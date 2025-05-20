@@ -1,0 +1,3 @@
+class Kornja:
+    def _():
+        ...

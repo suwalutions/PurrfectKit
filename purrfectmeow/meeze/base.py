@@ -1,0 +1,3 @@
+class WichienMaat:
+    def _():
+        ...
