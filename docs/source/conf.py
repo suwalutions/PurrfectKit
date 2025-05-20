@@ -46,7 +46,7 @@ html_theme_options = {
     "footer_icons": [
         {
             "name": "GitHub",
-            "url": "https://github.com/suwalutions/PurrfectKit/tree/meow",
+            "url": "https://github.com/suwalutions/PurrfectKit",
             "html": "",
             "class": "fa-brands fa-solid fa-github fa-2x",
         },
