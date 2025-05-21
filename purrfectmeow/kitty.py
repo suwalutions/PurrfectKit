@@ -2,7 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-def kitty_logger(name: str, log_file: str = "kitty.log", log_level: str = "INFO") -> logging.Logger:
+def kitty_logger(name: str, log_file: str = "kitty.log", log_level: str = "DEBUG") -> logging.Logger:
     """
     Sets up a logger with console and rotating file handlers.
 
