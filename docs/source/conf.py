@@ -4,8 +4,7 @@
 project = 'PurrfectKit'
 copyright = '2025, SUWALUTIONS'
 author = 'SUWALUTIONS'
-version = '0.0.1'
-release = '0.0.1'
+version = '0.1.0'
 
 # -- General configuration ---------------------------------------------------
 
