@@ -6,10 +6,25 @@ from purrfectmeow.kitty import kitty_logger
 
 class Markdown:
     """
-    A utility class for converting files or URLs to Markdown format using various converters.
+    A utility class for converting documents or URLs to Markdown format using third-party tools.
 
-    Provides static methods to process input content with different Markdown conversion tools,
-    such as MarkItDown and Docling, with logging support for tracking conversion progress.
+    This class provides static methods to facilitate Markdown conversion via:
+        - MarkItDown: A lightweight converter for extracting text content.
+        - Docling: A structured document converter supporting export to Markdown.
+
+    The class abstracts away the conversion and extraction process, ensuring consistent logging,
+    timing, and error handling across tools.
+
+    Methods:
+        convert_with_markitdown(input_path: str) -> str:
+            Converts content using MarkItDown and returns the extracted Markdown.
+
+        convert_with_docling(input_path: str) -> str:
+            Converts content using Docling and returns the exported Markdown.
+
+    Internal Methods:
+        _convert(input_path: str, converter: callable, extractor: callable) -> str:
+            Handles the shared logic of converting input and extracting Markdown, with logging.
     """
     _logger = kitty_logger(__name__)
     @staticmethod

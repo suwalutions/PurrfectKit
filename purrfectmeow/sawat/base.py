@@ -7,23 +7,28 @@ from purrfectmeow.sawat.ocr import OCR
 from purrfectmeow.sawat.simple import Simple
 
 class Malet:
-    """Text extraction class inspired by the Malet Thai cat breed.
+    """
+    A unified interface for extracting text from a wide variety of document formats.
 
-    This class provides methods to extract text from various file types using specialized loaders.
-    Supported file types include PDFs, images, spreadsheets, and Markdown files. Each loader is 
-    optimized for a specific format or extraction technique.
+    Inspired by the Malet breed of Thai cats, this class provides a graceful abstraction
+    for reading text content from files such as PDFs, spreadsheets, images, and URLs. 
+    It leverages specialized backends (like Tesseract, EasyOCR, Docling, and PyMuPDF) 
+    depending on the loader specified.
 
-    Attributes:
-        supported_loaders (list): List of available loader names: \n
-            - 'MARKITDOWN': MarkItDown for Markdown conversion\n
-            - 'DOCLING': Docling for Markdown conversion\n
-            - 'PYTESSERACT': Tesseract OCR for image text extraction\n
-            - 'EASYOCR': EasyOCR for image text extraction\n
-            - 'SURYAOCR': SuryaOCR for image text extraction\n
-            - 'PYMUPDF': PyMuPDF for PDF text extraction\n
-            - 'PYMUPDF_AS_TXT': Alternate PyMuPDF extraction as plain text\n
-            - 'PANDAS_EXCEL': pandas for Excel file extraction\n
-            - 'PANDAS_CSV': pandas for CSV file extraction\n
+    Supported Loaders:
+        - 'MARKITDOWN': Convert documents or URLs to Markdown using MarkItDown.
+        - 'DOCLING': Convert documents or URLs to Markdown using Docling.
+        - 'PYTESSERACT': Extract text from images or PDFs using Tesseract OCR.
+        - 'EASYOCR': Extract text using EasyOCR with Thai and English support.
+        - 'SURYAOCR': Extract structured text using SuryaOCR (detection + recognition).
+        - 'PYMUPDF': Extract text from PDFs using PyMuPDF (standard).
+        - 'PYMUPDF_AS_TXT': Extract raw text from PDFs using PyMuPDF with text-only mode.
+        - 'PANDAS_EXCEL': Read and convert Excel spreadsheets to plain text using pandas.
+        - 'PANDAS_CSV': Read and convert CSV files to plain text using pandas.
+
+    Methods:
+        loader(file: BinaryIO, file_name: str, loader: str, ``**kwargs``) -> str:
+            Extract text from the given file using the specified loader backend.
 
     Examples:
         >>> from purrfectmeow import Malet

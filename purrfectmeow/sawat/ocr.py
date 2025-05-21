@@ -13,10 +13,30 @@ from purrfectmeow.kitty import kitty_logger
 
 class OCR:
     """
-    A utility class for performing Optical Character Recognition (OCR) on images and PDFs.
+    A utility class for performing Optical Character Recognition (OCR) on image and PDF files.
 
-    Supports static methods to extract text from input files using various OCR engines,
-    such as PyTesseract, EasyOCR, and SuryaOCR, with logging for process monitoring.
+    This class provides a unified interface to extract text using different OCR engines:
+        - PyTesseract (Tesseract OCR)
+        - EasyOCR
+        - SuryaOCR (custom OCR pipeline using detection and recognition models)
+
+    It supports input formats including PDFs and image files (PNG, JPG, JPEG), and automatically
+    handles page-by-page processing for multi-page PDFs.
+
+    Methods:
+        convert_with_pytesseract(input_path: str) -> List[str]:
+            Extracts text using the PyTesseract OCR engine for English and Thai.
+
+        convert_with_easyocr(input_path: str) -> List[str]:
+            Extracts text using the EasyOCR engine for English and Thai.
+
+        convert_with_suryaocr(input_path: str) -> List[str]:
+            Extracts text using the SuryaOCR system, which combines custom detection and recognition models.
+
+    Internal Methods:
+        _convert(input_path: str, converter: callable) -> str:
+            Handles the core logic for converting input files into text using the provided converter.
+            Supports both image and multi-page PDF input with logging and timing.
     """
     _logger = kitty_logger(__name__)
     @staticmethod

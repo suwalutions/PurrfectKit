@@ -6,10 +6,32 @@ from purrfectmeow.kitty import kitty_logger
 
 class Simple:
     """
-    A utility class for extracting text from various file formats, including PDFs and spreadsheets.
+    A utility class for extracting textual content from various file formats.
 
-    Offers static methods to process files using tools like PyMuPDF for PDFs and pandas for
-    Excel and CSV files, with logging to track conversion performance and outcomes.
+    This class provides static methods to convert content from:
+        - PDF files using PyMuPDF
+        - Excel files using pandas
+        - CSV files using pandas
+
+    Each conversion method logs the process, including timing and success status. The `_convert`
+    helper method standardizes the logging and execution of all file conversion operations.
+
+    Methods:
+        convert_with_pymupdf(input_path: str) -> str:
+            Extracts text from a PDF file using PyMuPDF's default `get_text()`.
+
+        convert_with_pymupdf_as_txt(input_path: str) -> str:
+            Extracts text from a PDF using PyMuPDF with `filetype="txt"` for raw output.
+
+        convert_with_pandas_excel(input_path: str) -> str:
+            Reads and converts the first sheet of an Excel file to a text string using pandas.
+
+        convert_with_pandas_csv(input_path: str) -> str:
+            Reads and converts a CSV file to a text string using pandas.
+
+    Internal Methods:
+        _convert(input_path: str, converter: callable) -> str:
+            Wraps file conversion logic with timing and logging.
     """
     _logger = kitty_logger(__name__)
     @staticmethod
