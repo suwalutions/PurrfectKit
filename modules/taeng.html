@@ -213,6 +213,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="purrfectmeow.konja.html">purrfectmeow.konja</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of purrfectmeow.konja</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="purrfectmeow.konja.base.html">purrfectmeow.konja.base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.konja.splitter.html">purrfectmeow.konja.splitter</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="purrfectmeow.meeze.html">purrfectmeow.meeze</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of purrfectmeow.meeze</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -233,6 +234,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="purrfectmeow.taeng.html">purrfectmeow.taeng</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of purrfectmeow.taeng</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="purrfectmeow.taeng.base.html">purrfectmeow.taeng.base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="purrfectmeow.taeng.file_handler.html">purrfectmeow.taeng.file_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.taeng.tokenizer.html">purrfectmeow.taeng.tokenizer</a></li>
 </ul>
 </li>
 </ul>
@@ -285,16 +287,102 @@
 <dt class="sig sig-object py" id="purrfectmeow.Suphalaks">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.</span></span><span class="sig-name descname"><span class="pre">Suphalaks</span></span><a class="reference internal" href="../_modules/purrfectmeow/taeng/base.html#Suphalaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Suphalaks" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A convenience class that wraps utility functions for tokenizer loading and file handling.</p>
+<p>This class serves as a simplified interface, making it easy to manage temporary files
+and load tokenizers without needing to interact with the underlying utility classes directly.</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">save_file(file</span></span></dt>
+<dd><p>BinaryIO, file_name: str) -&gt; str:</p>
+<p>Saves a binary file to a predefined temporary directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">remove_file(file_path</span></span></dt>
+<dd><p>str) -&gt; None:</p>
+<p>Deletes a file from the filesystem if it exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_tokenizer(model_name</span></span></dt>
+<dd><p>str):</p>
+<p>Loads and returns a Hugging Face tokenizer instance, with caching support.</p>
+</dd></dl>
+
+<dl>
+<dt>Example usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow</span><span class="w"> </span><span class="kn">import</span> <span class="n">Suphalaks</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Suphalaks</span><span class="o">.</span><span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="purrfectmeow.Suphalaks.save_file">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.BinaryIO" title="(in Python v3.13)"><span class="pre">BinaryIO</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/purrfectmeow/taeng/base.html#Suphalaks.save_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Suphalaks.save_file" title="Link to this definition">¶</a></dt>
-<dd><p>Saves a file to a temporay directory.</p>
+<dd><p>Saves a binary file to a temporary directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file</strong> (<em>BinaryIO</em>) – A binary file-like object to save.</p></li>
+<li><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name to assign to the saved file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The full path to the saved temporary file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;example.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">path</span> <span class="o">=</span> <span class="n">Suphalaks</span><span class="o">.</span><span class="n">save_file</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;copy.txt&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="purrfectmeow.Suphalaks.remove_file">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remove_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/purrfectmeow/taeng/base.html#Suphalaks.remove_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Suphalaks.remove_file" title="Link to this definition">¶</a></dt>
-<dd><p>“Removes a file from the filesystem.</p>
+<dd><p>Removes a file from the filesystem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The path of the file to be removed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Suphalaks</span><span class="o">.</span><span class="n">remove_file</span><span class="p">(</span><span class="s2">&quot;tmp_dir/copy.txt&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="purrfectmeow.Suphalaks.get_tokenizer">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tokenizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PreTrainedTokenizerBase</span></span></span><a class="reference internal" href="../_modules/purrfectmeow/taeng/base.html#Suphalaks.get_tokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Suphalaks.get_tokenizer" title="Link to this definition">¶</a></dt>
+<dd><p>Loads a tokenizer from the Hugging Face Transformers library.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name or path of the model for which to load the tokenizer.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tokenizer instance corresponding to the specified model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>PreTrainedTokenizerBase</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the model name is invalid or the tokenizer cannot be loaded.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Suphalaks</span><span class="o">.</span><span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -363,6 +451,7 @@
 <li><a class="reference internal" href="#purrfectmeow.Suphalaks"><code class="docutils literal notranslate"><span class="pre">Suphalaks</span></code></a><ul>
 <li><a class="reference internal" href="#purrfectmeow.Suphalaks.save_file"><code class="docutils literal notranslate"><span class="pre">Suphalaks.save_file()</span></code></a></li>
 <li><a class="reference internal" href="#purrfectmeow.Suphalaks.remove_file"><code class="docutils literal notranslate"><span class="pre">Suphalaks.remove_file()</span></code></a></li>
+<li><a class="reference internal" href="#purrfectmeow.Suphalaks.get_tokenizer"><code class="docutils literal notranslate"><span class="pre">Suphalaks.get_tokenizer()</span></code></a></li>
 </ul>
 </li>
 </ul>

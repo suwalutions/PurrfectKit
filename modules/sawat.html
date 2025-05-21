@@ -213,6 +213,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="purrfectmeow.konja.html">purrfectmeow.konja</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of purrfectmeow.konja</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="purrfectmeow.konja.base.html">purrfectmeow.konja.base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.konja.splitter.html">purrfectmeow.konja.splitter</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="purrfectmeow.meeze.html">purrfectmeow.meeze</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of purrfectmeow.meeze</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -233,6 +234,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="purrfectmeow.taeng.html">purrfectmeow.taeng</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of purrfectmeow.taeng</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="purrfectmeow.taeng.base.html">purrfectmeow.taeng.base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="purrfectmeow.taeng.file_handler.html">purrfectmeow.taeng.file_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.taeng.tokenizer.html">purrfectmeow.taeng.tokenizer</a></li>
 </ul>
 </li>
 </ul>
@@ -285,30 +287,30 @@
 <dt class="sig sig-object py" id="purrfectmeow.Malet">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.</span></span><span class="sig-name descname"><span class="pre">Malet</span></span><a class="reference internal" href="../_modules/purrfectmeow/sawat/base.html#Malet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Malet" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Text extraction class inspired by the Malet Thai cat breed.</p>
-<p>This class provides methods to extract text from various file types using specialized loaders.
-Supported file types include PDFs, images, spreadsheets, and Markdown files. Each loader is
-optimized for a specific format or extraction technique.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="purrfectmeow.Malet.supported_loaders">
-<span class="sig-name descname"><span class="pre">supported_loaders</span></span><a class="headerlink" href="#purrfectmeow.Malet.supported_loaders" title="Link to this definition">¶</a></dt>
-<dd><p>List of available loader names:</p>
-<ul class="simple">
-<li><p>‘MARKITDOWN’: MarkItDown for Markdown conversion</p></li>
-<li><p>‘DOCLING’: Docling for Markdown conversion</p></li>
-<li><p>‘PYTESSERACT’: Tesseract OCR for image text extraction</p></li>
-<li><p>‘EASYOCR’: EasyOCR for image text extraction</p></li>
-<li><p>‘SURYAOCR’: SuryaOCR for image text extraction</p></li>
-<li><p>‘PYMUPDF’: PyMuPDF for PDF text extraction</p></li>
-<li><p>‘PYMUPDF_AS_TXT’: Alternate PyMuPDF extraction as plain text</p></li>
-<li><p>‘PANDAS_EXCEL’: pandas for Excel file extraction</p></li>
-<li><p>‘PANDAS_CSV’: pandas for CSV file extraction</p></li>
+<p>A unified interface for extracting text from a wide variety of document formats.</p>
+<p>Inspired by the Malet breed of Thai cats, this class provides a graceful abstraction
+for reading text content from files such as PDFs, spreadsheets, images, and URLs.
+It leverages specialized backends (like Tesseract, EasyOCR, Docling, and PyMuPDF)
+depending on the loader specified.</p>
+<dl class="simple">
+<dt>Supported Loaders:</dt><dd><ul class="simple">
+<li><p>‘MARKITDOWN’: Convert documents or URLs to Markdown using MarkItDown.</p></li>
+<li><p>‘DOCLING’: Convert documents or URLs to Markdown using Docling.</p></li>
+<li><p>‘PYTESSERACT’: Extract text from images or PDFs using Tesseract OCR.</p></li>
+<li><p>‘EASYOCR’: Extract text using EasyOCR with Thai and English support.</p></li>
+<li><p>‘SURYAOCR’: Extract structured text using SuryaOCR (detection + recognition).</p></li>
+<li><p>‘PYMUPDF’: Extract text from PDFs using PyMuPDF (standard).</p></li>
+<li><p>‘PYMUPDF_AS_TXT’: Extract raw text from PDFs using PyMuPDF with text-only mode.</p></li>
+<li><p>‘PANDAS_EXCEL’: Read and convert Excel spreadsheets to plain text using pandas.</p></li>
+<li><p>‘PANDAS_CSV’: Read and convert CSV files to plain text using pandas.</p></li>
 </ul>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a></p>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">loader(file</span></span></dt>
+<dd><p>BinaryIO, file_name: str, loader: str, <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>) -&gt; str:
+Extract text from the given file using the specified loader backend.</p>
 </dd></dl>
 
 <p class="rubric">Examples</p>
@@ -414,7 +416,6 @@ optimized for a specific format or extraction technique.</p>
             <ul>
 <li><a class="reference internal" href="#">Malet</a><ul>
 <li><a class="reference internal" href="#purrfectmeow.Malet"><code class="docutils literal notranslate"><span class="pre">Malet</span></code></a><ul>
-<li><a class="reference internal" href="#purrfectmeow.Malet.supported_loaders"><code class="docutils literal notranslate"><span class="pre">Malet.supported_loaders</span></code></a></li>
 <li><a class="reference internal" href="#purrfectmeow.Malet.loader"><code class="docutils literal notranslate"><span class="pre">Malet.loader()</span></code></a></li>
 </ul>
 </li>

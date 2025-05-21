@@ -212,6 +212,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.konja.html">purrfectmeow.konja</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of purrfectmeow.konja</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.konja.base.html">purrfectmeow.konja.base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.konja.splitter.html">purrfectmeow.konja.splitter</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.meeze.html">purrfectmeow.meeze</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of purrfectmeow.meeze</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -232,6 +233,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.html">purrfectmeow.taeng</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of purrfectmeow.taeng</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.base.html">purrfectmeow.taeng.base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.file_handler.html">purrfectmeow.taeng.file_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.tokenizer.html">purrfectmeow.taeng.tokenizer</a></li>
 </ul>
 </li>
 </ul>
@@ -282,23 +284,28 @@
 <div class="viewcode-block" id="Malet">
 <a class="viewcode-back" href="../../../modules/sawat.html#purrfectmeow.Malet">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Malet</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Text extraction class inspired by the Malet Thai cat breed.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A unified interface for extracting text from a wide variety of document formats.</span>
 
-<span class="sd">    This class provides methods to extract text from various file types using specialized loaders.</span>
-<span class="sd">    Supported file types include PDFs, images, spreadsheets, and Markdown files. Each loader is </span>
-<span class="sd">    optimized for a specific format or extraction technique.</span>
+<span class="sd">    Inspired by the Malet breed of Thai cats, this class provides a graceful abstraction</span>
+<span class="sd">    for reading text content from files such as PDFs, spreadsheets, images, and URLs. </span>
+<span class="sd">    It leverages specialized backends (like Tesseract, EasyOCR, Docling, and PyMuPDF) </span>
+<span class="sd">    depending on the loader specified.</span>
 
-<span class="sd">    Attributes:</span>
-<span class="sd">        supported_loaders (list): List of available loader names: \n</span>
-<span class="sd">            - &#39;MARKITDOWN&#39;: MarkItDown for Markdown conversion\n</span>
-<span class="sd">            - &#39;DOCLING&#39;: Docling for Markdown conversion\n</span>
-<span class="sd">            - &#39;PYTESSERACT&#39;: Tesseract OCR for image text extraction\n</span>
-<span class="sd">            - &#39;EASYOCR&#39;: EasyOCR for image text extraction\n</span>
-<span class="sd">            - &#39;SURYAOCR&#39;: SuryaOCR for image text extraction\n</span>
-<span class="sd">            - &#39;PYMUPDF&#39;: PyMuPDF for PDF text extraction\n</span>
-<span class="sd">            - &#39;PYMUPDF_AS_TXT&#39;: Alternate PyMuPDF extraction as plain text\n</span>
-<span class="sd">            - &#39;PANDAS_EXCEL&#39;: pandas for Excel file extraction\n</span>
-<span class="sd">            - &#39;PANDAS_CSV&#39;: pandas for CSV file extraction\n</span>
+<span class="sd">    Supported Loaders:</span>
+<span class="sd">        - &#39;MARKITDOWN&#39;: Convert documents or URLs to Markdown using MarkItDown.</span>
+<span class="sd">        - &#39;DOCLING&#39;: Convert documents or URLs to Markdown using Docling.</span>
+<span class="sd">        - &#39;PYTESSERACT&#39;: Extract text from images or PDFs using Tesseract OCR.</span>
+<span class="sd">        - &#39;EASYOCR&#39;: Extract text using EasyOCR with Thai and English support.</span>
+<span class="sd">        - &#39;SURYAOCR&#39;: Extract structured text using SuryaOCR (detection + recognition).</span>
+<span class="sd">        - &#39;PYMUPDF&#39;: Extract text from PDFs using PyMuPDF (standard).</span>
+<span class="sd">        - &#39;PYMUPDF_AS_TXT&#39;: Extract raw text from PDFs using PyMuPDF with text-only mode.</span>
+<span class="sd">        - &#39;PANDAS_EXCEL&#39;: Read and convert Excel spreadsheets to plain text using pandas.</span>
+<span class="sd">        - &#39;PANDAS_CSV&#39;: Read and convert CSV files to plain text using pandas.</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">        loader(file: BinaryIO, file_name: str, loader: str, ``**kwargs``) -&gt; str:</span>
+<span class="sd">            Extract text from the given file using the specified loader backend.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from purrfectmeow import Malet</span>

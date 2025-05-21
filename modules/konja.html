@@ -213,6 +213,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="purrfectmeow.konja.html">purrfectmeow.konja</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of purrfectmeow.konja</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="purrfectmeow.konja.base.html">purrfectmeow.konja.base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.konja.splitter.html">purrfectmeow.konja.splitter</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="purrfectmeow.meeze.html">purrfectmeow.meeze</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of purrfectmeow.meeze</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -233,6 +234,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="purrfectmeow.taeng.html">purrfectmeow.taeng</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of purrfectmeow.taeng</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="purrfectmeow.taeng.base.html">purrfectmeow.taeng.base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="purrfectmeow.taeng.file_handler.html">purrfectmeow.taeng.file_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.taeng.tokenizer.html">purrfectmeow.taeng.tokenizer</a></li>
 </ul>
 </li>
 </ul>
@@ -285,6 +287,79 @@
 <dt class="sig sig-object py" id="purrfectmeow.Kornja">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.</span></span><span class="sig-name descname"><span class="pre">Kornja</span></span><a class="reference internal" href="../_modules/purrfectmeow/konja/base.html#Kornja"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Kornja" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A flexible utility class for chunking text into smaller segments using token-based or character-based strategies.</p>
+<p>This class provides a static method chunking that allows dynamic configuration of text splitting behavior.
+It supports both:
+- Token-based splitting via OpenAI or HuggingFace tokenizers.
+- Character-based splitting using a specified string separator.</p>
+<p>This class acts as a high-level interface to the lower-level Splitter class, offering a simplified API for
+preparing text for use in NLP pipelines such as embeddings, semantic search, or summarization.</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">chunking(</span></span></dt>
+<dd><p>text: str,
+splitter: Optional[Literal[“token”, “character”]] = “token”,
+chunk_size: Optional[int] = None,
+chunk_overlap: Optional[int] = None,
+<code class="docutils literal notranslate"><span class="pre">**kwargs</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">)</span> <span class="pre">-&gt;</span> <span class="pre">List[str]</span></span></dt>
+<dd><p>Splits the input text into chunks using the specified splitter type. Additional configuration options such as
+model_name (for token-based) or separator (for character-based) can be passed via keyword arguments.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="purrfectmeow.Kornja.chunking">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chunking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">splitter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'token'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'character'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'token'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_overlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/purrfectmeow/konja/base.html#Kornja.chunking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Kornja.chunking" title="Link to this definition">¶</a></dt>
+<dd><p>Chunk text into segments using a token-based or character-based splitter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The input text to be chunked.</p></li>
+<li><p><strong>splitter</strong> (<em>Optional</em><em>[</em><em>Literal</em><em>[</em><em>&quot;token&quot;</em><em>, </em><em>&quot;character&quot;</em><em>]</em><em>]</em>) – The type of splitter to use. Defaults to “token”.</p></li>
+<li><p><strong>chunk_size</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em>) – Size of each chunk (tokens or characters). Defaults to None.</p></li>
+<li><p><strong>chunk_overlap</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em>) – Overlap between chunks. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional parameters, including:
+- model_name (str, optional): Model name for token-based splitter (required if splitter=”token”).
+- separator (str, optional): Separator for character-based splitter (required if splitter=”character”).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of text chunks.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If splitter is invalid or required kwargs (model_name, separator) are missing/invalid.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.13)"><strong>RuntimeError</strong></a> – If the splitter cannot be created or text splitting fails.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Token-based splitting with default model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;This is a sample text to chunk into smaller pieces.&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chunks</span> <span class="o">=</span> <span class="n">Kornja</span><span class="o">.</span><span class="n">chunking</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">chunk_overlap</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Uses splitter=&quot;token&quot; and model_name=&quot;text-embedding-ada-002&quot;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Token-based splitting with custom model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chunks</span> <span class="o">=</span> <span class="n">Kornja</span><span class="o">.</span><span class="n">chunking</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Uses splitter=&quot;token&quot; with specified model</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Character-based splitting with custom separator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Sentence one. Sentence two. Sentence three.&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chunks</span> <span class="o">=</span> <span class="n">Kornja</span><span class="o">.</span><span class="n">chunking</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">splitter</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">chunk_overlap</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Splits on &#39;.&#39; with specified chunk size and overlap</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -348,7 +423,10 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Kornja</a><ul>
-<li><a class="reference internal" href="#purrfectmeow.Kornja"><code class="docutils literal notranslate"><span class="pre">Kornja</span></code></a></li>
+<li><a class="reference internal" href="#purrfectmeow.Kornja"><code class="docutils literal notranslate"><span class="pre">Kornja</span></code></a><ul>
+<li><a class="reference internal" href="#purrfectmeow.Kornja.chunking"><code class="docutils literal notranslate"><span class="pre">Kornja.chunking()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
