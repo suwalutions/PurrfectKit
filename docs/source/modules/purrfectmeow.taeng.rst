@@ -12,3 +12,4 @@
 
    base
    file_handler
+   tokenizer
