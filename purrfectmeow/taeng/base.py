@@ -1,34 +1,36 @@
 from typing import BinaryIO
-from transformers import PreTrainedTokenizerBase
+from transformers import PreTrainedTokenizerBase, PreTrainedModel
 
 from purrfectmeow.taeng.file_handler import HandleFile
-from purrfectmeow.taeng.tokenizer import HFTokeniker
+from purrfectmeow.taeng.model_loader import LoadingModel
 
 class Suphalaks:
     """
-    A convenience class that wraps utility functions for tokenizer loading and file handling.
+    A utility class for simplified file handling and Hugging Face model/tokenizer loading.
 
-    This class serves as a simplified interface, making it easy to manage temporary files 
-    and load tokenizers without needing to interact with the underlying utility classes directly.
+    This class abstracts away repetitive tasks such as saving and removing temporary files, 
+    and loading tokenizers or models via Hugging Face's `transformers` library. It serves 
+    as a wrapper around lower-level utility classes, making the codebase more concise and 
+    easier to maintain.
 
     Methods:
-        save_file(file: BinaryIO, file_name: str) -> str:
+        save_file(file: BinaryIO, file_name: str) -> str
+            Saves a binary file to a temporary location.
 
-            Saves a binary file to a predefined temporary directory.
+        remove_file(file_path: str) -> None
+            Deletes the specified file from the filesystem.
 
-        remove_file(file_path: str) -> None:
+        get_model(model_name: str) -> PreTrainedModel
+            Loads and returns a pretrained model from Hugging Face.
 
-            Deletes a file from the filesystem if it exists.
+        get_tokenizer(model_name: str) -> PreTrainedTokenizerBase
+            Loads and returns a pretrained tokenizer from Hugging Face.
 
-        get_tokenizer(model_name: str):
-        
-            Loads and returns a Hugging Face tokenizer instance, with caching support.
-
-    Example usage:
+    Example:
         >>> from purrfectmeow import Suphalaks
         >>> tokenizer = Suphalaks.get_tokenizer("intfloat/multilingual-e5-large-instruct")
+        >>> model = Suphalaks.get_model("intfloat/multilingual-e5-large-instruct")
     """
-
     @staticmethod
     def save_file(file: BinaryIO, file_name: str) -> str:
         """
@@ -64,20 +66,39 @@ class Suphalaks:
         HandleFile.remove_temp_file(file_path)
 
     @staticmethod
+    def get_model(model_name: str) -> PreTrainedModel:
+        """
+        Loads a pretrained model from Hugging Face's model hub.
+
+        Args:
+            model_name (str): Name or path of the pretrained model.
+
+        Returns:
+            PreTrainedModel: Loaded Hugging Face model instance.
+
+        Raises:
+            ValueError: If the model name is invalid or loading fails.
+
+        Example:
+            >>> model = Suphalaks.get_model("bert-base-uncased")
+        """
+        return LoadingModel().get_model(model_name)
+
+    @staticmethod
     def get_tokenizer(model_name: str) -> PreTrainedTokenizerBase:
         """
         Loads a tokenizer from the Hugging Face Transformers library.
 
         Args:
-            model_name (str): The name or path of the model for which to load the tokenizer.
+            model_name (str): Name or path of the tokenizer to load.
 
         Returns:
-            PreTrainedTokenizerBase: A tokenizer instance corresponding to the specified model.
+            PreTrainedTokenizerBase: Tokenizer instance associated with the model.
 
         Raises:
-            ValueError: If the model name is invalid or the tokenizer cannot be loaded.
+            ValueError: If the tokenizer cannot be loaded.
 
-        Examples:
-            >>> tokenizer = Suphalaks.get_tokenizer("intfloat/multilingual-e5-large-instruct")
+        Example:
+            >>> tokenizer = Suphalaks.get_tokenizer("bert-base-uncased")
         """
-        return HFTokeniker.get_tokenizer(model_name)
+        return LoadingModel().get_tokenizer(model_name)
