@@ -50,7 +50,7 @@ class Simple:
             Logs the conversion start, success, and elapsed time.
             Ensures timing is logged even if an exception occurs.
         """
-        Simple._logger.info(f"Starting conversion for '{input_path}'")
+        Simple._logger.debug(f"Starting conversion for '{input_path}'")
         start = time.time()
         try:
             result = converter(input_path)
@@ -58,7 +58,7 @@ class Simple:
             return result
         finally:
             elapsed = time.time() - start
-            Simple._logger.info(f"Conversion time spent `{elapsed:.2f}` seconds.")
+            Simple._logger.debug(f"Conversion time spent `{elapsed:.2f}` seconds.")
 
     @staticmethod
     def convert_with_pymupdf(input_path: str) -> str:

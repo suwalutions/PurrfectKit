@@ -44,7 +44,7 @@ class Markdown:
             Logs the conversion start, success, and elapsed time.
             Ensures timing is logged even if an exception occurs.
         """
-        Markdown._logger.info(f"Starting conversion for '{input_path}'")
+        Markdown._logger.debug(f"Starting conversion for '{input_path}'")
         start = time.time()
         try:
             content = converter.convert(input_path)
@@ -53,7 +53,7 @@ class Markdown:
             return result
         finally:
             elapsed = time.time() - start
-            Markdown._logger.info(f"Conversion time spent `{elapsed:.2f}` seconds.")
+            Markdown._logger.debug(f"Conversion time spent `{elapsed:.2f}` seconds.")
 
     @staticmethod
     def convert_with_markitdown(input_path: str) -> str:

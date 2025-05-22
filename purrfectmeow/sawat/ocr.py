@@ -55,7 +55,7 @@ class OCR:
             Logs the conversion start, success, and elapsed time.
             Ensures timing is logged even if an exception occurs.
         """
-        OCR._logger.info(f"Starting conversion for '{input_path}'")
+        OCR._logger.debug(f"Starting conversion for '{input_path}'")
         start = time.time()
         try:
             content = []
@@ -65,9 +65,9 @@ class OCR:
                     for idx, image in enumerate(images):
                         try:
                             text = converter(image)
-                            OCR._logger.info(f"Text: {text}")
+                            OCR._logger.debug(f"Text: {text}")
                             content.append(text)
-                            OCR._logger.info(f"Page {idx+1} processed.")
+                            OCR._logger.debug(f"Page {idx+1} processed.")
                         except Exception as e:
                             OCR._logger.exception(f"Page {idx+1} failed: {e}")
                             raise
@@ -75,12 +75,12 @@ class OCR:
                     image = Image.open(input_path)
                     text = converter(image)
                     content.append(text)
-                    OCR._logger.info("Page 1 processed.")
+                    OCR._logger.debug("Page 1 processed.")
             OCR._logger.info(f"Successfully converted '{input_path}'.")
             return "\n".join(content)
         finally:
             elapsed = time.time() - start
-            OCR._logger.info(f"Conversion time spent `{elapsed:.2f}` seconds.")
+            OCR._logger.debug(f"Conversion time spent `{elapsed:.2f}` seconds.")
 
     @staticmethod
     def convert_with_pytesseract(input_path: str) -> List[str]:
