@@ -1,34 +1,52 @@
-import os
 import threading
 from pathlib import Path
+from transformers import AutoTokenizer, AutoModel
 from collections import OrderedDict
-from transformers import AutoTokenizer, AutoModel, PreTrainedTokenizerBase, PreTrainedModel
-from typing import Union
-
 from purrfectmeow.kitty import kitty_logger
 
 class LoadingModel:
     """
-    Manages the loading, caching, and reuse of Hugging Face tokenizers and models.
-
-    This class provides a thread-safe mechanism to:
-    - Cache downloaded models/tokenizers to disk and in memory,
-    - Set a custom cache path,
-    - Preload frequently used tokenizers,
-    - Automatically evict old entries based on a defined cache size limit.
-
-    Methods:
-        - set_path(path): Define a custom cache directory.
-        - get_tokenizer(name): Load or retrieve a tokenizer from cache.
-        - get_model(name): Load or retrieve a model from cache.
+    A class responsible for managing the loading, caching, and preloading of Hugging Face models and tokenizers.
 
     Attributes:
-        DEFAULT_CACHE_PATH (str): Default filesystem path for caching resources.
-        DEFAULT_MAX_CACHE_SIZE (dict): Maximum in-memory cache size for tokenizers and models.
-        PRELOADED_TOKENIZER_IDS (List[str]): Tokenizer identifiers to preload at startup.
+        DEFAULT_CACHE_PATH (str): Default directory path for caching models and tokenizers.
+        DEFAULT_MAX_CACHE_SIZE (int): Default maximum cache size before eviction occurs.
+        PRELOADED_TOKENIZER_IDS (list): A list of predefined tokenizer IDs to preload.
+        _cache_dir (Path): Directory where models and tokenizers are cached.
+        _cache (OrderedDict): In-memory cache for storing loaded models and tokenizers.
+        _cache_lock (threading.Lock): Lock for synchronizing access to the cache.
+        _max_cache_size (int): Maximum allowed cache size before evicting old items.
+        _logger (logger): Logger instance for logging debug, info, and error messages.
+
+    Methods:
+        set_path(self, path: str) -> None:
+            Sets a new cache path and clears the current in-memory cache.
+        
+        get_tokenizer(self, name: str):
+            Retrieves a tokenizer by its name from the cache or downloads it if not present.
+        
+        get_model(self, name: str):
+            Retrieves a model by its name from the cache or downloads it if not present.
+
+    Interna Methods:
+        __init__(self):
+            Initializes the class, setting up the cache directory, cache size, and logger, and preloads the tokenizers.
+        
+        _is_resource_cached(self, resource_dir: Path, is_tokenizer: bool) -> bool:
+            Checks if the resource (model or tokenizer) is already cached in the specified directory.
+        
+        _load_resource(self, name: str, is_tokenizer: bool):
+            Loads a model or tokenizer from the cache or downloads it from Hugging Face if not cached.
+        
+        _preload_tokenizers(self) -> None:
+            Preloads a predefined list of tokenizers and logs the success or failure of each attempt.
+        
+        _get_resource(self, name: str, is_tokenizer: bool):
+            Retrieves a model or tokenizer from the cache, or loads it if not present, and caches it.
     """
+
     DEFAULT_CACHE_PATH = 'models_hf/'
-    DEFAULT_MAX_CACHE_SIZE = {'tokenizer': 10, 'model': 5}
+    DEFAULT_MAX_CACHE_SIZE = 10
     PRELOADED_TOKENIZER_IDS = [
         "intfloat/multilingual-e5-large-instruct",
         "Alibaba-NLP/gte-Qwen2-1.5B-instruct",
@@ -38,174 +56,153 @@ class LoadingModel:
     ]
 
     def __init__(self):
-        """
-        Initialize internal caches, threading locks, and logger. Creates the cache directory if it doesn't exist.
+        """Initializes the LoadingModel instance.
+
+        Sets up the cache directory, in-memory cache, thread lock, logger, and preloads a set of predefined tokenizers.
         """
         self._cache_dir = Path(self.DEFAULT_CACHE_PATH)
+        self._cache = OrderedDict()
         self._cache_lock = threading.Lock()
-        self._tokenizer_cache = OrderedDict()
-        self._model_cache = OrderedDict()
         self._max_cache_size = self.DEFAULT_MAX_CACHE_SIZE
-        self._is_tokenizer_preloaded = False
         self._logger = kitty_logger(__name__)
         self._cache_dir.mkdir(parents=True, exist_ok=True)
+        self._logger.debug("Initialized LoadingModel with cache directory: %s", self._cache_dir)
+        self._preload_tokenizers()
 
     def set_path(self, path: str) -> None:
-        """
-        Set a custom directory for storing cached tokenizers and models.
-
-        This will reset existing in-memory caches and reload from the new path.
+        """Sets a new cache path and clears the in-memory cache.
 
         Args:
-            path (str): Path to the new cache directory.
+            path (str): The new path to be used for caching resources.
 
         Raises:
-            ValueError: If the provided path does not exist or is not a directory.
+            ValueError: If the provided path is not a valid directory.
         """
         path_obj = Path(path).resolve()
         if not path_obj.is_dir():
-            self._logger.error("Invalid cache path: %s", path)
+            self._logger.error("Invalid cache path provided: %s is not a directory", path)
             raise ValueError(f"Invalid cache path: `{path}` is not a directory")
-
         with self._cache_lock:
+            self._logger.debug("Setting new cache path: %s", path_obj)
             self._cache_dir = path_obj
             self._cache_dir.mkdir(parents=True, exist_ok=True)
-            self._tokenizer_cache.clear()
-            self._model_cache.clear()
-            self._is_tokenizer_preloaded = False
-            self._logger.info("Cache path set to: %s", path_obj)
+            self._cache.clear()
+            self._logger.debug("Cleared in-memory cache due to path change")
+            self._preload_tokenizers()
 
-    def _is_resource_cached(self, resource_dir: Path, resource_type: str) -> bool:
-        """
-        Check if the specified resource (tokenizer or model) is already cached locally.
+    def _is_resource_cached(self, resource_dir: Path, is_tokenizer: bool) -> bool:
+        """Checks if a resource (tokenizer or model) is already cached locally.
 
         Args:
-            resource_dir (Path): Directory path where the resource is expected to be cached.
-            resource_type (str): Either 'tokenizer' or 'model'.
+            resource_dir (Path): The path where the resource should be cached.
+            is_tokenizer (bool): Whether the resource is a tokenizer (True) or model (False).
 
         Returns:
-            bool: True if the resource exists in the local cache, False otherwise.
+            bool: True if the resource is found in the cache, False otherwise.
         """
-        cache_file = 'tokenizer_config.json' if resource_type == 'tokenizer' else 'config.json'
-        return (resource_dir / cache_file).exists()
+        cache_file = 'tokenizer_config.json' if is_tokenizer else 'config.json'
+        cached = (resource_dir / cache_file).exists()
+        self._logger.debug("Checking cache for %s at %s: %s", 
+                          "tokenizer" if is_tokenizer else "model", resource_dir, "found" if cached else "not found")
+        return cached
 
-    def _load_resource(self, resource_name: str, resource_type: str) -> Union[PreTrainedTokenizerBase, PreTrainedModel]:
-        """
-        Load a tokenizer or model either from local cache or the Hugging Face Hub.
+    def _load_resource(self, name: str, is_tokenizer: bool):
+        """Loads a tokenizer or model from cache or downloads it from Hugging Face.
 
         Args:
-            resource_name (str): Hugging Face resource identifier.
-            resource_type (str): Either 'tokenizer' or 'model'.
+            name (str): The Hugging Face model or tokenizer identifier.
+            is_tokenizer (bool): Whether to load a tokenizer (True) or model (False).
 
         Returns:
-            Union[PreTrainedTokenizerBase, PreTrainedModel]: The loaded tokenizer or model.
+            Any: The loaded tokenizer or model object.
+
+        Raises:
+            ValueError: If the resource cannot be loaded.
         """
-        resource_dir = self._cache_dir / resource_name.replace("/", "_")
-        loader_class = AutoTokenizer if resource_type == 'tokenizer' else AutoModel
-
-        if self._is_resource_cached(resource_dir, resource_type):
-            try:
-                self._logger.debug("Loading %s from cache: %s", resource_type, resource_dir)
-                return loader_class.from_pretrained(resource_dir)
-            except Exception as e:
-                self._logger.warning("Cache load failed for %s: %s. Trying HF Hugging Face.", resource_dir, str(e))
-
-        self._logger.debug("Downloading %s: %s", resource_type, resource_name)
-        return loader_class.from_pretrained(resource_name, cache_dir=resource_dir)
+        resource_type = "tokenizer" if is_tokenizer else "model"
+        resource_dir = self._cache_dir / name.replace("/", "_")
+        loader = AutoTokenizer if is_tokenizer else AutoModel
+        self._logger.debug("Loading %s: %s", resource_type, name)
+        
+        try:
+            if self._is_resource_cached(resource_dir, is_tokenizer):
+                self._logger.debug("Loading %s from local cache: %s", resource_type, resource_dir)
+                return loader.from_pretrained(resource_dir)
+            self._logger.debug("Downloading %s from Hugging Face: %s", resource_type, name)
+            return loader.from_pretrained(name, cache_dir=resource_dir)
+        except Exception as e:
+            self._logger.error("Failed to load %s %s: %s", resource_type, name, str(e))
+            raise ValueError(f"Cannot load {resource_type} for `{name}`: {str(e)}")
 
     def _preload_tokenizers(self) -> None:
+        """Preloads a predefined list of tokenizers into the cache.
+
+        Logs success or failure of each tokenizer load attempt.
         """
-        Preload and cache tokenizers defined in PRELOADED_TOKENIZER_IDS.
-
-        Tokenizers are loaded into memory only once per session to reduce repeated loading.
-        """
-
-        if self._is_tokenizer_preloaded:
-            return
-
-        self._logger.info("Preloading tokenizers")
+        self._logger.debug("Starting preloading of tokenizers")
         for model_id in self.PRELOADED_TOKENIZER_IDS:
             try:
-                tokenizer = self._load_resource(model_id, 'tokenizer')
-                with self._cache_lock:
-                    self._tokenizer_cache[model_id] = tokenizer
-                    if len(self._tokenizer_cache) > self._max_cache_size['tokenizer']:
-                        self._tokenizer_cache.popitem(last=False)
+                self._get_resource(model_id, is_tokenizer=True)
+                self._logger.debug("Successfully preloaded tokenizer: %s", model_id)
             except Exception as e:
-                self._logger.warning("Failed to preload %s: %s", model_id, str(e))
+                self._logger.warning("Failed to preload tokenizer %s: %s", model_id, str(e))
 
-        self._is_tokenizer_preloaded = True
-
-    def get_tokenizer(self, tokenizer_name: str) -> PreTrainedTokenizerBase:
-        """
-        Retrieve a tokenizer by name. If available in memory cache, it is returned directly.
-        Otherwise, it is loaded from disk or downloaded, then cached.
+    def _get_resource(self, name: str, is_tokenizer: bool):
+        """Retrieves a resource from cache or loads it if not cached.
 
         Args:
-            tokenizer_name (str): Hugging Face tokenizer identifier (e.g., "bert-base-uncased").
+            name (str): The Hugging Face model or tokenizer identifier.
+            is_tokenizer (bool): Whether to retrieve a tokenizer (True) or model (False).
 
         Returns:
-            PreTrainedTokenizerBase: The requested tokenizer.
+            Any: The tokenizer or model object.
 
         Raises:
-            ValueError: If the tokenizer name is not a valid string or fails to load.
+            ValueError: If the name is not a string or resource fails to load.
         """
-        self._preload_tokenizers()
-
-        if not isinstance(tokenizer_name, str):
-            self._logger.error("Invalid tokenizer name: %s", tokenizer_name)
-            raise ValueError(f"Invalid tokenizer name: `{tokenizer_name}`")
-
+        if not isinstance(name, str):
+            self._logger.error("Invalid %s name: %s", "tokenizer" if is_tokenizer else "model", name)
+            raise ValueError(f"Invalid {'tokenizer' if is_tokenizer else 'model'} name: `{name}`")
+        
+        resource_type = "tokenizer" if is_tokenizer else "model"
+        key = (resource_type, name)
         with self._cache_lock:
-            if tokenizer_name in self._tokenizer_cache:
-                self._logger.debug("Using cached tokenizer: %s", tokenizer_name)
-                self._tokenizer_cache.move_to_end(tokenizer_name)
-                return self._tokenizer_cache[tokenizer_name]
+            if key in self._cache:
+                self._logger.debug("Cache hit for %s: %s", resource_type, name)
+                self._cache.move_to_end(key)
+                return self._cache[key]
+            
+            self._logger.debug("Cache miss for %s: %s, loading resource", resource_type, name)
+            resource = self._load_resource(name, is_tokenizer)
+            self._cache[key] = resource
+            if len(self._cache) > self._max_cache_size:
+                evicted_key = self._cache.popitem(last=False)
+                self._logger.debug("Evicted %s from cache due to size limit: %s", evicted_key[0], evicted_key[1])
+            self._logger.debug("Successfully cached %s: %s", resource_type, name)
+            return resource
 
-        self._logger.info("Loading tokenizer: %s", tokenizer_name)
-        try:
-            tokenizer = self._load_resource(tokenizer_name, 'tokenizer')
-            with self._cache_lock:
-                self._tokenizer_cache[tokenizer_name] = tokenizer
-                if len(self._tokenizer_cache) > self._max_cache_size['tokenizer']:
-                    self._tokenizer_cache.popitem(last=False)
-            return tokenizer
-        except Exception as e:
-            self._logger.error("Failed to load tokenizer %s: %s", tokenizer_name, str(e))
-            raise ValueError(f"Cannot load tokenizer for `{tokenizer_name}`: {str(e)}")
-
-    def get_model(self, model_name: str) -> PreTrainedModel:
-        """
-        Retrieve a model by name. If available in memory cache, it is returned directly.
-        Otherwise, it is loaded from disk or downloaded, then cached.
+    def get_tokenizer(self, name: str) -> AutoTokenizer:
+        """Retrieves or loads a tokenizer by name and returns it.
 
         Args:
-            model_name (str): Hugging Face model identifier (e.g., "bert-base-uncased").
+            name (str): The Hugging Face tokenizer identifier.
 
         Returns:
-            PreTrainedModel: The requested model.
-
-        Raises:
-            ValueError: If the model name is not a valid string or fails to load.
+            AutoTokenizer: The tokenizer object.
         """
-        if not isinstance(model_name, str):
-            self._logger.error("Invalid model name: %s", model_name)
-            raise ValueError(f"Invalid model name: `{model_name}`")
+        pre_loaded = self._get_resource(name, is_tokenizer=True)
+        self._logger.info("Completed preloading tokenizer: %s", name)
+        return pre_loaded
 
-        with self._cache_lock:
-            if model_name in self._model_cache:
-                self._logger.debug("Using cached model: %s", model_name)
-                self._model_cache.move_to_end(model_name)
-                return self._model_cache[model_name]
+    def get_model(self, name: str) -> AutoModel:
+        """Retrieves or loads a model by name and returns it.
 
-        self._logger.info("Loading model: %s", model_name)
-        try:
-            model = self._load_resource(model_name, 'model')
-            with self._cache_lock:
-                self._model_cache[model_name] = model
-                if len(self._model_cache) > self._max_cache_size['model']:
-                    self._model_cache.popitem(last=False)
-            return model
-        except Exception as e:
-            self._logger.error("Failed to load model %s: %s", model_name, str(e))
-            raise ValueError(f"Cannot load model for `{model_name}`: {str(e)}")
+        Args:
+            name (str): The Hugging Face model identifier.
+
+        Returns:
+            AutoModel: The model object.
+        """
+        pre_loaded = self._get_resource(name, is_tokenizer=False)
+        self._logger.info("Completed preloading model: %s", name)
+        return pre_loaded
