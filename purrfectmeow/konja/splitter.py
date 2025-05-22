@@ -1,5 +1,5 @@
-from typing import Optional
-from langchain_text_splitters import TokenTextSplitter, CharacterTextSplitter
+from typing import Optional, List
+from langchain_text_splitters import TokenTextSplitter
 from functools import lru_cache
 
 from purrfectmeow.taeng import Suphalaks
@@ -7,15 +7,15 @@ from purrfectmeow.kitty import kitty_logger
 
 class Splitter:
     """
-    A utility class for creating text splitters for token-based and character-based segmentation.
+    A utility class for creating text splitters for token-based and separator-based segmentation.
 
-    Provides factory methods for generating `TokenTextSplitter` and `CharacterTextSplitter` instances,
+    Provides factory methods for generating `TokenTextSplitter` and `KornjaSeparatorSplitter` instances,
     supporting OpenAI and HuggingFace tokenizers for flexible text preprocessing. This is particularly
     useful for handling long documents that need to be split into manageable chunks for tasks such as
     embedding generation, summarization, or semantic search.
 
     Attributes:
-        DEFAULT_CHUNK_SIZE (int): Default chunk size (tokens or characters). Defaults to 500.
+        DEFAULT_CHUNK_SIZE (int): Default chunk size (tokens). Defaults to 500.
         DEFAULT_CHUNK_OVERLAP (int): Default chunk overlap. Defaults to 0.
         MAX_CHUNK_SIZE (int): Maximum chunk size to prevent memory issues. Defaults to 10,000.
         SUPPORTED_OPENAI_MODELS (set): Supported OpenAI model names for tiktoken tokenizer.
@@ -23,16 +23,20 @@ class Splitter:
     Methods:
         create_token_splitter(model_name, chunk_size=None, chunk_overlap=None) -> TokenTextSplitter:
             Creates a token-based splitter using either an OpenAI or HuggingFace tokenizer based on the model name.
-        create_character_splitter(separator='\n\n', chunk_size=None, chunk_overlap=None) -> CharacterTextSplitter:
-            Creates a character-based splitter using a specified separator (e.g., paragraph or sentence).
+
+        create_separator_splitter(separator='\n\n') -> KornjaSeparatorSplitter:
+            Creates a separator-based splitter using a specified separator (e.g., paragraph or sentence).
 
     Internal Methods:
         _get_huggingface_tokenizer(model_name) -> tokenizer:
             Loads and caches a HuggingFace tokenizer for the specified model name.
+
         _validate_string_param(param, param_name, method) -> None:
             Validates that a string parameter is non-empty and non-whitespace.
+
         _validate_and_set_chunk_params(chunk_size, chunk_overlap, method) -> tuple[int, int]:
             Validates chunk size and overlap parameters, returning resolved values.
+            
         _log_splitter_creation(method, params) -> None:
             Logs the creation of a splitter with the given parameters.
     """
@@ -186,36 +190,61 @@ class Splitter:
             cls._logger.exception(f"Failed to create splitter for model '{model_name}'")
             raise RuntimeError(f"Failed to create splitter for model '{model_name}': {str(e)}") from e
 
+    class KornjaSeparatorSplitter:
+        """
+        A custom separator-based text splitter that segments text solely based on a specified separator.
+
+        This splitter is designed for straightforward use cases where the text is divided using a single,
+        consistent delimiter such as newlines, paragraph breaks, or punctuation marks. Unlike more complex
+        splitters that manage token limits or context overlap, this implementation appends the separator
+        back to each split chunk for structural consistency, except for the final chunk.
+
+        Attributes:
+            separator (str): The delimiter used to split the input text.
+
+        Methods:
+            split_text(text: str) -> List[str]:
+                Splits the input text using the specified separator and appends the separator
+                to each resulting chunk, except the last one (which has it removed if present).
+
+        Example:
+            >>> splitter = KornjaSeparatorSplitter(separator=".\n")
+            >>> splitter.split_text("Sentence one.\nSentence two.\n")
+            ['Sentence one.\n', 'Sentence two.']
+        """
+        def __init__(self, separator: str):
+            self.separator = separator
+
+        def split_text(self, text: str) -> List[str]:
+            if not isinstance(text, str):
+                raise ValueError("Text must be a string")
+            
+            chunks = [chunk + self.separator for chunk in text.split(self.separator)]
+            chunks[-1] = chunks[-1].rstrip(self.separator)
+            return chunks
+        
     @classmethod
-    def create_character_splitter(
+    def create_separator_splitter(
         cls,
         separator: str = "\n\n",
-        chunk_size: Optional[int] = None,
-        chunk_overlap: Optional[int] = None
-    ) -> CharacterTextSplitter:
-        """Create a CharacterTextSplitter with the specified separator.
+    ) -> KornjaSeparatorSplitter:
+        """Create a KornjaSeparatorSplitter with the specified separator.
 
         Args:
             separator (str): Separator to split text (e.g., '\n\n' for paragraphs). Defaults to '\n\n'.
-            chunk_size (Optional[int]): Size of each chunk in characters. Defaults to DEFAULT_CHUNK_SIZE.
-            chunk_overlap (Optional[int]): Overlap between chunks in characters. Defaults to DEFAULT_CHUNK_OVERLAP.
 
         Returns:
-            CharacterTextSplitter: A configured character-based text splitter instance.
+            KornjaSeparatorSplitter: A configured separator-based text splitter instance.
 
         Raises:
-            ValueError: If separator or chunk parameters are invalid.
+            ValueError: If the separator is invalid.
 
         Example:
-            >>> splitter = Splitter.create_character_splitter(separator=".", chunk_size=200, chunk_overlap=20)
+            >>> splitter = Splitter.create_separator_splitter(separator=".")
             >>> chunks = splitter.split_text("Sentence one. Sentence two.")
         """
-        cls._validate_string_param(separator, "Separator", "create_character_splitter")
-        chunk_size, chunk_overlap = cls._validate_and_set_chunk_params(chunk_size, chunk_overlap, "create_character_splitter")
-        cls._log_splitter_creation("character splitter", {"separator": separator, "chunk_size": chunk_size, "chunk_overlap": chunk_overlap})
 
-        return CharacterTextSplitter(
-            separator=separator,
-            chunk_size=chunk_size,
-            chunk_overlap=chunk_overlap
-        )
+        cls._validate_string_param(separator, "Separator", "create_separator_splitter")
+        cls._log_splitter_creation("separator splitter", {"separator": separator})
+
+        return cls.KornjaSeparatorSplitter(separator)

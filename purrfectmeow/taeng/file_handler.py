@@ -1,6 +1,8 @@
 import os
 from typing import BinaryIO
 
+from purrfectmeow.kitty import kitty_logger
+
 class HandleFile:
     """
     A utility class for handling temporary file operations.
@@ -19,8 +21,11 @@ class HandleFile:
         remove_temp_file(file_path: str) -> None:
             Removes the specified file from the filesystem if it exists.
     """
+    _logger = kitty_logger(__name__)
+
     TMP_DIR = 'tmp_dir/'
     os.makedirs(TMP_DIR, exist_ok=True)
+    _logger.debug(f"Temporary directory initialized at: {TMP_DIR}")
         
     @classmethod
     def save_temp_file(cls, file: BinaryIO, file_name: str) -> str:
@@ -35,12 +40,18 @@ class HandleFile:
             str: Full path to the saved file.
         """
         file_path = os.path.join(cls.TMP_DIR, file_name)
-        with open(file_path, 'wb') as f:
-            f.write(file.read())
-        return file_path
+        try:
+            with open(file_path, 'wb') as f:
+                data = file.read()
+                f.write(data)
+            cls._logger.info(f"File saved: {file_path} ({len(data)} bytes)")
+            return file_path
+        except Exception as e:
+            cls._logger.error(f"Failed to save file {file_name}: {e}", exc_info=True)
+            raise
     
-    @staticmethod
-    def remove_temp_file(file_path: str) -> None:
+    @classmethod
+    def remove_temp_file(cls, file_path: str) -> None:
         """
         Deletes a file from the filesystem if it exists.
 
@@ -50,5 +61,12 @@ class HandleFile:
         Returns:
             None
         """
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        try:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                cls._logger.info(f"File removed: {file_path}")
+            else:
+                cls._logger.warning(f"Tried to remove non-existent file: {file_path}")
+        except Exception as e:
+            cls._logger.error(f"Failed to remove file {file_path}: {e}", exc_info=True)
+            raise

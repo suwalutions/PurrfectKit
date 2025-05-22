@@ -12,4 +12,4 @@
 
    base
    file_handler
-   tokenizer
+   model_loader
