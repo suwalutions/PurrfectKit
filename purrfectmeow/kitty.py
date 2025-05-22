@@ -2,7 +2,18 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-def kitty_logger(name: str, log_file: str = "kitty.log", log_level: str = "DEBUG") -> logging.Logger:
+class LevelBasedFormatter(logging.Formatter):
+    def __init__(self, default_fmt, info_fmt, datefmt=None):
+        super().__init__(datefmt=datefmt)
+        self.default_fmt = logging.Formatter(default_fmt, datefmt)
+        self.info_fmt = logging.Formatter(info_fmt, datefmt)
+
+    def format(self, record):
+        if record.levelno == logging.INFO:
+            return self.info_fmt.format(record)
+        return self.default_fmt.format(record)
+
+def kitty_logger(name: str, log_file: str = "kitty.log", log_level: str = "INFO") -> logging.Logger:
     """
     Sets up a logger with console and rotating file handlers.
 
@@ -16,20 +27,26 @@ def kitty_logger(name: str, log_file: str = "kitty.log", log_level: str = "DEBUG
     """
     logger = logging.getLogger(name)
     logger.setLevel(getattr(logging, log_level.upper(), logging.INFO))
+
     if not logger.handlers:
-        log_format = logging.Formatter(
-            "%(asctime)s [%(levelname)s] %(name)s:%(lineno)d - %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S"
-        )
+        default_fmt = "%(asctime)s [%(levelname)s] %(name)s:%(lineno)d - %(message)s"
+        info_fmt = "%(asctime)s [%(levelname)s] - %(message)s"
+        datefmt = "%Y-%m-%d %H:%M:%S"
+
+        formatter = LevelBasedFormatter(default_fmt, info_fmt, datefmt)
+
         console_handler = logging.StreamHandler()
-        console_handler.setFormatter(log_format)
+        console_handler.setFormatter(formatter)
         logger.addHandler(console_handler)
+
         log_dir = Path("logs")
         log_dir.mkdir(exist_ok=True)
         log_path = log_dir / log_file
+
         file_handler = RotatingFileHandler(
             log_path, maxBytes=5 * 1024 * 1024, backupCount=3
         )
-        file_handler.setFormatter(log_format)
+        file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
+
     return logger
