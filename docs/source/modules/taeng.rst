@@ -3,7 +3,7 @@
 Suphalaks
 =========
 
-The :class:`purrfectmeow.Suphalaks` class provides internal utilities for seamless operation within PurrfectKit.
+The :class:`purrfectmeow.Suphalaks` class provides handles file operations and model/tokenizer loading.
 
 See :doc:`/usage` for detailed examples of using PurrfectKit modules.
 

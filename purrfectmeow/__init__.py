@@ -6,7 +6,7 @@ Mappings:
     - WichienMaat: Semantic Search (understanding query intent)
     - KhaoManee: Embedding & Storage (converting text to vectors and storing)
     - Malet: Text Extraction (isolating specific data from text)
-    - Suphalaks: Internal use
+    - Suphalaks: Utility & Infrastructure (handles file operations and model/tokenizer loading)
 """
 
 from purrfectmeow.konja import Kornja
@@ -28,5 +28,5 @@ NLP_MAPPINGS = {
     "WichienMaat": "Semantic Search",
     "KhaoManee": "Embedding & Storage",
     "Malet": "Text Extraction",
-    "Suphalaks": "Internal use",
+    "Suphalaks": "Utility & Infrastructure",
 }

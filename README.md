@@ -11,7 +11,7 @@ PurrfectKit's core modules are each inspired by a Thai cat breed:
 - **`purrfectmeow.WichienMaat`** – Understands query intent for precise results *(Semantic Search)*.
 - **`purrfectmeow.KhaoManee`** – Converts text to vectors and stores them *(Embedding & Storage)*.
 - **`purrfectmeow.Malet`** – Extracts data from PDFs, images, spreadsheets, and Markdown *(Text Extraction)*.
-- **`purrfectmeow.Suphalaks`** – Internal utilities for seamless operation.
+- **`purrfectmeow.Suphalaks`** – Handles file operations and model/tokenizer loading to support other components *(Utility & Infrastructure)*
 
 > **Note:** All modules are prefixed with `purrfectmeow` for namespace clarity and reflect Thai cat breed names.
 
