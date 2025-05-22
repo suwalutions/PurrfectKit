@@ -12,4 +12,5 @@
 
    base
    file_handler
+   model_loader
    tokenizer

@@ -233,6 +233,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.html">purrfectmeow.taeng</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of purrfectmeow.taeng</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.base.html">purrfectmeow.taeng.base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.file_handler.html">purrfectmeow.taeng.file_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.model_loader.html">purrfectmeow.taeng.model_loader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.tokenizer.html">purrfectmeow.taeng.tokenizer</a></li>
 </ul>
 </li>
@@ -274,38 +275,40 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for purrfectmeow.taeng.base</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">BinaryIO</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">transformers</span><span class="w"> </span><span class="kn">import</span> <span class="n">PreTrainedTokenizerBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transformers</span><span class="w"> </span><span class="kn">import</span> <span class="n">PreTrainedTokenizerBase</span><span class="p">,</span> <span class="n">PreTrainedModel</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.taeng.file_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">HandleFile</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.taeng.tokenizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">HFTokeniker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.taeng.model_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoadingModel</span>
 
 <div class="viewcode-block" id="Suphalaks">
 <a class="viewcode-back" href="../../../modules/taeng.html#purrfectmeow.Suphalaks">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Suphalaks</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A convenience class that wraps utility functions for tokenizer loading and file handling.</span>
+<span class="sd">    A utility class for simplified file handling and Hugging Face model/tokenizer loading.</span>
 
-<span class="sd">    This class serves as a simplified interface, making it easy to manage temporary files </span>
-<span class="sd">    and load tokenizers without needing to interact with the underlying utility classes directly.</span>
+<span class="sd">    This class abstracts away repetitive tasks such as saving and removing temporary files, </span>
+<span class="sd">    and loading tokenizers or models via Hugging Face&#39;s `transformers` library. It serves </span>
+<span class="sd">    as a wrapper around lower-level utility classes, making the codebase more concise and </span>
+<span class="sd">    easier to maintain.</span>
 
 <span class="sd">    Methods:</span>
-<span class="sd">        save_file(file: BinaryIO, file_name: str) -&gt; str:</span>
+<span class="sd">        save_file(file: BinaryIO, file_name: str) -&gt; str</span>
+<span class="sd">            Saves a binary file to a temporary location.</span>
 
-<span class="sd">            Saves a binary file to a predefined temporary directory.</span>
+<span class="sd">        remove_file(file_path: str) -&gt; None</span>
+<span class="sd">            Deletes the specified file from the filesystem.</span>
 
-<span class="sd">        remove_file(file_path: str) -&gt; None:</span>
+<span class="sd">        get_model(model_name: str) -&gt; PreTrainedModel</span>
+<span class="sd">            Loads and returns a pretrained model from Hugging Face.</span>
 
-<span class="sd">            Deletes a file from the filesystem if it exists.</span>
+<span class="sd">        get_tokenizer(model_name: str) -&gt; PreTrainedTokenizerBase</span>
+<span class="sd">            Loads and returns a pretrained tokenizer from Hugging Face.</span>
 
-<span class="sd">        get_tokenizer(model_name: str):</span>
-<span class="sd">        </span>
-<span class="sd">            Loads and returns a Hugging Face tokenizer instance, with caching support.</span>
-
-<span class="sd">    Example usage:</span>
+<span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from purrfectmeow import Suphalaks</span>
 <span class="sd">        &gt;&gt;&gt; tokenizer = Suphalaks.get_tokenizer(&quot;intfloat/multilingual-e5-large-instruct&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; model = Suphalaks.get_model(&quot;intfloat/multilingual-e5-large-instruct&quot;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
 <div class="viewcode-block" id="Suphalaks.save_file">
 <a class="viewcode-back" href="../../../modules/taeng.html#purrfectmeow.Suphalaks.save_file">[docs]</a>
     <span class="nd">@staticmethod</span>
@@ -346,6 +349,28 @@
         <span class="n">HandleFile</span><span class="o">.</span><span class="n">remove_temp_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Suphalaks.get_model">
+<a class="viewcode-back" href="../../../modules/taeng.html#purrfectmeow.Suphalaks.get_model">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PreTrainedModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads a pretrained model from Hugging Face&#39;s model hub.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model_name (str): Name or path of the pretrained model.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            PreTrainedModel: Loaded Hugging Face model instance.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the model name is invalid or loading fails.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; model = Suphalaks.get_model(&quot;bert-base-uncased&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">LoadingModel</span><span class="p">()</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Suphalaks.get_tokenizer">
 <a class="viewcode-back" href="../../../modules/taeng.html#purrfectmeow.Suphalaks.get_tokenizer">[docs]</a>
     <span class="nd">@staticmethod</span>
@@ -354,18 +379,18 @@
 <span class="sd">        Loads a tokenizer from the Hugging Face Transformers library.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            model_name (str): The name or path of the model for which to load the tokenizer.</span>
+<span class="sd">            model_name (str): Name or path of the tokenizer to load.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            PreTrainedTokenizerBase: A tokenizer instance corresponding to the specified model.</span>
+<span class="sd">            PreTrainedTokenizerBase: Tokenizer instance associated with the model.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If the model name is invalid or the tokenizer cannot be loaded.</span>
+<span class="sd">            ValueError: If the tokenizer cannot be loaded.</span>
 
-<span class="sd">        Examples:</span>
-<span class="sd">            &gt;&gt;&gt; tokenizer = Suphalaks.get_tokenizer(&quot;intfloat/multilingual-e5-large-instruct&quot;)</span>
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; tokenizer = Suphalaks.get_tokenizer(&quot;bert-base-uncased&quot;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">HFTokeniker</span><span class="o">.</span><span class="n">get_tokenizer</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">LoadingModel</span><span class="p">()</span><span class="o">.</span><span class="n">get_tokenizer</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

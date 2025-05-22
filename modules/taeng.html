@@ -234,6 +234,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="purrfectmeow.taeng.html">purrfectmeow.taeng</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of purrfectmeow.taeng</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="purrfectmeow.taeng.base.html">purrfectmeow.taeng.base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="purrfectmeow.taeng.file_handler.html">purrfectmeow.taeng.file_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.taeng.model_loader.html">purrfectmeow.taeng.model_loader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="purrfectmeow.taeng.tokenizer.html">purrfectmeow.taeng.tokenizer</a></li>
 </ul>
 </li>
@@ -281,43 +282,51 @@
         <article role="main" id="furo-main-content">
           <section id="suphalaks">
 <span id="taeng"></span><h1>Suphalaks<a class="headerlink" href="#suphalaks" title="Link to this heading">¶</a></h1>
-<p>The <a class="reference internal" href="#purrfectmeow.Suphalaks" title="purrfectmeow.Suphalaks"><code class="xref py py-class docutils literal notranslate"><span class="pre">purrfectmeow.Suphalaks</span></code></a> class provides internal utilities for seamless operation within PurrfectKit.</p>
+<p>The <a class="reference internal" href="#purrfectmeow.Suphalaks" title="purrfectmeow.Suphalaks"><code class="xref py py-class docutils literal notranslate"><span class="pre">purrfectmeow.Suphalaks</span></code></a> class provides handles file operations and model/tokenizer loading.</p>
 <p>See <a class="reference internal" href="../usage.html"><span class="doc">Usage</span></a> for detailed examples of using PurrfectKit modules.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="purrfectmeow.Suphalaks">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.</span></span><span class="sig-name descname"><span class="pre">Suphalaks</span></span><a class="reference internal" href="../_modules/purrfectmeow/taeng/base.html#Suphalaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Suphalaks" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>A convenience class that wraps utility functions for tokenizer loading and file handling.</p>
-<p>This class serves as a simplified interface, making it easy to manage temporary files
-and load tokenizers without needing to interact with the underlying utility classes directly.</p>
+<p>A utility class for simplified file handling and Hugging Face model/tokenizer loading.</p>
+<p>This class abstracts away repetitive tasks such as saving and removing temporary files,
+and loading tokenizers or models via Hugging Face’s <cite>transformers</cite> library. It serves
+as a wrapper around lower-level utility classes, making the codebase more concise and
+easier to maintain.</p>
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">save_file(file</span></span></dt>
-<dd><p>BinaryIO, file_name: str) -&gt; str:</p>
-<p>Saves a binary file to a predefined temporary directory.</p>
+<dd><p>BinaryIO, file_name: str) -&gt; str
+Saves a binary file to a temporary location.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">remove_file(file_path</span></span></dt>
-<dd><p>str) -&gt; None:</p>
-<p>Deletes a file from the filesystem if it exists.</p>
+<dd><p>str) -&gt; None
+Deletes the specified file from the filesystem.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_model(model_name</span></span></dt>
+<dd><p>str) -&gt; PreTrainedModel
+Loads and returns a pretrained model from Hugging Face.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">get_tokenizer(model_name</span></span></dt>
-<dd><p>str):</p>
-<p>Loads and returns a Hugging Face tokenizer instance, with caching support.</p>
+<dd><p>str) -&gt; PreTrainedTokenizerBase
+Loads and returns a pretrained tokenizer from Hugging Face.</p>
 </dd></dl>
 
-<dl>
-<dt>Example usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow</span><span class="w"> </span><span class="kn">import</span> <span class="n">Suphalaks</span>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow</span><span class="w"> </span><span class="kn">import</span> <span class="n">Suphalaks</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Suphalaks</span><span class="o">.</span><span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">Suphalaks</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</dd>
-</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="purrfectmeow.Suphalaks.save_file">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.BinaryIO" title="(in Python v3.13)"><span class="pre">BinaryIO</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/purrfectmeow/taeng/base.html#Suphalaks.save_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Suphalaks.save_file" title="Link to this definition">¶</a></dt>
@@ -362,25 +371,49 @@ and load tokenizers without needing to interact with the underlying utility clas
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="purrfectmeow.Suphalaks.get_model">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PreTrainedModel</span></span></span><a class="reference internal" href="../_modules/purrfectmeow/taeng/base.html#Suphalaks.get_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Suphalaks.get_model" title="Link to this definition">¶</a></dt>
+<dd><p>Loads a pretrained model from Hugging Face’s model hub.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Name or path of the pretrained model.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Loaded Hugging Face model instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>PreTrainedModel</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the model name is invalid or loading fails.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">Suphalaks</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="s2">&quot;bert-base-uncased&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="purrfectmeow.Suphalaks.get_tokenizer">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tokenizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PreTrainedTokenizerBase</span></span></span><a class="reference internal" href="../_modules/purrfectmeow/taeng/base.html#Suphalaks.get_tokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Suphalaks.get_tokenizer" title="Link to this definition">¶</a></dt>
 <dd><p>Loads a tokenizer from the Hugging Face Transformers library.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name or path of the model for which to load the tokenizer.</p>
+<dd class="field-odd"><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Name or path of the tokenizer to load.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A tokenizer instance corresponding to the specified model.</p>
+<dd class="field-even"><p>Tokenizer instance associated with the model.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>PreTrainedTokenizerBase</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the model name is invalid or the tokenizer cannot be loaded.</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the tokenizer cannot be loaded.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Suphalaks</span><span class="o">.</span><span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span><span class="p">)</span>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Suphalaks</span><span class="o">.</span><span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;bert-base-uncased&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -451,6 +484,7 @@ and load tokenizers without needing to interact with the underlying utility clas
 <li><a class="reference internal" href="#purrfectmeow.Suphalaks"><code class="docutils literal notranslate"><span class="pre">Suphalaks</span></code></a><ul>
 <li><a class="reference internal" href="#purrfectmeow.Suphalaks.save_file"><code class="docutils literal notranslate"><span class="pre">Suphalaks.save_file()</span></code></a></li>
 <li><a class="reference internal" href="#purrfectmeow.Suphalaks.remove_file"><code class="docutils literal notranslate"><span class="pre">Suphalaks.remove_file()</span></code></a></li>
+<li><a class="reference internal" href="#purrfectmeow.Suphalaks.get_model"><code class="docutils literal notranslate"><span class="pre">Suphalaks.get_model()</span></code></a></li>
 <li><a class="reference internal" href="#purrfectmeow.Suphalaks.get_tokenizer"><code class="docutils literal notranslate"><span class="pre">Suphalaks.get_tokenizer()</span></code></a></li>
 </ul>
 </li>
