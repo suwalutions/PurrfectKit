@@ -22,14 +22,16 @@ class Suphalaks:
 
         get_model(model_name: str) -> PreTrainedModel
             Loads and returns a pretrained model from Hugging Face.
+            Defaults to "intfloat/multilingual-e5-large-instruct".
 
         get_tokenizer(model_name: str) -> PreTrainedTokenizerBase
             Loads and returns a pretrained tokenizer from Hugging Face.
+            Defaults to "intfloat/multilingual-e5-large-instruct".
 
     Example:
         >>> from purrfectmeow import Suphalaks
-        >>> tokenizer = Suphalaks.get_tokenizer("intfloat/multilingual-e5-large-instruct")
-        >>> model = Suphalaks.get_model("intfloat/multilingual-e5-large-instruct")
+        >>> tokenizer = Suphalaks.get_tokenizer()
+        >>> model = Suphalaks.get_model()
     """
     @staticmethod
     def save_file(file: BinaryIO, file_name: str) -> str:
@@ -66,7 +68,7 @@ class Suphalaks:
         HandleFile.remove_temp_file(file_path)
 
     @staticmethod
-    def get_model(model_name: str) -> PreTrainedModel:
+    def get_model(model_name: str = "intfloat/multilingual-e5-large-instruct") -> PreTrainedModel:
         """
         Loads a pretrained model from Hugging Face's model hub.
 
@@ -85,7 +87,7 @@ class Suphalaks:
         return LoadingModel().get_model(model_name)
 
     @staticmethod
-    def get_tokenizer(model_name: str) -> PreTrainedTokenizerBase:
+    def get_tokenizer(model_name: str = "intfloat/multilingual-e5-large-instruct") -> PreTrainedTokenizerBase:
         """
         Loads a tokenizer from the Hugging Face Transformers library.
 
