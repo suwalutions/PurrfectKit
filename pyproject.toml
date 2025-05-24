@@ -30,22 +30,26 @@ dependencies = [
     "markitdown<=0.1.1",
     "pandas<=2.2.3",
     "pdf2image<=1.17.0",
-    "pillow<=10.4.0",  # For pytesseract and surya-ocr
+    "pillow<=10.4.0", # For pytesseract and surya-ocr
     "pymupdf<=1.26.0",
     "pytesseract<=0.3.13",
     "pythainlp<=5.1.2",
     "python-magic<=0.4.27",
     "spacy<=3.8.7",
     "surya-ocr<=0.14.2",
-    "torch<=2.7.0",  # Pinned to CPU wheel version
-    "torchaudio<=2.7.0",  # Pinned to CPU wheel version
-    "torchvision<=0.22.0",  # Pinned to CPU wheel version
+    "tiktoken>=0.9.0",
+    "torch<=2.7.0", # Pinned to CPU wheel version
+    "torchaudio<=2.7.0", # Pinned to CPU wheel version
+    "torchvision<=0.22.0", # Pinned to CPU wheel version
     "transformers<=4.52.3",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest<=8.3.5",
+    "ipykernel>=6.29.5",
+    "ipywidgets>=8.1.7",
+    "jupyterlab-widgets>=3.0.15",
 ]
 docs = [
     "sphinx<=8.2.3",
