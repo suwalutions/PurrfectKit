@@ -1,12 +1,14 @@
 """Thai Cat breed classes mapped to NLP techniques.
 
-This module exports classes representing thai cat breeds, each associated with an NLP technique.
+This module exports classes representing Thai cat breeds, each associated with an NLP technique.
+
 Mappings:
-    - Kornja: Content Chunking (breaking text into manageable segments)
-    - WichienMaat: Semantic Search (understanding query intent)
-    - KhaoManee: Embedding & Storage (converting text to vectors and storing)
-    - Malet: Text Extraction (isolating specific data from text)
-    - Suphalaks: Utility & Infrastructure (handles file operations and model/tokenizer loading)
+
+- Kornja: Content Chunking (breaking text into manageable segments)
+- WichienMaat: Semantic Search (understanding query intent)
+- KhaoManee: Embedding & Storage (converting text to vectors and storing)
+- Malet: Text Extraction (isolating specific data from text)
+- Suphalaks: Utility & Infrastructure (handles file operations and model/tokenizer loading)
 """
 
 from purrfectmeow.konja import Kornja
