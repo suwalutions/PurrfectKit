@@ -36,8 +36,9 @@ class Suphalaks:
         >>> tokenizer = Suphalaks.get_tokenizer()
         >>> model = Suphalaks.get_model()
     """
-    @staticmethod
-    def save_file(file: BinaryIO, file_name: str) -> str:
+
+    @classmethod
+    def save_file(cls, file: BinaryIO, file_name: str) -> str:
         """
         Saves a binary file to a temporary directory.
 
@@ -54,8 +55,8 @@ class Suphalaks:
         """
         return HandleFile.save_temp_file(file, file_name)
     
-    @staticmethod
-    def remove_file(file_path: str) -> None:
+    @classmethod
+    def remove_file(cls, file_path: str) -> None:
         """
         Removes a file from the filesystem.
 
@@ -70,8 +71,8 @@ class Suphalaks:
         """
         HandleFile.remove_temp_file(file_path)
 
-    @staticmethod
-    def get_model(model_name: str) -> PreTrainedModel:
+    @classmethod
+    def get_model(cls, model_name: str) -> PreTrainedModel:
         """
         Loads a pretrained model from Hugging Face's model hub.
 
@@ -90,8 +91,8 @@ class Suphalaks:
         model_name = model_name or "intfloat/multilingual-e5-large-instruct"
         return LoadingModel().get_model(model_name)
 
-    @staticmethod
-    def get_tokenizer(model_name: str) -> PreTrainedTokenizerBase:
+    @classmethod
+    def get_tokenizer(cls, model_name: str) -> PreTrainedTokenizerBase:
         """
         Loads a tokenizer from the Hugging Face Transformers library.
 
@@ -110,8 +111,8 @@ class Suphalaks:
         model_name = model_name or "intfloat/multilingual-e5-large-instruct"
         return LoadingModel().get_tokenizer(model_name)
     
-    @staticmethod
-    def get_file_metadata(file_path: str) -> Dict:
+    @classmethod
+    def get_file_metadata(cls, file_path: str) -> Dict:
         """
         Extract metadata from a given file path.
 
@@ -126,8 +127,8 @@ class Suphalaks:
         """
         return MetadataFile(file_path).get_metadata()
 
-    @staticmethod
-    def get_document_template(chunks: List[str], metadata: Dict[str, Any]) -> Document:
+    @classmethod
+    def get_document_template(cls, chunks: List[str], metadata: Dict[str, Any]) -> Document:
         """
         Generate a LangChain Document from text chunks and metadata.
 

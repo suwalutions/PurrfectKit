@@ -2,6 +2,7 @@ import threading
 from pathlib import Path
 from transformers import AutoTokenizer, AutoModel
 from collections import OrderedDict
+
 from purrfectmeow.kitty import kitty_logger
 
 class LoadingModel:
@@ -16,7 +17,6 @@ class LoadingModel:
         _cache (OrderedDict): In-memory cache for storing loaded models and tokenizers.
         _cache_lock (threading.Lock): Lock for synchronizing access to the cache.
         _max_cache_size (int): Maximum allowed cache size before evicting old items.
-        _logger (logger): Logger instance for logging debug, info, and error messages.
 
     Methods:
         set_path(self, path: str) -> None:
@@ -44,6 +44,7 @@ class LoadingModel:
         _get_resource(self, name: str, is_tokenizer: bool):
             Retrieves a model or tokenizer from the cache, or loads it if not present, and caches it.
     """
+    _logger = kitty_logger(__name__)
 
     DEFAULT_CACHE_PATH = 'models_hf/'
     DEFAULT_MAX_CACHE_SIZE = 10
@@ -64,7 +65,6 @@ class LoadingModel:
         self._cache = OrderedDict()
         self._cache_lock = threading.Lock()
         self._max_cache_size = self.DEFAULT_MAX_CACHE_SIZE
-        self._logger = kitty_logger(__name__)
         self._cache_dir.mkdir(parents=True, exist_ok=True)
         self._logger.debug("Initialized LoadingModel with cache directory: %s", self._cache_dir)
         self._preload_tokenizers()
@@ -129,7 +129,11 @@ class LoadingModel:
                 self._logger.debug("Loading %s from local cache: %s", resource_type, resource_dir)
                 return loader.from_pretrained(resource_dir)
             self._logger.debug("Downloading %s from Hugging Face: %s", resource_type, name)
-            return loader.from_pretrained(name, cache_dir=resource_dir)
+            return loader.from_pretrained(
+                name, 
+                cache_dir=resource_dir, 
+                # trust_remote_code=True
+            )
         except Exception as e:
             self._logger.error("Failed to load %s %s: %s", resource_type, name, str(e))
             raise ValueError(f"Cannot load {resource_type} for `{name}`: {str(e)}")
@@ -191,7 +195,7 @@ class LoadingModel:
             AutoTokenizer: The tokenizer object.
         """
         pre_loaded = self._get_resource(name, is_tokenizer=True)
-        self._logger.info("Completed preloading tokenizer: %s", name)
+        self._logger.debug("Completed preloading tokenizer: %s", name)
         return pre_loaded
 
     def get_model(self, name: str) -> AutoModel:
@@ -204,5 +208,5 @@ class LoadingModel:
             AutoModel: The model object.
         """
         pre_loaded = self._get_resource(name, is_tokenizer=False)
-        self._logger.info("Completed preloading model: %s", name)
+        self._logger.debug("Completed preloading model: %s", name)
         return pre_loaded

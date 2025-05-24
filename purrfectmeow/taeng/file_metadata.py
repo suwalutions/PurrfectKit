@@ -5,6 +5,8 @@ import magic
 import hashlib
 import subprocess
 
+from purrfectmeow.kitty import kitty_logger
+
 class MetadataFile:
     """
     A class to extract and store metadata from a given file.
@@ -22,6 +24,7 @@ class MetadataFile:
         get_metadata():
             Extract metadata from the file, return the stored metadata dictionary..
     """
+    _logger = kitty_logger(__name__)
 
     def __init__(self, file_path):
         """
@@ -56,7 +59,9 @@ class MetadataFile:
             dict: A dictionary containing extracted metadata.
         """
         try:
+            self._logger.debug(f"Starting metadata extraction for file: {self.file_path}")
             if not os.path.exists(self.file_path):
+                self._logger.error(f"File not found: {self.file_path}")
                 raise FileNotFoundError(f"File {self.file_path} does not exist")
 
             stats = os.stat(self.file_path)
@@ -70,18 +75,30 @@ class MetadataFile:
             )
             self.metadata["file_extension"] = os.path.splitext(self.file_path)[1] or "none"
 
+            self._logger.debug(
+                f"Basic metadata extracted: name={self.metadata['file_name']}, "
+                f"size={self.metadata['file_size']}, created={self.metadata['file_created_date']}, "
+                f"modified={self.metadata['file_modified_date']}, extension={self.metadata['file_extension']}"
+            )
+
             try:
                 mime = magic.Magic(mime=True)
                 self.metadata["file_type"] = mime.from_file(self.file_path)
                 self.metadata["description"] = magic.from_file(self.file_path)
+                self._logger.debug(
+                    f"File type detected: {self.metadata['file_type']}, description: {self.metadata['description']}"
+                )
             except Exception as e:
                 self.metadata["file_type"] = "unknown"
                 self.metadata["description"] = f"Could not determine file type: {str(e)}"
+                self._logger.warning(f"Failed to determine file type: {str(e)}")
 
             if self.metadata["file_type"].startswith("image/"):
                 self.metadata["total_pages"] = 1
+                self._logger.debug("File is an image, total_pages set to 1")
             elif self.metadata["file_type"].startswith("application/pdf"):
                 try:
+                    self._logger.debug("File is a PDF, attempting to get page count via pdfinfo")
                     result = subprocess.run(
                         ['pdfinfo', self.file_path], 
                         stdout=subprocess.PIPE, 
@@ -91,20 +108,27 @@ class MetadataFile:
                     pages_match = re.search(r"Pages:\s*(\d+)", result.stdout)
                     if pages_match:
                         self.metadata["total_pages"] = int(pages_match.group(1))
+                        self._logger.debug(f"PDF page count found: {self.metadata['total_pages']}")
                     else:
                         self.metadata["total_pages"] = "Unknown (could not parse page count)"
+                        self._logger.warning("pdfinfo output did not contain page count")
                 except (subprocess.CalledProcessError, FileNotFoundError):
                     self.metadata["total_pages"] = "Unknown (pdfinfo not installed or failed)"
+                    self._logger.warning(f"Failed to get PDF page count: {str(e)}")
             else:
                 self.metadata["total_pages"] = 1
+                self._logger.debug("File type unknown or not PDF/image, total_pages set to 1")
 
             with open(self.file_path, "rb") as f:
                 hash_md5 = hashlib.md5()
                 for chunk in iter(lambda: f.read(4096), b""):
                     hash_md5.update(chunk)
                 self.metadata["file_md5"] = hash_md5.hexdigest()
+            self._logger.debug(f"MD5 checksum calculated: {self.metadata['file_md5']}")
 
+            self._logger.debug("Metadata extraction completed successfully")
             return self.metadata
 
         except Exception as e:
+            self._logger.error(f"Failed to extract metadata: {str(e)}", exc_info=True)
             raise RuntimeError(f"Failed to extract metadata: {str(e)}")

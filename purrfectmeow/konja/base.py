@@ -1,6 +1,5 @@
 from typing import List, Optional, Literal
 
-from purrfectmeow.kitty import kitty_logger
 from purrfectmeow.konja.splitter import Splitter
 
 class Kornja:
@@ -25,7 +24,6 @@ class Kornja:
             model_name (for token-based), separator (for separator-based), chunk_size, and chunk_overlap (for token-based)
             can be passed via keyword arguments.
     """
-    _logger = kitty_logger(__name__)
 
     @staticmethod
     def chunking(
@@ -61,34 +59,25 @@ class Kornja:
             >>> chunks = Kornja.chunking(text, splitter="separator", separator=".")
             >>> # Splits on '.' without chunk size or overlap
         """
-        Kornja._logger.info(
-            f"Chunking text with splitter='{splitter}', "
-            f"kwargs={kwargs}"
-        )
+        match splitter:
+            case "token":
+                model_name = kwargs.get("model_name", "text-embedding-ada-002")
+                chunk_size = kwargs.get("chunk_size", 500)
+                chunk_overlap = kwargs.get("chunk_overlap", 0)
 
-        try:
-            match splitter:
-                case "token":
-                    model_name = kwargs.get("model_name", "text-embedding-ada-002")
-                    chunk_size = kwargs.get("chunk_size", 500)
-                    chunk_overlap = kwargs.get("chunk_overlap", 0)
-                    if not model_name or not isinstance(model_name, str) or not model_name.strip():
-                        Kornja._logger.error("model_name must be a non-empty string for token splitter")
-                        raise ValueError("model_name must be a non-empty string for token splitter")
-                    sptr = Splitter.create_token_splitter(model_name, chunk_size, chunk_overlap)
-                case "separator":
-                    separator = kwargs.get("separator", "\n\n")
-                    if not separator or not isinstance(separator, str) or not separator.strip():
-                        Kornja._logger.error("separator must be a non-empty string for separator splitter")
-                        raise ValueError("separator must be a non-empty string for separator splitter")
-                    sptr = Splitter.create_separator_splitter(separator)
-                case _:
-                    Kornja._logger.error(f"Invalid splitter type: {splitter}")
-                    raise ValueError(f"Invalid splitter type: {splitter}. Must be 'token' or 'separator'.")
+                if not model_name or not isinstance(model_name, str) or not model_name.strip():
+                    raise ValueError("model_name must be a non-empty string for token splitter")
+                sptr = Splitter.create_token_splitter(model_name, chunk_size, chunk_overlap)
 
-            chunks = sptr.split_text(text)
-            Kornja._logger.info(f"Generated {len(chunks)} chunks")
-            return chunks
-        except (ValueError, RuntimeError) as e:
-            Kornja._logger.exception(f"Failed to chunk text with splitter '{splitter}'")
-            raise RuntimeError(f"Failed to chunk text: {str(e)}") from e
+            case "separator":
+                separator = kwargs.get("separator", "\n\n")
+                
+                if not separator or not isinstance(separator, str) or not separator.strip():
+                    raise ValueError("separator must be a non-empty string for separator splitter")
+                sptr = Splitter.create_separator_splitter(separator)
+                
+            case _:
+                raise ValueError(f"Invalid splitter type: {splitter}. Must be 'token' or 'separator'.")
+
+        chunks = sptr.split_text(text)
+        return chunks

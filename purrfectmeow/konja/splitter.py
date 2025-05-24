@@ -41,6 +41,7 @@ class Splitter:
             Logs the creation of a splitter with the given parameters.
     """
     _logger = kitty_logger(__name__)
+
     DEFAULT_CHUNK_SIZE = 500
     DEFAULT_CHUNK_OVERLAP = 0
     SUPPORTED_OPENAI_MODELS = {
@@ -50,9 +51,9 @@ class Splitter:
     }
     MAX_CHUNK_SIZE = 10000
 
-    @staticmethod
+    @classmethod
     @lru_cache(maxsize=32)
-    def _get_huggingface_tokenizer(model_name: str):
+    def _get_huggingface_tokenizer(cls, model_name: str):
         """
         Load and cache a HuggingFace tokenizer for the specified model.
 
@@ -68,9 +69,12 @@ class Splitter:
         Raises:
             RuntimeError: If no tokenizer is found for the specified model name.
         """
+        cls._logger.debug(f"Loading HuggingFace tokenizer for model '{model_name}'")
         tokenizer = Suphalaks.get_tokenizer(model_name)
         if tokenizer is None:
+            cls._logger.error(f"No tokenizer found for model '{model_name}'")
             raise RuntimeError(f"No tokenizer found for model '{model_name}'")
+        cls._logger.debug(f"Successfully loaded tokenizer for model '{model_name}'")
         return tokenizer
 
     @classmethod
@@ -86,6 +90,7 @@ class Splitter:
         Raises:
             ValueError: If the parameter is empty or contains only whitespace.
         """
+        cls._logger.debug(f"Validating parameter '{param_name}' in {method} with value: {param}")
         if not param or not isinstance(param, str) or not param.strip():
             cls._logger.error(f"{param_name} must be a non-empty, non-whitespace string in {method}")
             raise ValueError(f"{param_name} must be a non-empty, non-whitespace string")
@@ -112,6 +117,8 @@ class Splitter:
             ValueError: If chunk size is non-positive, exceeds the maximum allowed,
                         or if chunk overlap is negative or greater than/equal to chunk size.
         """
+        cls._logger.debug(f"Validating chunk parameters in {method}: chunk_size={chunk_size}, chunk_overlap={chunk_overlap}")
+
         chunk_size = chunk_size if chunk_size is not None else cls.DEFAULT_CHUNK_SIZE
         chunk_overlap = chunk_overlap if chunk_overlap is not None else cls.DEFAULT_CHUNK_OVERLAP
 
@@ -128,6 +135,7 @@ class Splitter:
             cls._logger.error(f"Chunk overlap ({chunk_overlap}) must be less than chunk size ({chunk_size}) in {method}")
             raise ValueError("Chunk overlap must be less than chunk size")
 
+        cls._logger.debug(f"Chunk parameters validated: chunk_size={chunk_size}, chunk_overlap={chunk_overlap}")
         return chunk_size, chunk_overlap
 
     @classmethod
@@ -167,6 +175,8 @@ class Splitter:
             >>> splitter = Splitter.create_token_splitter("text-embedding-ada-002", chunk_size=1000, chunk_overlap=100)
             >>> chunks = splitter.split_text("This is a sample text to split.")
         """
+        cls._logger.debug(f"Starting create_token_splitter with model_name='{model_name}', chunk_size={chunk_size}, chunk_overlap={chunk_overlap}")
+
         cls._validate_string_param(model_name, "Model name", "create_token_splitter")
         chunk_size, chunk_overlap = cls._validate_and_set_chunk_params(chunk_size, chunk_overlap, "create_token_splitter")
         cls._log_splitter_creation("token splitter", {"model_name": model_name, "chunk_size": chunk_size, "chunk_overlap": chunk_overlap})
@@ -174,18 +184,24 @@ class Splitter:
         try:
             if model_name in cls.SUPPORTED_OPENAI_MODELS:
                 cls._logger.debug(f"Using OpenAI tokenizer for model '{model_name}'")
-                return TokenTextSplitter.from_tiktoken_encoder(
+                splitter = TokenTextSplitter.from_tiktoken_encoder(
                     model_name=model_name,
                     chunk_size=chunk_size,
                     chunk_overlap=chunk_overlap
                 )
+                cls._logger.debug("TokenTextSplitter created using OpenAI tokenizer")
+                return splitter
+
             cls._logger.debug(f"Using HuggingFace tokenizer for model '{model_name}'")
             tokenizer = cls._get_huggingface_tokenizer(model_name)
-            return TokenTextSplitter.from_huggingface_tokenizer(
+            splitter = TokenTextSplitter.from_huggingface_tokenizer(
                 tokenizer=tokenizer,
                 chunk_size=chunk_size,
                 chunk_overlap=chunk_overlap
             )
+            cls._logger.debug("TokenTextSplitter created using HuggingFace tokenizer")
+            return splitter
+        
         except (ValueError, ImportError) as e:
             cls._logger.exception(f"Failed to create splitter for model '{model_name}'")
             raise RuntimeError(f"Failed to create splitter for model '{model_name}': {str(e)}") from e
@@ -213,14 +229,18 @@ class Splitter:
             ['Sentence one.\n', 'Sentence two.']
         """
         def __init__(self, separator: str):
+            Splitter._logger.debug(f"Initializing KornjaSeparatorSplitter with separator='{separator}'")
             self.separator = separator
 
         def split_text(self, text: str) -> List[str]:
             if not isinstance(text, str):
+                Splitter._logger.error("Text must be a string")
                 raise ValueError("Text must be a string")
             
             chunks = [chunk + self.separator for chunk in text.split(self.separator)]
+            Splitter._logger.debug(f"Split text into {len(chunks)} chunks before stripping last separator")
             chunks[-1] = chunks[-1].rstrip(self.separator)
+            Splitter._logger.debug(f"Final chunk length after stripping: {len(chunks[-1])}")
             return chunks
         
     @classmethod
@@ -243,8 +263,10 @@ class Splitter:
             >>> splitter = Splitter.create_separator_splitter(separator=".")
             >>> chunks = splitter.split_text("Sentence one. Sentence two.")
         """
-
+        cls._logger.debug(f"Starting create_separator_splitter with separator='{separator}'")
         cls._validate_string_param(separator, "Separator", "create_separator_splitter")
         cls._log_splitter_creation("separator splitter", {"separator": separator})
 
-        return cls.KornjaSeparatorSplitter(separator)
+        splitter = cls.KornjaSeparatorSplitter(separator)
+        cls._logger.debug("KornjaSeparatorSplitter instance created")
+        return splitter
