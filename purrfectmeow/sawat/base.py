@@ -72,6 +72,7 @@ class Malet:
         Malet._logger.info(f"Loading file `{file_name}` with loader `{loader}`")
         file_path = Suphalaks.save_file(file, file_name)
         try:
+            loader = loader or "PYMUPDF"
             if loader not in Malet._LOADER_METHODS:
                 Malet._logger.error(f"Unsupported loader: {loader}")
                 raise ValueError(f"Unsupported loader: {loader}")
