@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple
 from langchain_core.documents import Document
 from transformers import PreTrainedModel, PreTrainedTokenizer
 
-from purrfectmeow.taeng import Suphalaks
+from purrfectmeow.taeng.model_loader import LoadingModel
 from purrfectmeow.kitty import kitty_logger
 
 class SimpleHFEmbedder:
@@ -134,7 +134,7 @@ class SimpleHFEmbedder:
             PreTrainedTokenizer: The tokenizer instance corresponding to the model.
         """
         cls._logger.debug(f"Loading tokenizer for model '{model_name}'")
-        return Suphalaks.get_tokenizer(model_name)
+        return LoadingModel.get_tokenizer(model_name)
 
     @classmethod
     def _get_model(
@@ -152,7 +152,7 @@ class SimpleHFEmbedder:
         """
         # device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         cls._logger.debug(f"Loading model '{model_name}'")
-        model = Suphalaks.get_model(model_name)
+        model = LoadingModel.get_model(model_name)
         # model.to(device)
         return model
 

@@ -89,7 +89,7 @@ class Suphalaks:
             >>> model = Suphalaks.get_model("bert-base-uncased")
         """
         model_name = model_name or "intfloat/multilingual-e5-large-instruct"
-        return LoadingModel().get_model(model_name)
+        return LoadingModel.get_model(model_name)
 
     @classmethod
     def get_tokenizer(cls, model_name: str) -> PreTrainedTokenizerBase:
@@ -109,7 +109,7 @@ class Suphalaks:
             >>> tokenizer = Suphalaks.get_tokenizer("bert-base-uncased")
         """
         model_name = model_name or "intfloat/multilingual-e5-large-instruct"
-        return LoadingModel().get_tokenizer(model_name)
+        return LoadingModel.get_tokenizer(model_name)
     
     @classmethod
     def get_file_metadata(cls, file_path: str) -> Dict:

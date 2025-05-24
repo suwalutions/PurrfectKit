@@ -1,6 +1,6 @@
 from typing import BinaryIO, Any, Callable
 
-from purrfectmeow.taeng import Suphalaks
+from purrfectmeow.taeng.file_handler import HandleFile
 from purrfectmeow.sawat.markdown import Markdown
 from purrfectmeow.sawat.ocr import OCR
 from purrfectmeow.sawat.simple import Simple
@@ -25,7 +25,7 @@ class Malet:
         - 'PANDAS_CSV': Read and convert CSV files to plain text using pandas.
 
     Methods:
-        loader(file: BinaryIO, file_name: str, loader: str, **kwargs) -> str:
+        loader(file: BinaryIO, file_name: str, loader: str, ``**kwargs``) -> str:
             Extract text from the given file using the specified loader backend.
 
     Examples:
@@ -55,7 +55,7 @@ class Malet:
             file (BinaryIO): File-like object opened in binary mode.
             file_name (str): Name of the file (used for saving and reference).
             loader (str, optional): Loader type to use for extraction. Defaults to "PYMUPDF".
-            **kwargs (Any): Additional keyword arguments passed to the loader.
+            ``**kwargs`` (Any): Additional keyword arguments passed to the loader.
 
         Returns:
             str: Extracted text content.
@@ -69,7 +69,7 @@ class Malet:
             ...     text = Malet.loader(f, "example.pdf", loader="PYMUPDF")
             >>> print(text[:200])  # Print first 200 characters
         """
-        file_path = Suphalaks.save_file(file, file_name)
+        file_path = HandleFile.save_temp_file(file, file_name)
         try:
             if loader not in Malet._LOADER_METHODS:
                 raise ValueError(f"Unsupported loader: {loader}")
@@ -77,4 +77,4 @@ class Malet:
             method = Malet._LOADER_METHODS[loader]
             return method(file_path, **kwargs)
         finally:
-            Suphalaks.remove_file(file_path)
+            HandleFile.remove_temp_file(file_path)
