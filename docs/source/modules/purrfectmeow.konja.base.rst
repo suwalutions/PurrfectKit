@@ -1,4 +1,4 @@
-purrfectmeow.konja.base
+﻿purrfectmeow.konja.base
 =======================
 
 .. automodule:: purrfectmeow.konja.base

@@ -15,11 +15,12 @@ See :doc:`usage` for details.
 
    readme
    usage
-   modules/konja
-   modules/meeze
-   modules/plort
-   modules/sawat
-   modules/taeng
+   modules/modules
+   modules/purrfectmeow.konja
+   modules/purrfectmeow.meeze
+   modules/purrfectmeow.plort
+   modules/purrfectmeow.sawat
+   modules/purrfectmeow.taeng
    api
 
 Indices and Tables
