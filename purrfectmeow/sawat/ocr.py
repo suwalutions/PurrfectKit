@@ -76,7 +76,7 @@ class OCR:
                     text = converter(image)
                     content.append(text)
                     OCR._logger.debug("Page 1 processed.")
-            OCR._logger.info(f"Successfully converted '{input_path}'.")
+            OCR._logger.debug(f"Successfully converted '{input_path}'.")
             return "\n".join(content)
         finally:
             elapsed = time.time() - start

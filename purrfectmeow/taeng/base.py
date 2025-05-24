@@ -1,8 +1,11 @@
-from typing import BinaryIO
+from typing import BinaryIO, Dict, List, Any
+from langchain_core.documents import Document
 from transformers import PreTrainedTokenizerBase, PreTrainedModel
 
 from purrfectmeow.taeng.file_handler import HandleFile
+from purrfectmeow.taeng.file_metadata import MetadataFile
 from purrfectmeow.taeng.model_loader import LoadingModel
+from purrfectmeow.taeng.template_doc import DocTemplate
 
 class Suphalaks:
     """
@@ -22,17 +25,20 @@ class Suphalaks:
 
         get_model(model_name: str) -> PreTrainedModel
             Loads and returns a pretrained model from Hugging Face.
+            Defaults to "intfloat/multilingual-e5-large-instruct".
 
         get_tokenizer(model_name: str) -> PreTrainedTokenizerBase
             Loads and returns a pretrained tokenizer from Hugging Face.
+            Defaults to "intfloat/multilingual-e5-large-instruct".
 
     Example:
         >>> from purrfectmeow import Suphalaks
-        >>> tokenizer = Suphalaks.get_tokenizer("intfloat/multilingual-e5-large-instruct")
-        >>> model = Suphalaks.get_model("intfloat/multilingual-e5-large-instruct")
+        >>> tokenizer = Suphalaks.get_tokenizer()
+        >>> model = Suphalaks.get_model()
     """
-    @staticmethod
-    def save_file(file: BinaryIO, file_name: str) -> str:
+
+    @classmethod
+    def save_file(cls, file: BinaryIO, file_name: str) -> str:
         """
         Saves a binary file to a temporary directory.
 
@@ -49,8 +55,8 @@ class Suphalaks:
         """
         return HandleFile.save_temp_file(file, file_name)
     
-    @staticmethod
-    def remove_file(file_path: str) -> None:
+    @classmethod
+    def remove_file(cls, file_path: str) -> None:
         """
         Removes a file from the filesystem.
 
@@ -65,8 +71,8 @@ class Suphalaks:
         """
         HandleFile.remove_temp_file(file_path)
 
-    @staticmethod
-    def get_model(model_name: str) -> PreTrainedModel:
+    @classmethod
+    def get_model(cls, model_name: str) -> PreTrainedModel:
         """
         Loads a pretrained model from Hugging Face's model hub.
 
@@ -82,10 +88,11 @@ class Suphalaks:
         Example:
             >>> model = Suphalaks.get_model("bert-base-uncased")
         """
+        model_name = model_name or "intfloat/multilingual-e5-large-instruct"
         return LoadingModel().get_model(model_name)
 
-    @staticmethod
-    def get_tokenizer(model_name: str) -> PreTrainedTokenizerBase:
+    @classmethod
+    def get_tokenizer(cls, model_name: str) -> PreTrainedTokenizerBase:
         """
         Loads a tokenizer from the Hugging Face Transformers library.
 
@@ -101,4 +108,46 @@ class Suphalaks:
         Example:
             >>> tokenizer = Suphalaks.get_tokenizer("bert-base-uncased")
         """
+        model_name = model_name or "intfloat/multilingual-e5-large-instruct"
         return LoadingModel().get_tokenizer(model_name)
+    
+    @classmethod
+    def get_file_metadata(cls, file_path: str) -> Dict:
+        """
+        Extract metadata from a given file path.
+
+        Args:
+            file_path (str): The path to the file from which to extract metadata.
+
+        Returns:
+            Dict: A dictionary containing metadata information about the file.
+        
+        Example:
+            >>> metadata = Suphalaks.get_file_metadata('/path/to/file.pdf')
+        """
+        return MetadataFile(file_path).get_metadata()
+
+    @classmethod
+    def get_document_template(cls, chunks: List[str], metadata: Dict[str, Any]) -> Document:
+        """
+        Generate a LangChain Document from text chunks and metadata.
+
+        This static method serves as a wrapper around `DocTemplate.create_template`,
+        transforming raw text chunks and associated metadata into a structured 
+        `Document` object compatible with LangChain.
+
+        Args:
+            chunks (List[str]): A list of text chunks representing parts of the document.
+            metadata (Dict[str, Any]): Metadata dictionary to embed within each document.
+
+        Returns:
+            Document: A LangChain Document composed of the provided chunks and metadata.
+
+        Example:
+            >>> chunks = ["you only", "live once"]
+            >>> metadata = {"source": "file.txt"}
+            >>> doc = Suphalaks.get_document_template(chunks, metadata)
+        """
+        chunks = chunks or []
+        metadata = metadata or {}
+        return DocTemplate.create_template(chunks, metadata)

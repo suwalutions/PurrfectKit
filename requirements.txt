@@ -1,0 +1,18 @@
+langchain-core
+transformers
+python-magic # libmagic1
+pymupdf
+pandas
+pdf2image
+--index-url https://download.pytorch.org/whl/cpu
+torch
+torchvision
+torchaudio
+easyocr
+docling # click 8.1.8
+surya-ocr # pillow 10.4.0 # click 8.2.1
+pytesseract # poppler # pillow 11.2.1
+markitdown
+langchain-text-splitters
+pythainlp
+spacy # python =<3.12

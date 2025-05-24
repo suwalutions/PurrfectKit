@@ -49,7 +49,7 @@ class Markdown:
         try:
             content = converter.convert(input_path)
             result = extractor(content)
-            Markdown._logger.info(f"Successfully converted '{input_path}'.")
+            Markdown._logger.debug(f"Successfully converted '{input_path}'.")
             return result
         finally:
             elapsed = time.time() - start

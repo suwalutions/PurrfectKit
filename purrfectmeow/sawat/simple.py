@@ -54,7 +54,7 @@ class Simple:
         start = time.time()
         try:
             result = converter(input_path)
-            Simple._logger.info(f"Successfully converted '{input_path}'.")
+            Simple._logger.debug(f"Successfully converted '{input_path}'.")
             return result
         finally:
             elapsed = time.time() - start

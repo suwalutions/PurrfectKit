@@ -44,7 +44,7 @@ class HandleFile:
             with open(file_path, 'wb') as f:
                 data = file.read()
                 f.write(data)
-            cls._logger.info(f"File saved: {file_path} ({len(data)} bytes)")
+            cls._logger.debug(f"File saved: {file_path} ({len(data)} bytes)")
             return file_path
         except Exception as e:
             cls._logger.error(f"Failed to save file {file_name}: {e}", exc_info=True)
@@ -64,7 +64,7 @@ class HandleFile:
         try:
             if os.path.exists(file_path):
                 os.remove(file_path)
-                cls._logger.info(f"File removed: {file_path}")
+                cls._logger.debug(f"File removed: {file_path}")
             else:
                 cls._logger.warning(f"Tried to remove non-existent file: {file_path}")
         except Exception as e:
