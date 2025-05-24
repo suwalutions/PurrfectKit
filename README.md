@@ -1,3 +1,5 @@
+![PurrfectMeow Logo](docs/source/_static/repo-logo.png)
+
 # PurrfectKit
 
 **PurrfectKit** is a whimsical Python library that blends feline charm with powerful natural language processing (NLP), optical character recognition (OCR), and document processing capabilities. Inspired by Thai cat breeds, each module in the `purrfectmeow` package maps to a specific technique, making text processing, semantic search, and data extraction both fun and efficient.
