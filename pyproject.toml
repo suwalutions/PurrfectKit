@@ -1,13 +1,13 @@
 [project]
-name = "PurrfectKit"
+name = "purrfectkit"
 version = "0.1.1"
 description = "**PurrfectKit** is a whimsical Python library that blends feline charm with powerful NLP functionality."
 readme = "README.md"
 authors = [{ name = "SUWALUTIONS", email = "suwa@suwalutions.com" }]
-maintainers = [{name = "KHARAPSY", email = "kharapsy@suwalutions.com"}]
-license = { text = "MIT" }
-requires-python = ">=3.10"
-keywords = ["rag", "nlp", "llms", "python", "ai"]
+maintainers = [{ name = "KHARAPSY", email = "kharapsy@suwalutions.com" }]
+license = "MIT"
+requires-python = ">=3.10,<=3.12.4"
+keywords = ["rag", "nlp", "llms", "python", "ai", "ocr", "document-processing", "multilingual", "text-extraction"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -17,35 +17,39 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing :: Linguistic",
+    "Topic :: Text Processing :: General",
+]
+dependencies = [
+    "docling<=2.34.0",
+    "easyocr<=1.7.2",
+    "langchain-core<=0.3.61",
+    "langchain-text-splitters<=0.3.8",
+    "markitdown<=0.1.1",
+    "pandas<=2.2.3",
+    "pdf2image<=1.17.0",
+    "pillow<=10.4.0",  # For pytesseract and surya-ocr
+    "pymupdf<=1.26.0",
+    "pytesseract<=0.3.13",
+    "pythainlp<=5.1.2",
+    "python-magic<=0.4.27",
+    "spacy<=3.8.7",
+    "surya-ocr<=0.14.2",
+    "torch<=2.7.0",  # Pinned to CPU wheel version
+    "torchaudio<=2.7.0",  # Pinned to CPU wheel version
+    "torchvision<=0.22.0",  # Pinned to CPU wheel version
+    "transformers<=4.52.3",
 ]
 
-dependencies = [
-    "PyMuPDF>=1.25.5",
-    "pandas>=2.2.3",
-    "numpy>=2.2.5",
-    "pdf2image>=1.17.0",
-    "pytesseract>=0.3.13",
-    "easyocr>=1.7.2",
-    "surya-ocr>=0.14.0",
-    "docling>=2.31.1",
-    "markitdown>=0.1.1",
-    "pillow>=10.0.0",
-    "transformers[torch]>=4.51.3",
-    "langchain-text-splitters>=0.3.8",
-    "python-multipart>=0.0.20",
-    "tiktoken>=0.9.0",
-    "httpx>=0.28.1",
-]
 [project.optional-dependencies]
 dev = [
-    "pytest>=8.3.5",
+    "pytest<=8.3.5",
 ]
 docs = [
-    "sphinx>=8.2.3",
-    "furo>=2024.8.6",
+    "sphinx<=8.2.3",
+    "furo<=2024.8.6",
 ]
 
 [project.urls]
@@ -58,7 +62,12 @@ Issues = "https://github.com/SUWALUTIONS/PurrfectKit/issues"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.hatch.build.targets.wheel]
+[tool.hatch.build]
+exclude = [
+    "logs",
+    "tmp_dir",
+    "models_hf",
+]
 packages = ["purrfectmeow"]
 
 [tool.hatch.metadata]
