@@ -12,4 +12,6 @@
 
    base
    file_handler
+   file_metadata
    model_loader
+   template_doc

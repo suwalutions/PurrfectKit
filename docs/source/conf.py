@@ -1,10 +1,13 @@
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
 project = 'PurrfectKit'
 copyright = '2025, SUWALUTIONS'
 author = 'SUWALUTIONS'
-version = '0.1.0'
+version = '0.1.1'
 
 # -- General configuration ---------------------------------------------------
 
@@ -29,7 +32,23 @@ intersphinx_mapping = {
 # -- Autodoc configuration ---------------------------------------------------
 autodoc_member_order = 'bysource'
 autosummary_generate = True
-autodoc_mock_imports = ['pytesseract', 'easyocr', 'surya', 'markitdown', 'docling', 'pymupdf']
+autodoc_mock_imports = [
+    'pytesseract',
+    'easyocr',
+    'surya',
+    'markitdown',
+    'docling',
+    'pymupdf',
+    'spacy',
+    'sklearn'
+]
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+    'exclude-members': '__weakref__',
+    'no-index': True
+}
+
 
 # -- Options for HTML output -------------------------------------------------
 html_theme = 'furo'

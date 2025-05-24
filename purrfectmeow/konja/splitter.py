@@ -207,27 +207,6 @@ class Splitter:
             raise RuntimeError(f"Failed to create splitter for model '{model_name}': {str(e)}") from e
 
     class KornjaSeparatorSplitter:
-        """
-        A custom separator-based text splitter that segments text solely based on a specified separator.
-
-        This splitter is designed for straightforward use cases where the text is divided using a single,
-        consistent delimiter such as newlines, paragraph breaks, or punctuation marks. Unlike more complex
-        splitters that manage token limits or context overlap, this implementation appends the separator
-        back to each split chunk for structural consistency, except for the final chunk.
-
-        Attributes:
-            separator (str): The delimiter used to split the input text.
-
-        Methods:
-            split_text(text: str) -> List[str]:
-                Splits the input text using the specified separator and appends the separator
-                to each resulting chunk, except the last one (which has it removed if present).
-
-        Example:
-            >>> splitter = KornjaSeparatorSplitter(separator=".\n")
-            >>> splitter.split_text("Sentence one.\nSentence two.\n")
-            ['Sentence one.\n', 'Sentence two.']
-        """
         def __init__(self, separator: str):
             Splitter._logger.debug(f"Initializing KornjaSeparatorSplitter with separator='{separator}'")
             self.separator = separator

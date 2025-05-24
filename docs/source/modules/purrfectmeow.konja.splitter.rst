@@ -1,4 +1,4 @@
-purrfectmeow.konja.splitter
+﻿purrfectmeow.konja.splitter
 ===========================
 
 .. automodule:: purrfectmeow.konja.splitter
