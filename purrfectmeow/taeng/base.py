@@ -1,8 +1,11 @@
-from typing import BinaryIO
+from typing import BinaryIO, Dict, List, Any
+from langchain_core.documents import Document
 from transformers import PreTrainedTokenizerBase, PreTrainedModel
 
 from purrfectmeow.taeng.file_handler import HandleFile
+from purrfectmeow.taeng.file_metadata import MetadataFile
 from purrfectmeow.taeng.model_loader import LoadingModel
+from purrfectmeow.taeng.template_doc import DocTemplate
 
 class Suphalaks:
     """
@@ -68,7 +71,7 @@ class Suphalaks:
         HandleFile.remove_temp_file(file_path)
 
     @staticmethod
-    def get_model(model_name: str = "intfloat/multilingual-e5-large-instruct") -> PreTrainedModel:
+    def get_model(model_name: str) -> PreTrainedModel:
         """
         Loads a pretrained model from Hugging Face's model hub.
 
@@ -84,10 +87,11 @@ class Suphalaks:
         Example:
             >>> model = Suphalaks.get_model("bert-base-uncased")
         """
+        model_name = model_name or "intfloat/multilingual-e5-large-instruct"
         return LoadingModel().get_model(model_name)
 
     @staticmethod
-    def get_tokenizer(model_name: str = "intfloat/multilingual-e5-large-instruct") -> PreTrainedTokenizerBase:
+    def get_tokenizer(model_name: str) -> PreTrainedTokenizerBase:
         """
         Loads a tokenizer from the Hugging Face Transformers library.
 
@@ -103,4 +107,46 @@ class Suphalaks:
         Example:
             >>> tokenizer = Suphalaks.get_tokenizer("bert-base-uncased")
         """
+        model_name = model_name or "intfloat/multilingual-e5-large-instruct"
         return LoadingModel().get_tokenizer(model_name)
+    
+    @staticmethod
+    def get_file_metadata(file_path: str) -> Dict:
+        """
+        Extract metadata from a given file path.
+
+        Args:
+            file_path (str): The path to the file from which to extract metadata.
+
+        Returns:
+            Dict: A dictionary containing metadata information about the file.
+        
+        Example:
+            >>> metadata = Suphalaks.get_file_metadata('/path/to/file.pdf')
+        """
+        return MetadataFile(file_path).get_metadata()
+
+    @staticmethod
+    def get_document_template(chunks: List[str], metadata: Dict[str, Any]) -> Document:
+        """
+        Generate a LangChain Document from text chunks and metadata.
+
+        This static method serves as a wrapper around `DocTemplate.create_template`,
+        transforming raw text chunks and associated metadata into a structured 
+        `Document` object compatible with LangChain.
+
+        Args:
+            chunks (List[str]): A list of text chunks representing parts of the document.
+            metadata (Dict[str, Any]): Metadata dictionary to embed within each document.
+
+        Returns:
+            Document: A LangChain Document composed of the provided chunks and metadata.
+
+        Example:
+            >>> chunks = ["you only", "live once"]
+            >>> metadata = {"source": "file.txt"}
+            >>> doc = Suphalaks.get_document_template(chunks, metadata)
+        """
+        chunks = chunks or []
+        metadata = metadata or {}
+        return DocTemplate.create_template(chunks, metadata)
