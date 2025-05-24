@@ -70,8 +70,8 @@ class Kornja:
             match splitter:
                 case "token":
                     model_name = kwargs.get("model_name", "text-embedding-ada-002")
-                    chunk_size = kwargs.get("chunk_size", "500")
-                    chunk_overlap = kwargs.get("chunk_overlap", "0")
+                    chunk_size = kwargs.get("chunk_size", 500)
+                    chunk_overlap = kwargs.get("chunk_overlap", 0)
                     if not model_name or not isinstance(model_name, str) or not model_name.strip():
                         Kornja._logger.error("model_name must be a non-empty string for token splitter")
                         raise ValueError("model_name must be a non-empty string for token splitter")
