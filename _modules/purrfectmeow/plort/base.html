@@ -221,6 +221,9 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.plort.html">purrfectmeow.plort</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of purrfectmeow.plort</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.base.html">purrfectmeow.plort.base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.embedder.html">purrfectmeow.plort.embedder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.tokenization.html">purrfectmeow.plort.tokenization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.vectorstore.html">purrfectmeow.plort.vectorstore</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.sawat.html">purrfectmeow.sawat</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of purrfectmeow.sawat</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -233,7 +236,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.html">purrfectmeow.taeng</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of purrfectmeow.taeng</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.base.html">purrfectmeow.taeng.base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.file_handler.html">purrfectmeow.taeng.file_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.file_metadata.html">purrfectmeow.taeng.file_metadata</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.model_loader.html">purrfectmeow.taeng.model_loader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.template_doc.html">purrfectmeow.taeng.template_doc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.tokenizer.html">purrfectmeow.taeng.tokenizer</a></li>
 </ul>
 </li>
@@ -274,11 +279,150 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for purrfectmeow.plort.base</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.embedder</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleHFEmbedder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.tokenization</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleTokenization</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.vectorstore</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleInMemoryVectorStore</span>
+
 <div class="viewcode-block" id="KhaoManee">
 <a class="viewcode-back" href="../../../modules/plort.html#purrfectmeow.KhaoManee">[docs]</a>
-<span></span><span class="k">class</span><span class="w"> </span><span class="nc">KhaoManee</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_</span><span class="p">():</span>
-        <span class="o">...</span></div>
+<span class="k">class</span><span class="w"> </span><span class="nc">KhaoManee</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    KhaoManee is a utility class for embedding documents and queries using a </span>
+<span class="sd">    specified embedding model and performing similarity search on embedded vectors.</span>
+
+<span class="sd">    This class wraps functionalities from SimpleHFEmbedder and SimpleInMemoryVectorStore</span>
+<span class="sd">    to provide easy access to embeddings and search results.</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">        get_embeddings(documents, model_name): Generate embeddings for one or more documents.</span>
+<span class="sd">        get_query_embeddings(query, model_name): Generate embeddings for a query string.</span>
+<span class="sd">        get_tokens(text, engine): Tokenizes the given text using the specified NLP engine.</span>
+<span class="sd">        get_search(query_embedding, embeddings, documents, top_k): Perform similarity search to find the most relevant documents given a query embedding.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="KhaoManee.get_embeddings">
+<a class="viewcode-back" href="../../../modules/plort.html#purrfectmeow.KhaoManee.get_embeddings">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_embeddings</span><span class="p">(</span>
+        <span class="n">documents</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> 
+        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate embeddings for the provided documents using a specified embedding model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            documents (Document): A Document object or a list of Document objects to embed.</span>
+<span class="sd">            model_name (str, optional): The model identifier to use for embeddings.</span>
+<span class="sd">                Defaults to &quot;intfloat/multilingual-e5-large-instruct&quot;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: An array of embeddings representing the documents.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; docs = [Document(page_content=&quot;Hello world&quot;), Document(page_content=&quot;Bonjour monde&quot;)]</span>
+<span class="sd">            &gt;&gt;&gt; embeddings = KhaoManee.get_embeddings(docs)</span>
+<span class="sd">            &gt;&gt;&gt; print(embeddings.shape)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">embed_documents</span><span class="p">(</span><span class="n">documents</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="KhaoManee.get_query_embeddings">
+<a class="viewcode-back" href="../../../modules/plort.html#purrfectmeow.KhaoManee.get_query_embeddings">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_query_embeddings</span><span class="p">(</span>
+        <span class="n">query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;meow~&quot;</span><span class="p">,</span>
+        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate an embedding vector for a query string using the specified embedding model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query (str, optional): The input query text to embed. Defaults to &quot;meow~&quot;.</span>
+<span class="sd">            model_name (str, optional): The model identifier to use for embeddings.</span>
+<span class="sd">                Defaults to &quot;intfloat/multilingual-e5-large-instruct&quot;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: An embedding vector representing the query.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; query_embedding = KhaoManee.get_query_embeddings(&quot;Find cats&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; print(query_embedding.shape)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">embed_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="KhaoManee.get_tokens">
+<a class="viewcode-back" href="../../../modules/plort.html#purrfectmeow.KhaoManee.get_tokens">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tokens</span><span class="p">(</span>
+        <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">engine</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;spacy&quot;</span><span class="p">,</span> <span class="s2">&quot;pythainlp&quot;</span><span class="p">,</span> <span class="s2">&quot;huggingface&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;pythainlp&quot;</span>
+        <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tokenizes the given text using the specified NLP engine.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The input text to tokenize.</span>
+<span class="sd">            engine (Optional[Literal[&quot;spacy&quot;, &quot;pythainlp&quot;, &quot;huggingface&quot;]], optional): </span>
+<span class="sd">                The tokenization engine to use. Must be one of:</span>
+<span class="sd">                - &quot;spacy&quot;: Uses spaCy tokenizer.</span>
+<span class="sd">                - &quot;pythainlp&quot;: Uses PyThaiNLP tokenizer (default).</span>
+<span class="sd">                - &quot;huggingface&quot;: Uses a HuggingFace tokenizer.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]: A list of tokens extracted from the input text.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If an unsupported engine name is provided.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; KhaoManee.get_tokens(&quot;ฉันรักภาษาไทย&quot;)</span>
+<span class="sd">            [&#39;ฉัน&#39;, &#39;รัก&#39;, &#39;ภาษา&#39;, &#39;ไทย&#39;]</span>
+
+<span class="sd">            &gt;&gt;&gt; KhaoManee.get_tokens(&quot;I love Python.&quot;, engine=&quot;spacy&quot;)</span>
+<span class="sd">            [&#39;I&#39;, &#39;love&#39;, &#39;Python&#39;, &#39;.&#39;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">SimpleTokenization</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="KhaoManee.get_search">
+<a class="viewcode-back" href="../../../modules/plort.html#purrfectmeow.KhaoManee.get_search">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_search</span><span class="p">(</span>
+        <span class="n">query_embedding</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">embeddings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">documents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Document</span><span class="p">],</span>
+        <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a similarity search to retrieve the top_k most relevant documents to the query.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query_embedding (numpy.ndarray): The embedding vector for the search query.</span>
+<span class="sd">            embeddings (List[numpy.ndarray]): List of document embedding vectors.</span>
+<span class="sd">            documents (List[Document]): List of Document objects corresponding to embeddings.</span>
+<span class="sd">            top_k (int, optional): The number of top matching documents to return. Defaults to 5.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[Document]: The top_k documents most similar to the query.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; docs = [Document(page_content=&quot;Hello world&quot;), Document(page_content=&quot;Bonjour monde&quot;)]</span>
+<span class="sd">            &gt;&gt;&gt; embeddings = KhaoManee.get_embeddings(docs)</span>
+<span class="sd">            &gt;&gt;&gt; query_emb = KhaoManee.get_query_embeddings(&quot;Hello&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; top_docs = KhaoManee.get_search(query_emb, embeddings, docs, top_k=1)</span>
+<span class="sd">            &gt;&gt;&gt; print(top_docs[0].page_content)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">SimpleInMemoryVectorStore</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+            <span class="n">query_embedding</span><span class="o">=</span><span class="n">query_embedding</span><span class="p">,</span>
+            <span class="n">vectors</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">embeddings</span><span class="p">),</span>
+            <span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span>
+            <span class="n">top_k</span><span class="o">=</span><span class="n">top_k</span>
+        <span class="p">)</span></div>
+</div>
 
 </pre></div>
         </article>

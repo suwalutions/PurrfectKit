@@ -221,6 +221,9 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.plort.html">purrfectmeow.plort</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of purrfectmeow.plort</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.base.html">purrfectmeow.plort.base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.embedder.html">purrfectmeow.plort.embedder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.tokenization.html">purrfectmeow.plort.tokenization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.vectorstore.html">purrfectmeow.plort.vectorstore</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.sawat.html">purrfectmeow.sawat</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of purrfectmeow.sawat</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -233,7 +236,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.html">purrfectmeow.taeng</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of purrfectmeow.taeng</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.base.html">purrfectmeow.taeng.base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.file_handler.html">purrfectmeow.taeng.file_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.file_metadata.html">purrfectmeow.taeng.file_metadata</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.model_loader.html">purrfectmeow.taeng.model_loader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.template_doc.html">purrfectmeow.taeng.template_doc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.tokenizer.html">purrfectmeow.taeng.tokenizer</a></li>
 </ul>
 </li>
@@ -276,7 +281,6 @@
           <h1>Source code for purrfectmeow.konja.base</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.kitty</span><span class="w"> </span><span class="kn">import</span> <span class="n">kitty_logger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.konja.splitter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Splitter</span>
 
 <div class="viewcode-block" id="Kornja">
@@ -303,7 +307,6 @@
 <span class="sd">            model_name (for token-based), separator (for separator-based), chunk_size, and chunk_overlap (for token-based)</span>
 <span class="sd">            can be passed via keyword arguments.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_logger</span> <span class="o">=</span> <span class="n">kitty_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Kornja.chunking">
 <a class="viewcode-back" href="../../../modules/konja.html#purrfectmeow.Kornja.chunking">[docs]</a>
@@ -341,37 +344,28 @@
 <span class="sd">            &gt;&gt;&gt; chunks = Kornja.chunking(text, splitter=&quot;separator&quot;, separator=&quot;.&quot;)</span>
 <span class="sd">            &gt;&gt;&gt; # Splits on &#39;.&#39; without chunk size or overlap</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">Kornja</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Chunking text with splitter=&#39;</span><span class="si">{</span><span class="n">splitter</span><span class="si">}</span><span class="s2">&#39;, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;kwargs=</span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="k">match</span> <span class="n">splitter</span><span class="p">:</span>
+            <span class="k">case</span> <span class="s2">&quot;token&quot;</span><span class="p">:</span>
+                <span class="n">model_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_name&quot;</span><span class="p">,</span> <span class="s2">&quot;text-embedding-ada-002&quot;</span><span class="p">)</span>
+                <span class="n">chunk_size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chunk_size&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+                <span class="n">chunk_overlap</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chunk_overlap&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">match</span> <span class="n">splitter</span><span class="p">:</span>
-                <span class="k">case</span> <span class="s2">&quot;token&quot;</span><span class="p">:</span>
-                    <span class="n">model_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_name&quot;</span><span class="p">,</span> <span class="s2">&quot;text-embedding-ada-002&quot;</span><span class="p">)</span>
-                    <span class="n">chunk_size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chunk_size&quot;</span><span class="p">,</span> <span class="s2">&quot;500&quot;</span><span class="p">)</span>
-                    <span class="n">chunk_overlap</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chunk_overlap&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">model_name</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">model_name</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
-                        <span class="n">Kornja</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;model_name must be a non-empty string for token splitter&quot;</span><span class="p">)</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;model_name must be a non-empty string for token splitter&quot;</span><span class="p">)</span>
-                    <span class="n">sptr</span> <span class="o">=</span> <span class="n">Splitter</span><span class="o">.</span><span class="n">create_token_splitter</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">chunk_overlap</span><span class="p">)</span>
-                <span class="k">case</span> <span class="s2">&quot;separator&quot;</span><span class="p">:</span>
-                    <span class="n">separator</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;separator&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">separator</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">separator</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">separator</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
-                        <span class="n">Kornja</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;separator must be a non-empty string for separator splitter&quot;</span><span class="p">)</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;separator must be a non-empty string for separator splitter&quot;</span><span class="p">)</span>
-                    <span class="n">sptr</span> <span class="o">=</span> <span class="n">Splitter</span><span class="o">.</span><span class="n">create_separator_splitter</span><span class="p">(</span><span class="n">separator</span><span class="p">)</span>
-                <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
-                    <span class="n">Kornja</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid splitter type: </span><span class="si">{</span><span class="n">splitter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid splitter type: </span><span class="si">{</span><span class="n">splitter</span><span class="si">}</span><span class="s2">. Must be &#39;token&#39; or &#39;separator&#39;.&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">model_name</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">model_name</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;model_name must be a non-empty string for token splitter&quot;</span><span class="p">)</span>
+                <span class="n">sptr</span> <span class="o">=</span> <span class="n">Splitter</span><span class="o">.</span><span class="n">create_token_splitter</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">chunk_overlap</span><span class="p">)</span>
 
-            <span class="n">chunks</span> <span class="o">=</span> <span class="n">sptr</span><span class="o">.</span><span class="n">split_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-            <span class="n">Kornja</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s2"> chunks&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">chunks</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">Kornja</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to chunk text with splitter &#39;</span><span class="si">{</span><span class="n">splitter</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to chunk text: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+            <span class="k">case</span> <span class="s2">&quot;separator&quot;</span><span class="p">:</span>
+                <span class="n">separator</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;separator&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">separator</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">separator</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">separator</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;separator must be a non-empty string for separator splitter&quot;</span><span class="p">)</span>
+                <span class="n">sptr</span> <span class="o">=</span> <span class="n">Splitter</span><span class="o">.</span><span class="n">create_separator_splitter</span><span class="p">(</span><span class="n">separator</span><span class="p">)</span>
+                
+            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid splitter type: </span><span class="si">{</span><span class="n">splitter</span><span class="si">}</span><span class="s2">. Must be &#39;token&#39; or &#39;separator&#39;.&quot;</span><span class="p">)</span>
+
+        <span class="n">chunks</span> <span class="o">=</span> <span class="n">sptr</span><span class="o">.</span><span class="n">split_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">chunks</span></div>
 </div>
 
 </pre></div>

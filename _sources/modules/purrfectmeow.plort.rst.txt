@@ -11,3 +11,6 @@
    :recursive:
 
    base
+   embedder
+   tokenization
+   vectorstore

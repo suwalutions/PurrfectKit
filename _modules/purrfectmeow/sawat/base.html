@@ -221,6 +221,9 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.plort.html">purrfectmeow.plort</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of purrfectmeow.plort</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.base.html">purrfectmeow.plort.base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.embedder.html">purrfectmeow.plort.embedder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.tokenization.html">purrfectmeow.plort.tokenization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.vectorstore.html">purrfectmeow.plort.vectorstore</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.sawat.html">purrfectmeow.sawat</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of purrfectmeow.sawat</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -233,7 +236,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.html">purrfectmeow.taeng</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of purrfectmeow.taeng</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.base.html">purrfectmeow.taeng.base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.file_handler.html">purrfectmeow.taeng.file_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.file_metadata.html">purrfectmeow.taeng.file_metadata</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.model_loader.html">purrfectmeow.taeng.model_loader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.template_doc.html">purrfectmeow.taeng.template_doc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.tokenizer.html">purrfectmeow.taeng.tokenizer</a></li>
 </ul>
 </li>
@@ -276,7 +281,6 @@
           <h1>Source code for purrfectmeow.sawat.base</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.kitty</span><span class="w"> </span><span class="kn">import</span> <span class="n">kitty_logger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.taeng</span><span class="w"> </span><span class="kn">import</span> <span class="n">Suphalaks</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.sawat.markdown</span><span class="w"> </span><span class="kn">import</span> <span class="n">Markdown</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.sawat.ocr</span><span class="w"> </span><span class="kn">import</span> <span class="n">OCR</span>
@@ -286,59 +290,60 @@
 <a class="viewcode-back" href="../../../modules/sawat.html#purrfectmeow.Malet">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Malet</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A unified interface for extracting text from a wide variety of document formats.</span>
+<span class="sd">    Unified interface for extracting text from a wide variety of document formats.</span>
 
-<span class="sd">    Inspired by the Malet breed of Thai cats, this class provides a graceful abstraction</span>
-<span class="sd">    for reading text content from files such as PDFs, spreadsheets, images, and URLs. </span>
-<span class="sd">    It leverages specialized backends (like Tesseract, EasyOCR, Docling, and PyMuPDF) </span>
-<span class="sd">    depending on the loader specified.</span>
+<span class="sd">    Named after the elegant Malet breed of Thai cats, this class provides a </span>
+<span class="sd">    graceful abstraction to read text content from files such as PDFs, spreadsheets, images, and URLs. </span>
+<span class="sd">    It dispatches extraction tasks to specialized backends based on the loader specified.</span>
 
-<span class="sd">    Supported Loaders:</span>
+<span class="sd">    Supported loaders:</span>
 <span class="sd">        - &#39;MARKITDOWN&#39;: Convert documents or URLs to Markdown using MarkItDown.</span>
 <span class="sd">        - &#39;DOCLING&#39;: Convert documents or URLs to Markdown using Docling.</span>
 <span class="sd">        - &#39;PYTESSERACT&#39;: Extract text from images or PDFs using Tesseract OCR.</span>
 <span class="sd">        - &#39;EASYOCR&#39;: Extract text using EasyOCR with Thai and English support.</span>
 <span class="sd">        - &#39;SURYAOCR&#39;: Extract structured text using SuryaOCR (detection + recognition).</span>
-<span class="sd">        - &#39;PYMUPDF&#39;: Extract text from PDFs using PyMuPDF (standard).</span>
-<span class="sd">        - &#39;PYMUPDF_AS_TXT&#39;: Extract raw text from PDFs using PyMuPDF with text-only mode.</span>
+<span class="sd">        - &#39;PYMUPDF&#39;: Extract text from PDFs using PyMuPDF.</span>
+<span class="sd">        - &#39;PYMUPDF_AS_TXT&#39;: Extract raw text from PDFs using PyMuPDF in text-only mode.</span>
 <span class="sd">        - &#39;PANDAS_EXCEL&#39;: Read and convert Excel spreadsheets to plain text using pandas.</span>
 <span class="sd">        - &#39;PANDAS_CSV&#39;: Read and convert CSV files to plain text using pandas.</span>
 
 <span class="sd">    Methods:</span>
-<span class="sd">        loader(file: BinaryIO, file_name: str, loader: str, ``**kwargs``) -&gt; str:</span>
+<span class="sd">        loader(file: BinaryIO, file_name: str, loader: str, **kwargs) -&gt; str:</span>
 <span class="sd">            Extract text from the given file using the specified loader backend.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from purrfectmeow import Malet</span>
-<span class="sd">        &gt;&gt;&gt; docs = Malet.loader(&quot;example.pdf&quot;, &quot;example.pdf&quot;, loader=&quot;PYMUPDF&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; with open(&quot;example.pdf&quot;, &quot;rb&quot;) as f:</span>
+<span class="sd">        ...     text = Malet.loader(f, &quot;example.pdf&quot;, loader=&quot;PYMUPDF&quot;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_logger</span> <span class="o">=</span> <span class="n">kitty_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-    <span class="n">_LOADER_METHODS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">BinaryIO</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;MARKITDOWN&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">Markdown</span><span class="o">.</span><span class="n">convert_with_markitdown</span><span class="p">,</span> <span class="s2">&quot;MarkItDown Converter&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;DOCLING&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">Markdown</span><span class="o">.</span><span class="n">convert_with_docling</span><span class="p">,</span> <span class="s2">&quot;Docling converter&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;PYTESSERACT&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">OCR</span><span class="o">.</span><span class="n">convert_with_pytesseract</span><span class="p">,</span> <span class="s2">&quot;Tesseract converter&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;EASYOCR&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">OCR</span><span class="o">.</span><span class="n">convert_with_easyocr</span><span class="p">,</span> <span class="s2">&quot;EasyOCR converter&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;SURYAOCR&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">OCR</span><span class="o">.</span><span class="n">convert_with_suryaocr</span><span class="p">,</span> <span class="s2">&quot;SuryaOCR converter&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;PYMUPDF&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pymupdf</span><span class="p">,</span> <span class="s2">&quot;PyMuPDF converter&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;PYMUPDF_AS_TXT&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pymupdf_as_txt</span><span class="p">,</span> <span class="s2">&quot;PyMuPDF converter&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;PANDAS_EXCEL&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pandas_excel</span><span class="p">,</span> <span class="s2">&quot;Pandas converter&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;PANDAS_CSV&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pandas_csv</span><span class="p">,</span> <span class="s2">&quot;Pandas converter&quot;</span><span class="p">),</span>
+    
+    <span class="n">_LOADER_METHODS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;MARKITDOWN&quot;</span><span class="p">:</span> <span class="n">Markdown</span><span class="o">.</span><span class="n">convert_with_markitdown</span><span class="p">,</span>
+        <span class="s2">&quot;DOCLING&quot;</span><span class="p">:</span> <span class="n">Markdown</span><span class="o">.</span><span class="n">convert_with_docling</span><span class="p">,</span>
+        <span class="s2">&quot;PYTESSERACT&quot;</span><span class="p">:</span> <span class="n">OCR</span><span class="o">.</span><span class="n">convert_with_pytesseract</span><span class="p">,</span>
+        <span class="s2">&quot;EASYOCR&quot;</span><span class="p">:</span> <span class="n">OCR</span><span class="o">.</span><span class="n">convert_with_easyocr</span><span class="p">,</span>
+        <span class="s2">&quot;SURYAOCR&quot;</span><span class="p">:</span> <span class="n">OCR</span><span class="o">.</span><span class="n">convert_with_suryaocr</span><span class="p">,</span>
+        <span class="s2">&quot;PYMUPDF&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pymupdf</span><span class="p">,</span>
+        <span class="s2">&quot;PYMUPDF_AS_TXT&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pymupdf_as_txt</span><span class="p">,</span>
+        <span class="s2">&quot;PANDAS_EXCEL&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pandas_excel</span><span class="p">,</span>
+        <span class="s2">&quot;PANDAS_CSV&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pandas_csv</span><span class="p">,</span>
     <span class="p">}</span>
 
 <div class="viewcode-block" id="Malet.loader">
 <a class="viewcode-back" href="../../../modules/sawat.html#purrfectmeow.Malet.loader">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">loader</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">loader</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load and extract text from a file using the specified loader.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loader</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">loader</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;PYMUPDF&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load and extract text from a file using the specified loader.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            file (BinaryIO): A file-like object opened in binary mode.</span>
-<span class="sd">            file_name (str): Name of the file for reference (used for context or metadata).</span>
-<span class="sd">            loader (str): Loader type to use for extraction.</span>
+<span class="sd">            file (BinaryIO): File-like object opened in binary mode.</span>
+<span class="sd">            file_name (str): Name of the file (used for saving and reference).</span>
+<span class="sd">            loader (str, optional): Loader type to use for extraction. Defaults to &quot;PYMUPDF&quot;.</span>
 <span class="sd">            **kwargs (Any): Additional keyword arguments passed to the loader.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            str: Extracted text content, or other data structure depending on the loader.</span>
+<span class="sd">            str: Extracted text content.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            FileNotFoundError: If the file does not exist or cannot be accessed.</span>
@@ -347,18 +352,15 @@
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; with open(&quot;example.pdf&quot;, &quot;rb&quot;) as f:</span>
 <span class="sd">            ...     text = Malet.loader(f, &quot;example.pdf&quot;, loader=&quot;PYMUPDF&quot;)</span>
-<span class="sd">            &gt;&gt;&gt; print(text[:200])  # Prints first 200 characters of extracted text</span>
+<span class="sd">            &gt;&gt;&gt; print(text[:200])  # Print first 200 characters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">Malet</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading file `</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">` with loader `</span><span class="si">{</span><span class="n">loader</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
         <span class="n">file_path</span> <span class="o">=</span> <span class="n">Suphalaks</span><span class="o">.</span><span class="n">save_file</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">loader</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Malet</span><span class="o">.</span><span class="n">_LOADER_METHODS</span><span class="p">:</span>
-                <span class="n">Malet</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported loader: </span><span class="si">{</span><span class="n">loader</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported loader: </span><span class="si">{</span><span class="n">loader</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             
-            <span class="n">method</span><span class="p">,</span> <span class="n">converter_name</span> <span class="o">=</span> <span class="n">Malet</span><span class="o">.</span><span class="n">_LOADER_METHODS</span><span class="p">[</span><span class="n">loader</span><span class="p">]</span>
-            <span class="n">Malet</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using </span><span class="si">{</span><span class="n">converter_name</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">method</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="n">Malet</span><span class="o">.</span><span class="n">_LOADER_METHODS</span><span class="p">[</span><span class="n">loader</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">method</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="n">Suphalaks</span><span class="o">.</span><span class="n">remove_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
 </div>

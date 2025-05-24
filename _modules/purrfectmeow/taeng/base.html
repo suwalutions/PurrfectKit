@@ -221,6 +221,9 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.plort.html">purrfectmeow.plort</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of purrfectmeow.plort</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.base.html">purrfectmeow.plort.base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.embedder.html">purrfectmeow.plort.embedder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.tokenization.html">purrfectmeow.plort.tokenization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.plort.vectorstore.html">purrfectmeow.plort.vectorstore</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.sawat.html">purrfectmeow.sawat</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of purrfectmeow.sawat</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -233,7 +236,9 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.html">purrfectmeow.taeng</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of purrfectmeow.taeng</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.base.html">purrfectmeow.taeng.base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.file_handler.html">purrfectmeow.taeng.file_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.file_metadata.html">purrfectmeow.taeng.file_metadata</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.model_loader.html">purrfectmeow.taeng.model_loader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.template_doc.html">purrfectmeow.taeng.template_doc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../modules/purrfectmeow.taeng.tokenizer.html">purrfectmeow.taeng.tokenizer</a></li>
 </ul>
 </li>
@@ -274,11 +279,14 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for purrfectmeow.taeng.base</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">BinaryIO</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">transformers</span><span class="w"> </span><span class="kn">import</span> <span class="n">PreTrainedTokenizerBase</span><span class="p">,</span> <span class="n">PreTrainedModel</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.taeng.file_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">HandleFile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.taeng.file_metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetadataFile</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.taeng.model_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoadingModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.taeng.template_doc</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocTemplate</span>
 
 <div class="viewcode-block" id="Suphalaks">
 <a class="viewcode-back" href="../../../modules/taeng.html#purrfectmeow.Suphalaks">[docs]</a>
@@ -300,19 +308,22 @@
 
 <span class="sd">        get_model(model_name: str) -&gt; PreTrainedModel</span>
 <span class="sd">            Loads and returns a pretrained model from Hugging Face.</span>
+<span class="sd">            Defaults to &quot;intfloat/multilingual-e5-large-instruct&quot;.</span>
 
 <span class="sd">        get_tokenizer(model_name: str) -&gt; PreTrainedTokenizerBase</span>
 <span class="sd">            Loads and returns a pretrained tokenizer from Hugging Face.</span>
+<span class="sd">            Defaults to &quot;intfloat/multilingual-e5-large-instruct&quot;.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from purrfectmeow import Suphalaks</span>
-<span class="sd">        &gt;&gt;&gt; tokenizer = Suphalaks.get_tokenizer(&quot;intfloat/multilingual-e5-large-instruct&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; model = Suphalaks.get_model(&quot;intfloat/multilingual-e5-large-instruct&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer = Suphalaks.get_tokenizer()</span>
+<span class="sd">        &gt;&gt;&gt; model = Suphalaks.get_model()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="Suphalaks.save_file">
 <a class="viewcode-back" href="../../../modules/taeng.html#purrfectmeow.Suphalaks.save_file">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">save_file</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Saves a binary file to a temporary directory.</span>
 
@@ -332,8 +343,8 @@
     
 <div class="viewcode-block" id="Suphalaks.remove_file">
 <a class="viewcode-back" href="../../../modules/taeng.html#purrfectmeow.Suphalaks.remove_file">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">remove_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes a file from the filesystem.</span>
 
@@ -351,8 +362,8 @@
 
 <div class="viewcode-block" id="Suphalaks.get_model">
 <a class="viewcode-back" href="../../../modules/taeng.html#purrfectmeow.Suphalaks.get_model">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PreTrainedModel</span><span class="p">:</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PreTrainedModel</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads a pretrained model from Hugging Face&#39;s model hub.</span>
 
@@ -368,13 +379,14 @@
 <span class="sd">        Example:</span>
 <span class="sd">            &gt;&gt;&gt; model = Suphalaks.get_model(&quot;bert-base-uncased&quot;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="ow">or</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
         <span class="k">return</span> <span class="n">LoadingModel</span><span class="p">()</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Suphalaks.get_tokenizer">
 <a class="viewcode-back" href="../../../modules/taeng.html#purrfectmeow.Suphalaks.get_tokenizer">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_tokenizer</span><span class="p">(</span><span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PreTrainedTokenizerBase</span><span class="p">:</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tokenizer</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PreTrainedTokenizerBase</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads a tokenizer from the Hugging Face Transformers library.</span>
 
@@ -390,7 +402,55 @@
 <span class="sd">        Example:</span>
 <span class="sd">            &gt;&gt;&gt; tokenizer = Suphalaks.get_tokenizer(&quot;bert-base-uncased&quot;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="ow">or</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
         <span class="k">return</span> <span class="n">LoadingModel</span><span class="p">()</span><span class="o">.</span><span class="n">get_tokenizer</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="Suphalaks.get_file_metadata">
+<a class="viewcode-back" href="../../../modules/taeng.html#purrfectmeow.Suphalaks.get_file_metadata">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_file_metadata</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract metadata from a given file path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_path (str): The path to the file from which to extract metadata.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict: A dictionary containing metadata information about the file.</span>
+<span class="sd">        </span>
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; metadata = Suphalaks.get_file_metadata(&#39;/path/to/file.pdf&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">MetadataFile</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Suphalaks.get_document_template">
+<a class="viewcode-back" href="../../../modules/taeng.html#purrfectmeow.Suphalaks.get_document_template">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_document_template</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">chunks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a LangChain Document from text chunks and metadata.</span>
+
+<span class="sd">        This static method serves as a wrapper around `DocTemplate.create_template`,</span>
+<span class="sd">        transforming raw text chunks and associated metadata into a structured </span>
+<span class="sd">        `Document` object compatible with LangChain.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            chunks (List[str]): A list of text chunks representing parts of the document.</span>
+<span class="sd">            metadata (Dict[str, Any]): Metadata dictionary to embed within each document.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Document: A LangChain Document composed of the provided chunks and metadata.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; chunks = [&quot;you only&quot;, &quot;live once&quot;]</span>
+<span class="sd">            &gt;&gt;&gt; metadata = {&quot;source&quot;: &quot;file.txt&quot;}</span>
+<span class="sd">            &gt;&gt;&gt; doc = Suphalaks.get_document_template(chunks, metadata)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chunks</span> <span class="o">=</span> <span class="n">chunks</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="n">DocTemplate</span><span class="o">.</span><span class="n">create_template</span><span class="p">(</span><span class="n">chunks</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
