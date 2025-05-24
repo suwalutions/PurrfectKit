@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>purrfectmeow.plort.base - PurrfectKit documentation</title>
+        <title>purrfectmeow.plort.embedder - PurrfectKit documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -343,150 +343,206 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for purrfectmeow.plort.base</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
+          <h1>Source code for purrfectmeow.plort.embedder</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transformers</span><span class="w"> </span><span class="kn">import</span> <span class="n">PreTrainedModel</span><span class="p">,</span> <span class="n">PreTrainedTokenizer</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.embedder</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleHFEmbedder</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.tokenization</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleTokenization</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.vectorstore</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleInMemoryVectorStore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.taeng.model_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoadingModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.kitty</span><span class="w"> </span><span class="kn">import</span> <span class="n">kitty_logger</span>
 
-<div class="viewcode-block" id="KhaoManee">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">KhaoManee</span><span class="p">:</span>
+<div class="viewcode-block" id="SimpleHFEmbedder">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.embedder.html#purrfectmeow.plort.embedder.SimpleHFEmbedder">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimpleHFEmbedder</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    KhaoManee is a utility class for embedding documents and queries using a </span>
-<span class="sd">    specified embedding model and performing similarity search on embedded vectors.</span>
+<span class="sd">    A simple Hugging Face transformer-based embedder for converting documents or queries</span>
+<span class="sd">    into dense vector embeddings using a pretrained model.</span>
 
-<span class="sd">    This class wraps functionalities from SimpleHFEmbedder and SimpleInMemoryVectorStore</span>
-<span class="sd">    to provide easy access to embeddings and search results.</span>
+<span class="sd">    This class wraps tokenizer and model loading management, and embedding</span>
+<span class="sd">    computation including mean pooling over token embeddings. It supports embedding</span>
+<span class="sd">    multiple documents or single queries and returns numpy arrays suitable for downstream</span>
+<span class="sd">    tasks such as similarity search or classification.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        _DEFAULT_MODEL_NAME (str): Default model identifier for embeddings if none provided.</span>
+<span class="sd">        _logger (logging.Logger): Logger instance for debugging and info messages.</span>
 
 <span class="sd">    Methods:</span>
-<span class="sd">        get_embeddings(documents, model_name): Generate embeddings for one or more documents.</span>
-<span class="sd">        get_query_embeddings(query, model_name): Generate embeddings for a query string.</span>
-<span class="sd">        get_tokens(text, engine): Tokenizes the given text using the specified NLP engine.</span>
-<span class="sd">        get_search(query_embedding, embeddings, documents, top_k): Perform similarity search to find the most relevant documents given a query embedding.</span>
+<span class="sd">        embed_documents(documents, model_name=None) -&gt; np.ndarray:</span>
+<span class="sd">            Embed a list of `Document` objects into dense vectors.</span>
+
+<span class="sd">        embed_query(query, model_name=None) -&gt; np.ndarray:</span>
+<span class="sd">            Embed a single query string into a dense vector.</span>
+
+<span class="sd">        _get_tokenizer(model_name) -&gt; PreTrainedTokenizer:</span>
+<span class="sd">            Load the tokenizer corresponding to the specified model.</span>
+
+<span class="sd">        _get_model(model_name) -&gt; PreTrainedModel:</span>
+<span class="sd">            Load the model on the specified device.</span>
+
+<span class="sd">        _mean_pooling(model_output, attention_mask) -&gt; torch.Tensor:</span>
+<span class="sd">            Compute mean pooled embeddings from model output and attention mask.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="KhaoManee.get_embeddings">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_embeddings">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_embeddings</span><span class="p">(</span>
-        <span class="n">documents</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> 
-        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
-    <span class="p">):</span>
+    <span class="n">_logger</span> <span class="o">=</span> <span class="n">kitty_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">_DEFAULT_MODEL_NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
+
+<div class="viewcode-block" id="SimpleHFEmbedder.embed_documents">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.embedder.html#purrfectmeow.plort.embedder.SimpleHFEmbedder.embed_documents">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">embed_documents</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">documents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Document</span><span class="p">],</span> 
+        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate embeddings for the provided documents using a specified embedding model.</span>
+<span class="sd">        Embed a list of Document objects into dense vector embeddings.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            documents (Document): A Document object or a list of Document objects to embed.</span>
-<span class="sd">            model_name (str, optional): The model identifier to use for embeddings.</span>
-<span class="sd">                Defaults to &quot;intfloat/multilingual-e5-large-instruct&quot;.</span>
+<span class="sd">            documents (List[Document]): A list of langchain Document instances to embed.</span>
+<span class="sd">            model_name (Optional[str]): Name or path of the pretrained transformer model</span>
+<span class="sd">                to use. Defaults to `SimpleHFEmbedder._DEFAULT_MODEL_NAME`.</span>
+<span class="sd">            device (Optional[str]): Compute device to load the model on (e.g., &#39;cpu&#39;, &#39;cuda&#39;).</span>
+<span class="sd">                Defaults to &#39;cuda&#39; if available, else &#39;cpu&#39;.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            numpy.ndarray: An array of embeddings representing the documents.</span>
+<span class="sd">            np.ndarray: A 2D numpy array where each row is the embedding vector of a document.</span>
 
 <span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; docs = [Document(page_content=&quot;Hello world&quot;), Document(page_content=&quot;Bonjour monde&quot;)]</span>
-<span class="sd">            &gt;&gt;&gt; embeddings = KhaoManee.get_embeddings(docs)</span>
-<span class="sd">            &gt;&gt;&gt; print(embeddings.shape)</span>
+<span class="sd">            &gt;&gt;&gt; from langchain_core.documents import Document</span>
+<span class="sd">            &gt;&gt;&gt; docs = [Document(page_content=&quot;Hello world&quot;), Document(page_content=&quot;Goodbye world&quot;)]</span>
+<span class="sd">            &gt;&gt;&gt; embeddings = SimpleHFEmbedder.embed_documents(docs)</span>
+<span class="sd">            &gt;&gt;&gt; embeddings.shape</span>
+<span class="sd">            (2, 1024)  # assuming the model outputs 1024-dim embeddings</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">embed_documents</span><span class="p">(</span><span class="n">documents</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span></div>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="ow">or</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">_DEFAULT_MODEL_NAME</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Embedding documents using model &#39;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">_get_tokenizer</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Tokenizer loaded successfully&quot;</span><span class="p">)</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">_get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model loaded on device &#39;</span><span class="si">{</span><span class="n">device</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="n">texts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">]</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of documents to embed: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">texts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">encoded</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tokenized inputs: input_ids shape </span><span class="si">{</span><span class="n">encoded</span><span class="p">[</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">encoded</span><span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Model forward pass complete&quot;</span><span class="p">)</span>
+
+        <span class="n">embeddings</span> <span class="o">=</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">_mean_pooling</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">encoded</span><span class="p">[</span><span class="s1">&#39;attention_mask&#39;</span><span class="p">])</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Embeddings computed with shape </span><span class="si">{</span><span class="n">embeddings</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">embeddings</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="KhaoManee.get_query_embeddings">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_query_embeddings">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_query_embeddings</span><span class="p">(</span>
-        <span class="n">query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;meow~&quot;</span><span class="p">,</span>
-        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
-    <span class="p">):</span>
+<div class="viewcode-block" id="SimpleHFEmbedder.embed_query">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.embedder.html#purrfectmeow.plort.embedder.SimpleHFEmbedder.embed_query">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">embed_query</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate an embedding vector for a query string using the specified embedding model.</span>
+<span class="sd">        Embed a single query string into a dense vector embedding.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            query (str, optional): The input query text to embed. Defaults to &quot;meow~&quot;.</span>
-<span class="sd">            model_name (str, optional): The model identifier to use for embeddings.</span>
-<span class="sd">                Defaults to &quot;intfloat/multilingual-e5-large-instruct&quot;.</span>
+<span class="sd">            query (str): The input query string to embed.</span>
+<span class="sd">            model_name (Optional[str]): Name or path of the pretrained transformer model</span>
+<span class="sd">                to use. Defaults to `SimpleHFEmbedder._DEFAULT_MODEL_NAME`.</span>
+<span class="sd">            device (Optional[str]): Compute device to load the model on (e.g., &#39;cpu&#39;, &#39;cuda&#39;).</span>
+<span class="sd">                Defaults to &#39;cuda&#39; if available, else &#39;cpu&#39;.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            numpy.ndarray: An embedding vector representing the query.</span>
+<span class="sd">            np.ndarray: A 1D numpy array representing the embedding vector of the query.</span>
 
 <span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; query_embedding = KhaoManee.get_query_embeddings(&quot;Find cats&quot;)</span>
-<span class="sd">            &gt;&gt;&gt; print(query_embedding.shape)</span>
+<span class="sd">            &gt;&gt;&gt; query = &quot;What is the capital of France?&quot;</span>
+<span class="sd">            &gt;&gt;&gt; embedding = SimpleHFEmbedder.embed_query(query)</span>
+<span class="sd">            &gt;&gt;&gt; embedding.shape</span>
+<span class="sd">            (1024,)  # assuming the model outputs 1024-dim embeddings</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">embed_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span></div>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Embedding query: &#39;</span><span class="si">{</span><span class="n">query</span><span class="p">[:</span><span class="mi">50</span><span class="p">]</span><span class="si">}</span><span class="s2">...&#39;&quot;</span><span class="p">)</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">page_content</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{})</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Query embedding computed&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">embed_documents</span><span class="p">([</span><span class="n">doc</span><span class="p">],</span> <span class="n">model_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
-    
-<div class="viewcode-block" id="KhaoManee.get_tokens">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_tokens">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_tokens</span><span class="p">(</span>
-        <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">engine</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;spacy&quot;</span><span class="p">,</span> <span class="s2">&quot;pythainlp&quot;</span><span class="p">,</span> <span class="s2">&quot;huggingface&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;pythainlp&quot;</span>
-        <span class="p">):</span>
+
+<div class="viewcode-block" id="SimpleHFEmbedder._get_tokenizer">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.embedder.html#purrfectmeow.plort.embedder.SimpleHFEmbedder._get_tokenizer">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_tokenizer</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PreTrainedTokenizer</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Tokenizes the given text using the specified NLP engine.</span>
+<span class="sd">        Load the tokenizer for a given model name.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            text (str): The input text to tokenize.</span>
-<span class="sd">            engine (Optional[Literal[&quot;spacy&quot;, &quot;pythainlp&quot;, &quot;huggingface&quot;]], optional): </span>
-<span class="sd">                The tokenization engine to use. Must be one of:</span>
-<span class="sd">                - &quot;spacy&quot;: Uses spaCy tokenizer.</span>
-<span class="sd">                - &quot;pythainlp&quot;: Uses PyThaiNLP tokenizer (default).</span>
-<span class="sd">                - &quot;huggingface&quot;: Uses a HuggingFace tokenizer.</span>
+<span class="sd">            model_name (str): The pretrained model identifier.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List[str]: A list of tokens extracted from the input text.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If an unsupported engine name is provided.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; KhaoManee.get_tokens(&quot;ฉันรักภาษาไทย&quot;)</span>
-<span class="sd">            [&#39;ฉัน&#39;, &#39;รัก&#39;, &#39;ภาษา&#39;, &#39;ไทย&#39;]</span>
-
-<span class="sd">            &gt;&gt;&gt; KhaoManee.get_tokens(&quot;I love Python.&quot;, engine=&quot;spacy&quot;)</span>
-<span class="sd">            [&#39;I&#39;, &#39;love&#39;, &#39;Python&#39;, &#39;.&#39;]</span>
+<span class="sd">            PreTrainedTokenizer: The tokenizer instance corresponding to the model.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleTokenization</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span></div>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading tokenizer for model &#39;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">LoadingModel</span><span class="o">.</span><span class="n">get_tokenizer</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="KhaoManee.get_search">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_search">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_search</span><span class="p">(</span>
-        <span class="n">query_embedding</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">embeddings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-        <span class="n">documents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Document</span><span class="p">],</span>
-        <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="p">):</span>
+<div class="viewcode-block" id="SimpleHFEmbedder._get_model">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.embedder.html#purrfectmeow.plort.embedder.SimpleHFEmbedder._get_model">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_model</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PreTrainedModel</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Perform a similarity search to retrieve the top_k most relevant documents to the query.</span>
+<span class="sd">        Load the pretrained model on the specified device.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            query_embedding (numpy.ndarray): The embedding vector for the search query.</span>
-<span class="sd">            embeddings (List[numpy.ndarray]): List of document embedding vectors.</span>
-<span class="sd">            documents (List[Document]): List of Document objects corresponding to embeddings.</span>
-<span class="sd">            top_k (int, optional): The number of top matching documents to return. Defaults to 5.</span>
+<span class="sd">            model_name (str): The pretrained model identifier.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List[Document]: The top_k documents most similar to the query.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; docs = [Document(page_content=&quot;Hello world&quot;), Document(page_content=&quot;Bonjour monde&quot;)]</span>
-<span class="sd">            &gt;&gt;&gt; embeddings = KhaoManee.get_embeddings(docs)</span>
-<span class="sd">            &gt;&gt;&gt; query_emb = KhaoManee.get_query_embeddings(&quot;Hello&quot;)</span>
-<span class="sd">            &gt;&gt;&gt; top_docs = KhaoManee.get_search(query_emb, embeddings, docs, top_k=1)</span>
-<span class="sd">            &gt;&gt;&gt; print(top_docs[0].page_content)</span>
+<span class="sd">            PreTrainedModel: The loaded model.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleInMemoryVectorStore</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
-            <span class="n">query_embedding</span><span class="o">=</span><span class="n">query_embedding</span><span class="p">,</span>
-            <span class="n">vectors</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">embeddings</span><span class="p">),</span>
-            <span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span>
-            <span class="n">top_k</span><span class="o">=</span><span class="n">top_k</span>
-        <span class="p">)</span></div>
+        <span class="c1"># device = device or (&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading model &#39;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">LoadingModel</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+        <span class="c1"># model.to(device)</span>
+        <span class="k">return</span> <span class="n">model</span></div>
+
+
+<div class="viewcode-block" id="SimpleHFEmbedder._mean_pooling">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.embedder.html#purrfectmeow.plort.embedder.SimpleHFEmbedder._mean_pooling">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mean_pooling</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">model_output</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> 
+        <span class="n">attention_mask</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply mean pooling to the token embeddings from the model output.</span>
+
+<span class="sd">        This averages token embeddings, ignoring padded tokens based on the attention mask.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model_output (Tuple[torch.Tensor]): Output tuple from the transformer model forward pass,</span>
+<span class="sd">                where the first element contains token embeddings.</span>
+<span class="sd">            attention_mask (torch.Tensor): Attention mask indicating valid tokens (1) vs padding (0).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: The mean pooled embedding tensor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Performing mean pooling on model outputs&quot;</span><span class="p">)</span>
+        <span class="n">token_embeddings</span> <span class="o">=</span> <span class="n">model_output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">input_mask_expanded</span> <span class="o">=</span> <span class="n">attention_mask</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">token_embeddings</span><span class="o">.</span><span class="n">size</span><span class="p">())</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="n">pooled</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">token_embeddings</span> <span class="o">*</span> <span class="n">input_mask_expanded</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">input_mask_expanded</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pooled embeddings shape: </span><span class="si">{</span><span class="n">pooled</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pooled</span></div>
 </div>
 
 </pre></div>

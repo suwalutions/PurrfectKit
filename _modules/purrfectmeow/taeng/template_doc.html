@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>purrfectmeow.plort.base - PurrfectKit documentation</title>
+        <title>purrfectmeow.taeng.template_doc - PurrfectKit documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -343,150 +343,96 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for purrfectmeow.plort.base</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
+          <h1>Source code for purrfectmeow.taeng.template_doc</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.embedder</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleHFEmbedder</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.tokenization</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleTokenization</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.vectorstore</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleInMemoryVectorStore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.kitty</span><span class="w"> </span><span class="kn">import</span> <span class="n">kitty_logger</span>
 
-<div class="viewcode-block" id="KhaoManee">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">KhaoManee</span><span class="p">:</span>
+<div class="viewcode-block" id="DocTemplate">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.taeng.template_doc.html#purrfectmeow.taeng.template_doc.DocTemplate">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DocTemplate</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    KhaoManee is a utility class for embedding documents and queries using a </span>
-<span class="sd">    specified embedding model and performing similarity search on embedded vectors.</span>
+<span class="sd">    A utility class for generating structured document chunks with metadata.</span>
 
-<span class="sd">    This class wraps functionalities from SimpleHFEmbedder and SimpleInMemoryVectorStore</span>
-<span class="sd">    to provide easy access to embeddings and search results.</span>
-
-<span class="sd">    Methods:</span>
-<span class="sd">        get_embeddings(documents, model_name): Generate embeddings for one or more documents.</span>
-<span class="sd">        get_query_embeddings(query, model_name): Generate embeddings for a query string.</span>
-<span class="sd">        get_tokens(text, engine): Tokenizes the given text using the specified NLP engine.</span>
-<span class="sd">        get_search(query_embedding, embeddings, documents, top_k): Perform similarity search to find the most relevant documents given a query embedding.</span>
+<span class="sd">    This class provides a method to split text content into smaller chunks,</span>
+<span class="sd">    compute hashes for each chunk, and encapsulate them into LangChain `Document`</span>
+<span class="sd">    objects enriched with metadata, including chunk-specific and source-specific details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="KhaoManee.get_embeddings">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_embeddings">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_embeddings</span><span class="p">(</span>
-        <span class="n">documents</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> 
-        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
-    <span class="p">):</span>
+    <span class="n">_logger</span> <span class="o">=</span> <span class="n">kitty_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DocTemplate.create_template">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.taeng.template_doc.html#purrfectmeow.taeng.template_doc.DocTemplate.create_template">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_template</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">chunks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate embeddings for the provided documents using a specified embedding model.</span>
+<span class="sd">        Create a list of LangChain `Document` objects from text chunks and metadata.</span>
+
+<span class="sd">        Each chunk is assigned a unique UUID, an MD5 hash, and positional metadata</span>
+<span class="sd">        including the previous and next chunk hashes (if applicable). The resulting</span>
+<span class="sd">        documents are useful for traceable, chunk-wise processing in language models</span>
+<span class="sd">        or knowledge systems.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            documents (Document): A Document object or a list of Document objects to embed.</span>
-<span class="sd">            model_name (str, optional): The model identifier to use for embeddings.</span>
-<span class="sd">                Defaults to &quot;intfloat/multilingual-e5-large-instruct&quot;.</span>
+<span class="sd">            chunks (list[str]): List of string text chunks to convert into documents.</span>
+<span class="sd">            metadata (dict): Dictionary containing metadata about the source of the content.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            numpy.ndarray: An array of embeddings representing the documents.</span>
+<span class="sd">            list[Document]: List of LangChain `Document` objects with structured metadata.</span>
 
 <span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; docs = [Document(page_content=&quot;Hello world&quot;), Document(page_content=&quot;Bonjour monde&quot;)]</span>
-<span class="sd">            &gt;&gt;&gt; embeddings = KhaoManee.get_embeddings(docs)</span>
-<span class="sd">            &gt;&gt;&gt; print(embeddings.shape)</span>
+<span class="sd">            &gt;&gt;&gt; chunks = [&quot;Hello world.&quot;, &quot;This is a test.&quot;]</span>
+<span class="sd">            &gt;&gt;&gt; metadata = {&quot;source&quot;: &quot;example.txt&quot;, &quot;type&quot;: &quot;text&quot;, &quot;desc&quot;: &quot;Sample file&quot;}</span>
+<span class="sd">            &gt;&gt;&gt; docs = DocTemplate.create_template(chunks, metadata)</span>
+<span class="sd">            &gt;&gt;&gt; for doc in docs:</span>
+<span class="sd">            &gt;&gt;&gt;     print(doc.page_content)</span>
+<span class="sd">            &gt;&gt;&gt;     print(doc.metadata)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">embed_documents</span><span class="p">(</span><span class="n">documents</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span></div>
 
+        <span class="n">docs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">chunk_hashes</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="KhaoManee.get_query_embeddings">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_query_embeddings">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_query_embeddings</span><span class="p">(</span>
-        <span class="n">query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;meow~&quot;</span><span class="p">,</span>
-        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate an embedding vector for a query string using the specified embedding model.</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunks</span><span class="p">):</span>
+            <span class="n">hash_val</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+            <span class="n">chunk_hashes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hash_val</span><span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[Chunk </span><span class="si">{</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">] MD5 hash: </span><span class="si">{</span><span class="n">hash_val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            query (str, optional): The input query text to embed. Defaults to &quot;meow~&quot;.</span>
-<span class="sd">            model_name (str, optional): The model identifier to use for embeddings.</span>
-<span class="sd">                Defaults to &quot;intfloat/multilingual-e5-large-instruct&quot;.</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunks</span><span class="p">):</span>
+            <span class="n">chunk_number</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">chunk_id</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span>
+            <span class="n">chunk_hash</span> <span class="o">=</span> <span class="n">chunk_hashes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">prev_hash</span> <span class="o">=</span> <span class="n">chunk_hashes</span><span class="p">[</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">next_hash</span> <span class="o">=</span> <span class="n">chunk_hashes</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            numpy.ndarray: An embedding vector representing the query.</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;[Chunk </span><span class="si">{</span><span class="n">chunk_number</span><span class="si">}</span><span class="s2">] Creating document | ID: </span><span class="si">{</span><span class="n">chunk_id</span><span class="si">}</span><span class="s2">, Size: </span><span class="si">{</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Prev: </span><span class="si">{</span><span class="n">prev_hash</span><span class="si">}</span><span class="s2">, Current: </span><span class="si">{</span><span class="n">chunk_hash</span><span class="si">}</span><span class="s2">, Next: </span><span class="si">{</span><span class="n">next_hash</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; query_embedding = KhaoManee.get_query_embeddings(&quot;Find cats&quot;)</span>
-<span class="sd">            &gt;&gt;&gt; print(query_embedding.shape)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">embed_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span></div>
+            <span class="n">chunk_info</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;chunk_number&quot;</span><span class="p">:</span> <span class="n">chunk_number</span><span class="p">,</span>
+                <span class="s2">&quot;chunk_id&quot;</span><span class="p">:</span> <span class="n">chunk_id</span><span class="p">,</span>
+                <span class="s2">&quot;chunk_hash&quot;</span><span class="p">:</span> <span class="n">chunk_hash</span><span class="p">,</span>
+                <span class="s2">&quot;previous_chunk_hash&quot;</span><span class="p">:</span> <span class="n">prev_hash</span><span class="p">,</span>
+                <span class="s2">&quot;next_chunk_hash&quot;</span><span class="p">:</span> <span class="n">next_hash</span><span class="p">,</span>
+                <span class="s2">&quot;chunk_size&quot;</span><span class="p">:</span> <span class="n">chunk_size</span><span class="p">,</span>
+            <span class="p">}</span>
 
-    
-<div class="viewcode-block" id="KhaoManee.get_tokens">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_tokens">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_tokens</span><span class="p">(</span>
-        <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">engine</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;spacy&quot;</span><span class="p">,</span> <span class="s2">&quot;pythainlp&quot;</span><span class="p">,</span> <span class="s2">&quot;huggingface&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;pythainlp&quot;</span>
-        <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Tokenizes the given text using the specified NLP engine.</span>
+            <span class="n">doc_metadata</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;chunk_info&quot;</span><span class="p">:</span> <span class="n">chunk_info</span><span class="p">,</span>
+                <span class="s2">&quot;source_info&quot;</span><span class="p">:</span> <span class="n">metadata</span>
+            <span class="p">}</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            text (str): The input text to tokenize.</span>
-<span class="sd">            engine (Optional[Literal[&quot;spacy&quot;, &quot;pythainlp&quot;, &quot;huggingface&quot;]], optional): </span>
-<span class="sd">                The tokenization engine to use. Must be one of:</span>
-<span class="sd">                - &quot;spacy&quot;: Uses spaCy tokenizer.</span>
-<span class="sd">                - &quot;pythainlp&quot;: Uses PyThaiNLP tokenizer (default).</span>
-<span class="sd">                - &quot;huggingface&quot;: Uses a HuggingFace tokenizer.</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
+                <span class="n">page_content</span><span class="o">=</span><span class="n">chunk</span><span class="p">,</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="n">doc_metadata</span>
+            <span class="p">)</span>
+            <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            List[str]: A list of tokens extracted from the input text.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If an unsupported engine name is provided.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; KhaoManee.get_tokens(&quot;ฉันรักภาษาไทย&quot;)</span>
-<span class="sd">            [&#39;ฉัน&#39;, &#39;รัก&#39;, &#39;ภาษา&#39;, &#39;ไทย&#39;]</span>
-
-<span class="sd">            &gt;&gt;&gt; KhaoManee.get_tokens(&quot;I love Python.&quot;, engine=&quot;spacy&quot;)</span>
-<span class="sd">            [&#39;I&#39;, &#39;love&#39;, &#39;Python&#39;, &#39;.&#39;]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleTokenization</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="KhaoManee.get_search">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_search">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_search</span><span class="p">(</span>
-        <span class="n">query_embedding</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">embeddings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-        <span class="n">documents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Document</span><span class="p">],</span>
-        <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Perform a similarity search to retrieve the top_k most relevant documents to the query.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            query_embedding (numpy.ndarray): The embedding vector for the search query.</span>
-<span class="sd">            embeddings (List[numpy.ndarray]): List of document embedding vectors.</span>
-<span class="sd">            documents (List[Document]): List of Document objects corresponding to embeddings.</span>
-<span class="sd">            top_k (int, optional): The number of top matching documents to return. Defaults to 5.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            List[Document]: The top_k documents most similar to the query.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; docs = [Document(page_content=&quot;Hello world&quot;), Document(page_content=&quot;Bonjour monde&quot;)]</span>
-<span class="sd">            &gt;&gt;&gt; embeddings = KhaoManee.get_embeddings(docs)</span>
-<span class="sd">            &gt;&gt;&gt; query_emb = KhaoManee.get_query_embeddings(&quot;Hello&quot;)</span>
-<span class="sd">            &gt;&gt;&gt; top_docs = KhaoManee.get_search(query_emb, embeddings, docs, top_k=1)</span>
-<span class="sd">            &gt;&gt;&gt; print(top_docs[0].page_content)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleInMemoryVectorStore</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
-            <span class="n">query_embedding</span><span class="o">=</span><span class="n">query_embedding</span><span class="p">,</span>
-            <span class="n">vectors</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">embeddings</span><span class="p">),</span>
-            <span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span>
-            <span class="n">top_k</span><span class="o">=</span><span class="n">top_k</span>
-        <span class="p">)</span></div>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Document creation complete.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">docs</span></div>
 </div>
 
 </pre></div>

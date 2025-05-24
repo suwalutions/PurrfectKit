@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>purrfectmeow.plort.base - PurrfectKit documentation</title>
+        <title>purrfectmeow.taeng.model_loader - PurrfectKit documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -343,150 +343,224 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for purrfectmeow.plort.base</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
+          <h1>Source code for purrfectmeow.taeng.model_loader</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transformers</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoTokenizer</span><span class="p">,</span> <span class="n">AutoModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.embedder</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleHFEmbedder</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.tokenization</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleTokenization</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.vectorstore</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleInMemoryVectorStore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.kitty</span><span class="w"> </span><span class="kn">import</span> <span class="n">kitty_logger</span>
 
-<div class="viewcode-block" id="KhaoManee">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">KhaoManee</span><span class="p">:</span>
+<div class="viewcode-block" id="LoadingModel">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.taeng.model_loader.html#purrfectmeow.taeng.model_loader.LoadingModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LoadingModel</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    KhaoManee is a utility class for embedding documents and queries using a </span>
-<span class="sd">    specified embedding model and performing similarity search on embedded vectors.</span>
+<span class="sd">    A class responsible for managing the loading, caching, and preloading of Hugging Face models and tokenizers.</span>
 
-<span class="sd">    This class wraps functionalities from SimpleHFEmbedder and SimpleInMemoryVectorStore</span>
-<span class="sd">    to provide easy access to embeddings and search results.</span>
+<span class="sd">    This class uses a shared class-level in-memory cache and file-based cache to avoid redundant downloads of models</span>
+<span class="sd">    and tokenizers from Hugging Face. It supports concurrent access and automatic eviction of older items based on a </span>
+<span class="sd">    maximum cache size.</span>
 
-<span class="sd">    Methods:</span>
-<span class="sd">        get_embeddings(documents, model_name): Generate embeddings for one or more documents.</span>
-<span class="sd">        get_query_embeddings(query, model_name): Generate embeddings for a query string.</span>
-<span class="sd">        get_tokens(text, engine): Tokenizes the given text using the specified NLP engine.</span>
-<span class="sd">        get_search(query_embedding, embeddings, documents, top_k): Perform similarity search to find the most relevant documents given a query embedding.</span>
+<span class="sd">    Class Attributes:</span>
+<span class="sd">        DEFAULT_CACHE_PATH (str): Default directory path for caching models and tokenizers.</span>
+<span class="sd">        DEFAULT_MAX_CACHE_SIZE (int): Default maximum number of items allowed in the cache.</span>
+<span class="sd">        PRELOADED_TOKENIZER_IDS (list): A list of tokenizer model IDs to preload at class initialization.</span>
+<span class="sd">        _cache_dir (Path): The directory on disk where resources are cached.</span>
+<span class="sd">        _cache (OrderedDict): Class-level in-memory LRU cache for models and tokenizers.</span>
+<span class="sd">        _cache_lock (threading.Lock): Thread lock for safe concurrent access to the cache.</span>
+<span class="sd">        _max_cache_size (int): Maximum number of entries allowed in the cache.</span>
+
+<span class="sd">    Class Methods:</span>
+<span class="sd">        get_tokenizer(name: str) -&gt; AutoTokenizer:</span>
+<span class="sd">            Retrieves a tokenizer from the cache or downloads it.</span>
+<span class="sd">        </span>
+<span class="sd">        get_model(name: str) -&gt; AutoModel:</span>
+<span class="sd">            Retrieves a model from the cache or downloads it.</span>
+<span class="sd">        </span>
+<span class="sd">        set_path(path: str) -&gt; None:</span>
+<span class="sd">            Changes the cache directory path and clears the current in-memory cache.</span>
+
+<span class="sd">    Internal Methods:</span>
+<span class="sd">        _is_resource_cached(resource_dir: Path, is_tokenizer: bool) -&gt; bool:</span>
+<span class="sd">            Checks whether the resource is already cached on disk.</span>
+<span class="sd">        </span>
+<span class="sd">        _load_resource(name: str, is_tokenizer: bool):</span>
+<span class="sd">            Loads the tokenizer or model from cache or downloads it if not available.</span>
+<span class="sd">        </span>
+<span class="sd">        _get_resource(name: str, is_tokenizer: bool):</span>
+<span class="sd">            Retrieves or loads a resource, and updates the LRU cache.</span>
+<span class="sd">        </span>
+<span class="sd">        _preload_tokenizers() -&gt; None:</span>
+<span class="sd">            Preloads a list of commonly-used tokenizers.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="KhaoManee.get_embeddings">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_embeddings">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_embeddings</span><span class="p">(</span>
-        <span class="n">documents</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> 
-        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
-    <span class="p">):</span>
+    <span class="n">_logger</span> <span class="o">=</span> <span class="n">kitty_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="n">DEFAULT_CACHE_PATH</span> <span class="o">=</span> <span class="s1">&#39;models_hf/&#39;</span>
+    <span class="n">DEFAULT_MAX_CACHE_SIZE</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">PRELOADED_TOKENIZER_IDS</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span><span class="p">,</span>
+        <span class="c1"># &quot;Alibaba-NLP/gte-Qwen2-1.5B-instruct&quot;,</span>
+        <span class="c1"># &quot;Lajavaness/bilingual-embedding-large&quot;,</span>
+        <span class="c1"># &quot;BAAI/bge-m3&quot;,</span>
+        <span class="c1"># &quot;Snowflake/snowflake-arctic-embed-l-v2.0&quot;,</span>
+    <span class="p">]</span>
+
+    <span class="n">_cache_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">DEFAULT_CACHE_PATH</span><span class="p">)</span>
+    <span class="n">_cache</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="n">_cache_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+    <span class="n">_max_cache_size</span> <span class="o">=</span> <span class="n">DEFAULT_MAX_CACHE_SIZE</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_cache_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initialized LoadingModel with cache directory: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_preload_tokenizers</span><span class="p">()</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_resource_cached</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">resource_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">is_tokenizer</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate embeddings for the provided documents using a specified embedding model.</span>
+<span class="sd">        Checks whether a given tokenizer or model is already cached locally on disk.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            documents (Document): A Document object or a list of Document objects to embed.</span>
-<span class="sd">            model_name (str, optional): The model identifier to use for embeddings.</span>
-<span class="sd">                Defaults to &quot;intfloat/multilingual-e5-large-instruct&quot;.</span>
+<span class="sd">            resource_dir (Path): Path to the local cache directory for the resource.</span>
+<span class="sd">            is_tokenizer (bool): Whether the resource is a tokenizer (True) or model (False).</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            numpy.ndarray: An array of embeddings representing the documents.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; docs = [Document(page_content=&quot;Hello world&quot;), Document(page_content=&quot;Bonjour monde&quot;)]</span>
-<span class="sd">            &gt;&gt;&gt; embeddings = KhaoManee.get_embeddings(docs)</span>
-<span class="sd">            &gt;&gt;&gt; print(embeddings.shape)</span>
+<span class="sd">            bool: True if the resource is cached; False otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">embed_documents</span><span class="p">(</span><span class="n">documents</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span></div>
+        <span class="n">cache_file</span> <span class="o">=</span> <span class="s1">&#39;tokenizer_config.json&#39;</span> <span class="k">if</span> <span class="n">is_tokenizer</span> <span class="k">else</span> <span class="s1">&#39;config.json&#39;</span>
+        <span class="n">cached</span> <span class="o">=</span> <span class="p">(</span><span class="n">resource_dir</span> <span class="o">/</span> <span class="n">cache_file</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Checking cache for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;tokenizer&quot;</span> <span class="k">if</span> <span class="n">is_tokenizer</span> <span class="k">else</span> <span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="n">resource_dir</span><span class="p">,</span> <span class="s2">&quot;found&quot;</span> <span class="k">if</span> <span class="n">cached</span> <span class="k">else</span> <span class="s2">&quot;not found&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cached</span>
 
-
-<div class="viewcode-block" id="KhaoManee.get_query_embeddings">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_query_embeddings">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_query_embeddings</span><span class="p">(</span>
-        <span class="n">query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;meow~&quot;</span><span class="p">,</span>
-        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
-    <span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_resource</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_tokenizer</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate an embedding vector for a query string using the specified embedding model.</span>
+<span class="sd">        Loads a Hugging Face model or tokenizer from local disk if cached, or downloads and caches it.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            query (str, optional): The input query text to embed. Defaults to &quot;meow~&quot;.</span>
-<span class="sd">            model_name (str, optional): The model identifier to use for embeddings.</span>
-<span class="sd">                Defaults to &quot;intfloat/multilingual-e5-large-instruct&quot;.</span>
+<span class="sd">            name (str): The Hugging Face identifier for the model or tokenizer.</span>
+<span class="sd">            is_tokenizer (bool): True if loading a tokenizer, False if loading a model.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            numpy.ndarray: An embedding vector representing the query.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; query_embedding = KhaoManee.get_query_embeddings(&quot;Find cats&quot;)</span>
-<span class="sd">            &gt;&gt;&gt; print(query_embedding.shape)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">embed_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span></div>
-
-    
-<div class="viewcode-block" id="KhaoManee.get_tokens">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_tokens">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_tokens</span><span class="p">(</span>
-        <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">engine</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;spacy&quot;</span><span class="p">,</span> <span class="s2">&quot;pythainlp&quot;</span><span class="p">,</span> <span class="s2">&quot;huggingface&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;pythainlp&quot;</span>
-        <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Tokenizes the given text using the specified NLP engine.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            text (str): The input text to tokenize.</span>
-<span class="sd">            engine (Optional[Literal[&quot;spacy&quot;, &quot;pythainlp&quot;, &quot;huggingface&quot;]], optional): </span>
-<span class="sd">                The tokenization engine to use. Must be one of:</span>
-<span class="sd">                - &quot;spacy&quot;: Uses spaCy tokenizer.</span>
-<span class="sd">                - &quot;pythainlp&quot;: Uses PyThaiNLP tokenizer (default).</span>
-<span class="sd">                - &quot;huggingface&quot;: Uses a HuggingFace tokenizer.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            List[str]: A list of tokens extracted from the input text.</span>
+<span class="sd">            Any: The loaded tokenizer or model object.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If an unsupported engine name is provided.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; KhaoManee.get_tokens(&quot;ฉันรักภาษาไทย&quot;)</span>
-<span class="sd">            [&#39;ฉัน&#39;, &#39;รัก&#39;, &#39;ภาษา&#39;, &#39;ไทย&#39;]</span>
-
-<span class="sd">            &gt;&gt;&gt; KhaoManee.get_tokens(&quot;I love Python.&quot;, engine=&quot;spacy&quot;)</span>
-<span class="sd">            [&#39;I&#39;, &#39;love&#39;, &#39;Python&#39;, &#39;.&#39;]</span>
+<span class="sd">            ValueError: If loading fails due to network or cache issues.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleTokenization</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span></div>
+        <span class="n">resource_type</span> <span class="o">=</span> <span class="s2">&quot;tokenizer&quot;</span> <span class="k">if</span> <span class="n">is_tokenizer</span> <span class="k">else</span> <span class="s2">&quot;model&quot;</span>
+        <span class="n">resource_dir</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cache_dir</span> <span class="o">/</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="n">loader</span> <span class="o">=</span> <span class="n">AutoTokenizer</span> <span class="k">if</span> <span class="n">is_tokenizer</span> <span class="k">else</span> <span class="n">AutoModel</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_resource_cached</span><span class="p">(</span><span class="n">resource_dir</span><span class="p">,</span> <span class="n">is_tokenizer</span><span class="p">):</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading </span><span class="si">%s</span><span class="s2"> from local cache: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">resource_dir</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">loader</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">resource_dir</span><span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Downloading </span><span class="si">%s</span><span class="s2"> from Hugging Face: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">loader</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="n">resource_dir</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to load </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot load </span><span class="si">{</span><span class="n">resource_type</span><span class="si">}</span><span class="s2"> for `</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">`: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="KhaoManee.get_search">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_search">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_search</span><span class="p">(</span>
-        <span class="n">query_embedding</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">embeddings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-        <span class="n">documents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Document</span><span class="p">],</span>
-        <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_resource</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_tokenizer</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Perform a similarity search to retrieve the top_k most relevant documents to the query.</span>
+<span class="sd">        Retrieves a Hugging Face model or tokenizer from the class-level in-memory cache,</span>
+<span class="sd">        or loads and caches it if not already present.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            query_embedding (numpy.ndarray): The embedding vector for the search query.</span>
-<span class="sd">            embeddings (List[numpy.ndarray]): List of document embedding vectors.</span>
-<span class="sd">            documents (List[Document]): List of Document objects corresponding to embeddings.</span>
-<span class="sd">            top_k (int, optional): The number of top matching documents to return. Defaults to 5.</span>
+<span class="sd">            name (str): Hugging Face identifier for the model or tokenizer.</span>
+<span class="sd">            is_tokenizer (bool): True if the resource is a tokenizer, False if it is a model.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List[Document]: The top_k documents most similar to the query.</span>
+<span class="sd">            Any: The loaded and cached tokenizer or model.</span>
 
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; docs = [Document(page_content=&quot;Hello world&quot;), Document(page_content=&quot;Bonjour monde&quot;)]</span>
-<span class="sd">            &gt;&gt;&gt; embeddings = KhaoManee.get_embeddings(docs)</span>
-<span class="sd">            &gt;&gt;&gt; query_emb = KhaoManee.get_query_embeddings(&quot;Hello&quot;)</span>
-<span class="sd">            &gt;&gt;&gt; top_docs = KhaoManee.get_search(query_emb, embeddings, docs, top_k=1)</span>
-<span class="sd">            &gt;&gt;&gt; print(top_docs[0].page_content)</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the provided name is not a string or loading fails.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleInMemoryVectorStore</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
-            <span class="n">query_embedding</span><span class="o">=</span><span class="n">query_embedding</span><span class="p">,</span>
-            <span class="n">vectors</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">embeddings</span><span class="p">),</span>
-            <span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span>
-            <span class="n">top_k</span><span class="o">=</span><span class="n">top_k</span>
-        <span class="p">)</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Invalid </span><span class="si">%s</span><span class="s2"> name: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;tokenizer&quot;</span> <span class="k">if</span> <span class="n">is_tokenizer</span> <span class="k">else</span> <span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid </span><span class="si">{</span><span class="s1">&#39;tokenizer&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_tokenizer</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;model&#39;</span><span class="si">}</span><span class="s2"> name: `</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+
+        <span class="n">resource_type</span> <span class="o">=</span> <span class="s2">&quot;tokenizer&quot;</span> <span class="k">if</span> <span class="n">is_tokenizer</span> <span class="k">else</span> <span class="s2">&quot;model&quot;</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">resource_type</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cache_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Cache hit for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Cache miss for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">, loading resource&quot;</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="n">resource</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_load_resource</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_tokenizer</span><span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">resource</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_max_cache_size</span><span class="p">:</span>
+                <span class="n">evicted_key</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Evicted </span><span class="si">%s</span><span class="s2"> from cache due to size limit: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">evicted_key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">evicted_key</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Successfully cached </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">resource</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_preload_tokenizers</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Preloads a predefined set of tokenizers into the cache for faster access.</span>
+
+<span class="sd">        Logs any failures but does not raise exceptions to prevent preload errors from stopping execution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting preloading of tokenizers&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">model_id</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">PRELOADED_TOKENIZER_IDS</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_get_resource</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">is_tokenizer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Successfully preloaded tokenizer: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">model_id</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to preload tokenizer </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+<div class="viewcode-block" id="LoadingModel.get_tokenizer">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.taeng.model_loader.html#purrfectmeow.taeng.model_loader.LoadingModel.get_tokenizer">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tokenizer</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AutoTokenizer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class method to retrieve or load a tokenizer by its Hugging Face model identifier.</span>
+
+<span class="sd">        This method uses a shared class-level cache to avoid redundant downloads or loads,</span>
+<span class="sd">        ensuring efficient reuse across all instances or class-level calls.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): The Hugging Face tokenizer identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            AutoTokenizer: The loaded tokenizer object, either from cache or Hugging Face.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the name is invalid or loading fails.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tokenizer</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_resource</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_tokenizer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed loading tokenizer: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tokenizer</span></div>
+
+
+<div class="viewcode-block" id="LoadingModel.get_model">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.taeng.model_loader.html#purrfectmeow.taeng.model_loader.LoadingModel.get_model">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AutoModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class method to retrieve or load a model by its Hugging Face model identifier.</span>
+
+<span class="sd">        This method uses a shared class-level cache to avoid redundant downloads or loads,</span>
+<span class="sd">        ensuring efficient reuse across all instances or class-level calls.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): The Hugging Face model identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            AutoModel: The loaded model object, either from cache or Hugging Face.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the name is invalid or loading fails.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_resource</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_tokenizer</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed loading model: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">model</span></div>
 </div>
 
 </pre></div>

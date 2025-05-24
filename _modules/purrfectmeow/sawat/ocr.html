@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>purrfectmeow.plort.base - PurrfectKit documentation</title>
+        <title>purrfectmeow.sawat.ocr - PurrfectKit documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -343,150 +343,160 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for purrfectmeow.plort.base</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
+          <h1>Source code for purrfectmeow.sawat.ocr</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">easyocr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytesseract</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pdf2image</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_from_path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">surya.recognition</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecognitionPredictor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">surya.detection</span><span class="w"> </span><span class="kn">import</span> <span class="n">DetectionPredictor</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.embedder</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleHFEmbedder</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.tokenization</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleTokenization</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.vectorstore</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleInMemoryVectorStore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.kitty</span><span class="w"> </span><span class="kn">import</span> <span class="n">kitty_logger</span>
 
-<div class="viewcode-block" id="KhaoManee">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">KhaoManee</span><span class="p">:</span>
+<div class="viewcode-block" id="OCR">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.sawat.ocr.html#purrfectmeow.sawat.ocr.OCR">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OCR</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    KhaoManee is a utility class for embedding documents and queries using a </span>
-<span class="sd">    specified embedding model and performing similarity search on embedded vectors.</span>
+<span class="sd">    A utility class for performing Optical Character Recognition (OCR) on image and PDF files.</span>
 
-<span class="sd">    This class wraps functionalities from SimpleHFEmbedder and SimpleInMemoryVectorStore</span>
-<span class="sd">    to provide easy access to embeddings and search results.</span>
+<span class="sd">    This class provides a unified interface to extract text using different OCR engines:</span>
+<span class="sd">        - PyTesseract (Tesseract OCR)</span>
+<span class="sd">        - EasyOCR</span>
+<span class="sd">        - SuryaOCR (custom OCR pipeline using detection and recognition models)</span>
+
+<span class="sd">    It supports input formats including PDFs and image files (PNG, JPG, JPEG), and automatically</span>
+<span class="sd">    handles page-by-page processing for multi-page PDFs.</span>
 
 <span class="sd">    Methods:</span>
-<span class="sd">        get_embeddings(documents, model_name): Generate embeddings for one or more documents.</span>
-<span class="sd">        get_query_embeddings(query, model_name): Generate embeddings for a query string.</span>
-<span class="sd">        get_tokens(text, engine): Tokenizes the given text using the specified NLP engine.</span>
-<span class="sd">        get_search(query_embedding, embeddings, documents, top_k): Perform similarity search to find the most relevant documents given a query embedding.</span>
+<span class="sd">        convert_with_pytesseract(input_path: str) -&gt; List[str]:</span>
+<span class="sd">            Extracts text using the PyTesseract OCR engine for English and Thai.</span>
+
+<span class="sd">        convert_with_easyocr(input_path: str) -&gt; List[str]:</span>
+<span class="sd">            Extracts text using the EasyOCR engine for English and Thai.</span>
+
+<span class="sd">        convert_with_suryaocr(input_path: str) -&gt; List[str]:</span>
+<span class="sd">            Extracts text using the SuryaOCR system, which combines custom detection and recognition models.</span>
+
+<span class="sd">    Internal Methods:</span>
+<span class="sd">        _convert(input_path: str, converter: callable) -&gt; str:</span>
+<span class="sd">            Handles the core logic for converting input files into text using the provided converter.</span>
+<span class="sd">            Supports both image and multi-page PDF input with logging and timing.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="KhaoManee.get_embeddings">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_embeddings">[docs]</a>
+    <span class="n">_logger</span> <span class="o">=</span> <span class="n">kitty_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_embeddings</span><span class="p">(</span>
-        <span class="n">documents</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> 
-        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
-    <span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert</span><span class="p">(</span><span class="n">input_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">converter</span><span class="p">:</span> <span class="nb">callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate embeddings for the provided documents using a specified embedding model.</span>
+<span class="sd">        Converts an image or PDF file to text using the provided OCR converter.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            documents (Document): A Document object or a list of Document objects to embed.</span>
-<span class="sd">            model_name (str, optional): The model identifier to use for embeddings.</span>
-<span class="sd">                Defaults to &quot;intfloat/multilingual-e5-large-instruct&quot;.</span>
+<span class="sd">            input_path (str): Path to the input file (PDF, PNG, JPG, or JPEG).</span>
+<span class="sd">            converter (callable): A callable that processes an image and returns extracted text.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            numpy.ndarray: An array of embeddings representing the documents.</span>
+<span class="sd">            str: The extracted text from all pages, joined with newlines.</span>
 
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; docs = [Document(page_content=&quot;Hello world&quot;), Document(page_content=&quot;Bonjour monde&quot;)]</span>
-<span class="sd">            &gt;&gt;&gt; embeddings = KhaoManee.get_embeddings(docs)</span>
-<span class="sd">            &gt;&gt;&gt; print(embeddings.shape)</span>
+<span class="sd">        Notes:</span>
+<span class="sd">            Logs the conversion start, success, and elapsed time.</span>
+<span class="sd">            Ensures timing is logged even if an exception occurs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">embed_documents</span><span class="p">(</span><span class="n">documents</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span></div>
+        <span class="n">OCR</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting conversion for &#39;</span><span class="si">{</span><span class="n">input_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">match</span> <span class="n">input_path</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="k">case</span> <span class="n">path</span> <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">):</span>
+                    <span class="n">images</span> <span class="o">=</span> <span class="n">convert_from_path</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">images</span><span class="p">):</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">text</span> <span class="o">=</span> <span class="n">converter</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                            <span class="n">OCR</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Text: </span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                            <span class="n">content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+                            <span class="n">OCR</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Page </span><span class="si">{</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> processed.&quot;</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                            <span class="n">OCR</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Page </span><span class="si">{</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                            <span class="k">raise</span>
+                <span class="k">case</span> <span class="n">path</span> <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.png&quot;</span><span class="p">,</span> <span class="s2">&quot;.jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;.jpeg&quot;</span><span class="p">)):</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="n">converter</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+                    <span class="n">content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+                    <span class="n">OCR</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Page 1 processed.&quot;</span><span class="p">)</span>
+            <span class="n">OCR</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully converted &#39;</span><span class="si">{</span><span class="n">input_path</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+            <span class="n">OCR</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Conversion time spent `</span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">` seconds.&quot;</span><span class="p">)</span>
 
-
-<div class="viewcode-block" id="KhaoManee.get_query_embeddings">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_query_embeddings">[docs]</a>
+<div class="viewcode-block" id="OCR.convert_with_pytesseract">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.sawat.ocr.html#purrfectmeow.sawat.ocr.OCR.convert_with_pytesseract">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_query_embeddings</span><span class="p">(</span>
-        <span class="n">query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;meow~&quot;</span><span class="p">,</span>
-        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
-    <span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_with_pytesseract</span><span class="p">(</span><span class="n">input_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate an embedding vector for a query string using the specified embedding model.</span>
+<span class="sd">        Perform OCR using pytesseract.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            query (str, optional): The input query text to embed. Defaults to &quot;meow~&quot;.</span>
-<span class="sd">            model_name (str, optional): The model identifier to use for embeddings.</span>
-<span class="sd">                Defaults to &quot;intfloat/multilingual-e5-large-instruct&quot;.</span>
+<span class="sd">            input_path (str): Path to an image or PDF file.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            numpy.ndarray: An embedding vector representing the query.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; query_embedding = KhaoManee.get_query_embeddings(&quot;Find cats&quot;)</span>
-<span class="sd">            &gt;&gt;&gt; print(query_embedding.shape)</span>
+<span class="sd">            List[str]: Extracted text lines.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">embed_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span></div>
+        <span class="k">def</span><span class="w"> </span><span class="nf">tesseract_converter</span><span class="p">(</span><span class="n">img</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pytesseract</span><span class="o">.</span><span class="n">image_to_string</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;tha+eng&quot;</span><span class="p">)</span>
 
-    
-<div class="viewcode-block" id="KhaoManee.get_tokens">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_tokens">[docs]</a>
+        <span class="k">return</span> <span class="n">OCR</span><span class="o">.</span><span class="n">_convert</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">tesseract_converter</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OCR.convert_with_easyocr">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.sawat.ocr.html#purrfectmeow.sawat.ocr.OCR.convert_with_easyocr">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_tokens</span><span class="p">(</span>
-        <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">engine</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;spacy&quot;</span><span class="p">,</span> <span class="s2">&quot;pythainlp&quot;</span><span class="p">,</span> <span class="s2">&quot;huggingface&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;pythainlp&quot;</span>
-        <span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_with_easyocr</span><span class="p">(</span><span class="n">input_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Tokenizes the given text using the specified NLP engine.</span>
+<span class="sd">        Perform OCR using EasyOCR.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            text (str): The input text to tokenize.</span>
-<span class="sd">            engine (Optional[Literal[&quot;spacy&quot;, &quot;pythainlp&quot;, &quot;huggingface&quot;]], optional): </span>
-<span class="sd">                The tokenization engine to use. Must be one of:</span>
-<span class="sd">                - &quot;spacy&quot;: Uses spaCy tokenizer.</span>
-<span class="sd">                - &quot;pythainlp&quot;: Uses PyThaiNLP tokenizer (default).</span>
-<span class="sd">                - &quot;huggingface&quot;: Uses a HuggingFace tokenizer.</span>
+<span class="sd">            input_path (str): Path to an image or PDF file.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List[str]: A list of tokens extracted from the input text.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If an unsupported engine name is provided.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; KhaoManee.get_tokens(&quot;ฉันรักภาษาไทย&quot;)</span>
-<span class="sd">            [&#39;ฉัน&#39;, &#39;รัก&#39;, &#39;ภาษา&#39;, &#39;ไทย&#39;]</span>
-
-<span class="sd">            &gt;&gt;&gt; KhaoManee.get_tokens(&quot;I love Python.&quot;, engine=&quot;spacy&quot;)</span>
-<span class="sd">            [&#39;I&#39;, &#39;love&#39;, &#39;Python&#39;, &#39;.&#39;]</span>
+<span class="sd">            List[str]: Extracted text lines.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleTokenization</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span></div>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">easyocr</span><span class="o">.</span><span class="n">Reader</span><span class="p">([</span><span class="s1">&#39;th&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">],</span> <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">easy_converter</span><span class="p">(</span><span class="n">img</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">readtext</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span class="p">))</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">results</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">OCR</span><span class="o">.</span><span class="n">_convert</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">easy_converter</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="KhaoManee.get_search">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_search">[docs]</a>
+<div class="viewcode-block" id="OCR.convert_with_suryaocr">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.sawat.ocr.html#purrfectmeow.sawat.ocr.OCR.convert_with_suryaocr">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_search</span><span class="p">(</span>
-        <span class="n">query_embedding</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">embeddings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-        <span class="n">documents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Document</span><span class="p">],</span>
-        <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_with_suryaocr</span><span class="p">(</span><span class="n">input_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Perform a similarity search to retrieve the top_k most relevant documents to the query.</span>
+<span class="sd">        Perform OCR using SuryaOCR.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            query_embedding (numpy.ndarray): The embedding vector for the search query.</span>
-<span class="sd">            embeddings (List[numpy.ndarray]): List of document embedding vectors.</span>
-<span class="sd">            documents (List[Document]): List of Document objects corresponding to embeddings.</span>
-<span class="sd">            top_k (int, optional): The number of top matching documents to return. Defaults to 5.</span>
+<span class="sd">            input_path (str): Path to an image or PDF file.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List[Document]: The top_k documents most similar to the query.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; docs = [Document(page_content=&quot;Hello world&quot;), Document(page_content=&quot;Bonjour monde&quot;)]</span>
-<span class="sd">            &gt;&gt;&gt; embeddings = KhaoManee.get_embeddings(docs)</span>
-<span class="sd">            &gt;&gt;&gt; query_emb = KhaoManee.get_query_embeddings(&quot;Hello&quot;)</span>
-<span class="sd">            &gt;&gt;&gt; top_docs = KhaoManee.get_search(query_emb, embeddings, docs, top_k=1)</span>
-<span class="sd">            &gt;&gt;&gt; print(top_docs[0].page_content)</span>
+<span class="sd">            List[str]: Extracted text lines.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleInMemoryVectorStore</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
-            <span class="n">query_embedding</span><span class="o">=</span><span class="n">query_embedding</span><span class="p">,</span>
-            <span class="n">vectors</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">embeddings</span><span class="p">),</span>
-            <span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span>
-            <span class="n">top_k</span><span class="o">=</span><span class="n">top_k</span>
-        <span class="p">)</span></div>
+        <span class="n">recognition_predictor</span> <span class="o">=</span> <span class="n">RecognitionPredictor</span><span class="p">()</span>
+        <span class="n">detection_predictor</span> <span class="o">=</span> <span class="n">DetectionPredictor</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">surya_converter</span><span class="p">(</span><span class="n">img</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">prediction</span> <span class="o">=</span> <span class="n">recognition_predictor</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">img</span><span class="p">],</span>
+                <span class="n">det_predictor</span><span class="o">=</span><span class="n">detection_predictor</span><span class="p">,</span>
+                <span class="n">detection_batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">recognition_batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">prediction</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_lines</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">OCR</span><span class="o">.</span><span class="n">_convert</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">surya_converter</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

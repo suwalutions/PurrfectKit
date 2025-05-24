@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>purrfectmeow.plort.base - PurrfectKit documentation</title>
+        <title>purrfectmeow.taeng.file_metadata - PurrfectKit documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -343,150 +343,145 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for purrfectmeow.plort.base</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_core.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
+          <h1>Source code for purrfectmeow.taeng.file_metadata</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">magic</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.embedder</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleHFEmbedder</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.tokenization</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleTokenization</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.plort.vectorstore</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleInMemoryVectorStore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.kitty</span><span class="w"> </span><span class="kn">import</span> <span class="n">kitty_logger</span>
 
-<div class="viewcode-block" id="KhaoManee">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">KhaoManee</span><span class="p">:</span>
+<div class="viewcode-block" id="MetadataFile">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.taeng.file_metadata.html#purrfectmeow.taeng.file_metadata.MetadataFile">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MetadataFile</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    KhaoManee is a utility class for embedding documents and queries using a </span>
-<span class="sd">    specified embedding model and performing similarity search on embedded vectors.</span>
+<span class="sd">    A class to extract and store metadata from a given file.</span>
 
-<span class="sd">    This class wraps functionalities from SimpleHFEmbedder and SimpleInMemoryVectorStore</span>
-<span class="sd">    to provide easy access to embeddings and search results.</span>
+<span class="sd">    Supports extraction of basic file system metadata (name, size, creation</span>
+<span class="sd">    and modification dates, extension) as well as file type detection using</span>
+<span class="sd">    the `magic` library. Additionally, it attempts to determine the total page</span>
+<span class="sd">    count for PDF files using the `pdfinfo` tool, and defaults to 1 page for images.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        file_path (str): Path to the target file.</span>
+<span class="sd">        metadata (dict): Dictionary storing extracted metadata.</span>
 
 <span class="sd">    Methods:</span>
-<span class="sd">        get_embeddings(documents, model_name): Generate embeddings for one or more documents.</span>
-<span class="sd">        get_query_embeddings(query, model_name): Generate embeddings for a query string.</span>
-<span class="sd">        get_tokens(text, engine): Tokenizes the given text using the specified NLP engine.</span>
-<span class="sd">        get_search(query_embedding, embeddings, documents, top_k): Perform similarity search to find the most relevant documents given a query embedding.</span>
+<span class="sd">        get_metadata():</span>
+<span class="sd">            Extract metadata from the file, return the stored metadata dictionary..</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="KhaoManee.get_embeddings">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_embeddings">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_embeddings</span><span class="p">(</span>
-        <span class="n">documents</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> 
-        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
-    <span class="p">):</span>
+    <span class="n">_logger</span> <span class="o">=</span> <span class="n">kitty_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate embeddings for the provided documents using a specified embedding model.</span>
+<span class="sd">        Initialize MetadataFile with the path to a file.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            documents (Document): A Document object or a list of Document objects to embed.</span>
-<span class="sd">            model_name (str, optional): The model identifier to use for embeddings.</span>
-<span class="sd">                Defaults to &quot;intfloat/multilingual-e5-large-instruct&quot;.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            numpy.ndarray: An array of embeddings representing the documents.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; docs = [Document(page_content=&quot;Hello world&quot;), Document(page_content=&quot;Bonjour monde&quot;)]</span>
-<span class="sd">            &gt;&gt;&gt; embeddings = KhaoManee.get_embeddings(docs)</span>
-<span class="sd">            &gt;&gt;&gt; print(embeddings.shape)</span>
+<span class="sd">            file_path (str): The full path to the file to extract metadata from.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">embed_documents</span><span class="p">(</span><span class="n">documents</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">file_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
 
-
-<div class="viewcode-block" id="KhaoManee.get_query_embeddings">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_query_embeddings">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_query_embeddings</span><span class="p">(</span>
-        <span class="n">query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;meow~&quot;</span><span class="p">,</span>
-        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intfloat/multilingual-e5-large-instruct&quot;</span>
-    <span class="p">):</span>
+<div class="viewcode-block" id="MetadataFile.get_metadata">
+<a class="viewcode-back" href="../../../modules/purrfectmeow.taeng.file_metadata.html#purrfectmeow.taeng.file_metadata.MetadataFile.get_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate an embedding vector for a query string using the specified embedding model.</span>
+<span class="sd">        Internal method to extract metadata from the file.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            query (str, optional): The input query text to embed. Defaults to &quot;meow~&quot;.</span>
-<span class="sd">            model_name (str, optional): The model identifier to use for embeddings.</span>
-<span class="sd">                Defaults to &quot;intfloat/multilingual-e5-large-instruct&quot;.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            numpy.ndarray: An embedding vector representing the query.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; query_embedding = KhaoManee.get_query_embeddings(&quot;Find cats&quot;)</span>
-<span class="sd">            &gt;&gt;&gt; print(query_embedding.shape)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleHFEmbedder</span><span class="o">.</span><span class="n">embed_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span></div>
-
-    
-<div class="viewcode-block" id="KhaoManee.get_tokens">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_tokens">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_tokens</span><span class="p">(</span>
-        <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">engine</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;spacy&quot;</span><span class="p">,</span> <span class="s2">&quot;pythainlp&quot;</span><span class="p">,</span> <span class="s2">&quot;huggingface&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;pythainlp&quot;</span>
-        <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Tokenizes the given text using the specified NLP engine.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            text (str): The input text to tokenize.</span>
-<span class="sd">            engine (Optional[Literal[&quot;spacy&quot;, &quot;pythainlp&quot;, &quot;huggingface&quot;]], optional): </span>
-<span class="sd">                The tokenization engine to use. Must be one of:</span>
-<span class="sd">                - &quot;spacy&quot;: Uses spaCy tokenizer.</span>
-<span class="sd">                - &quot;pythainlp&quot;: Uses PyThaiNLP tokenizer (default).</span>
-<span class="sd">                - &quot;huggingface&quot;: Uses a HuggingFace tokenizer.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            List[str]: A list of tokens extracted from the input text.</span>
+<span class="sd">        This method collects:</span>
+<span class="sd">            - File name</span>
+<span class="sd">            - File size (in bytes)</span>
+<span class="sd">            - File creation date and modification date (formatted as YYYY-MM-DD HH:MM:SS)</span>
+<span class="sd">            - File extension (or &quot;none&quot; if no extension)</span>
+<span class="sd">            - MIME type and description (using `magic` library)</span>
+<span class="sd">            - Total pages:</span>
+<span class="sd">                - For PDFs, uses `pdfinfo` to get the page count.</span>
+<span class="sd">                - For images, defaults to 1.</span>
+<span class="sd">                - For other file types, defaults to 1.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If an unsupported engine name is provided.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; KhaoManee.get_tokens(&quot;ฉันรักภาษาไทย&quot;)</span>
-<span class="sd">            [&#39;ฉัน&#39;, &#39;รัก&#39;, &#39;ภาษา&#39;, &#39;ไทย&#39;]</span>
-
-<span class="sd">            &gt;&gt;&gt; KhaoManee.get_tokens(&quot;I love Python.&quot;, engine=&quot;spacy&quot;)</span>
-<span class="sd">            [&#39;I&#39;, &#39;love&#39;, &#39;Python&#39;, &#39;.&#39;]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleTokenization</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="KhaoManee.get_search">
-<a class="viewcode-back" href="../../../modules/purrfectmeow.plort.base.html#purrfectmeow.KhaoManee.get_search">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_search</span><span class="p">(</span>
-        <span class="n">query_embedding</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">embeddings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-        <span class="n">documents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Document</span><span class="p">],</span>
-        <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Perform a similarity search to retrieve the top_k most relevant documents to the query.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            query_embedding (numpy.ndarray): The embedding vector for the search query.</span>
-<span class="sd">            embeddings (List[numpy.ndarray]): List of document embedding vectors.</span>
-<span class="sd">            documents (List[Document]): List of Document objects corresponding to embeddings.</span>
-<span class="sd">            top_k (int, optional): The number of top matching documents to return. Defaults to 5.</span>
+<span class="sd">            FileNotFoundError: If the specified file does not exist.</span>
+<span class="sd">            RuntimeError: If metadata extraction fails for any other reason.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List[Document]: The top_k documents most similar to the query.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; docs = [Document(page_content=&quot;Hello world&quot;), Document(page_content=&quot;Bonjour monde&quot;)]</span>
-<span class="sd">            &gt;&gt;&gt; embeddings = KhaoManee.get_embeddings(docs)</span>
-<span class="sd">            &gt;&gt;&gt; query_emb = KhaoManee.get_query_embeddings(&quot;Hello&quot;)</span>
-<span class="sd">            &gt;&gt;&gt; top_docs = KhaoManee.get_search(query_emb, embeddings, docs, top_k=1)</span>
-<span class="sd">            &gt;&gt;&gt; print(top_docs[0].page_content)</span>
+<span class="sd">            dict: A dictionary containing extracted metadata.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">SimpleInMemoryVectorStore</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
-            <span class="n">query_embedding</span><span class="o">=</span><span class="n">query_embedding</span><span class="p">,</span>
-            <span class="n">vectors</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">embeddings</span><span class="p">),</span>
-            <span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span>
-            <span class="n">top_k</span><span class="o">=</span><span class="n">top_k</span>
-        <span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting metadata extraction for file: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File not found: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="si">}</span><span class="s2"> does not exist&quot;</span><span class="p">)</span>
+
+            <span class="n">stats</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;file_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;file_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">st_size</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;file_created_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span>
+                <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">st_ctime</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;file_modified_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span>
+                <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;file_extension&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="s2">&quot;none&quot;</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Basic metadata extracted: name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;file_size&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, created=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;file_created_date&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;modified=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;file_modified_date&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, extension=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;file_extension&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">mime</span> <span class="o">=</span> <span class="n">magic</span><span class="o">.</span><span class="n">Magic</span><span class="p">(</span><span class="n">mime</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;file_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mime</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">magic</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;File type detected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;file_type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, description: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;file_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Could not determine file type: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to determine file type: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;file_type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;image/&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;total_pages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;File is an image, total_pages set to 1&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;file_type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;application/pdf&quot;</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;File is a PDF, attempting to get page count via pdfinfo&quot;</span><span class="p">)</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                        <span class="p">[</span><span class="s1">&#39;pdfinfo&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">],</span> 
+                        <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> 
+                        <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                        <span class="n">check</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="p">)</span>
+                    <span class="n">pages_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Pages:\s*(\d+)&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">pages_match</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;total_pages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pages_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PDF page count found: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;total_pages&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;total_pages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Unknown (could not parse page count)&quot;</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;pdfinfo output did not contain page count&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;total_pages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Unknown (pdfinfo not installed or failed)&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to get PDF page count: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;total_pages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;File type unknown or not PDF/image, total_pages set to 1&quot;</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">hash_md5</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4096</span><span class="p">),</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+                    <span class="n">hash_md5</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;file_md5&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hash_md5</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MD5 checksum calculated: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;file_md5&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Metadata extraction completed successfully&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to extract metadata: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to extract metadata: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
