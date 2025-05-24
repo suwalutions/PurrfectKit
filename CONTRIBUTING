@@ -1,0 +1,97 @@
+# Contributing to PurrfectKit
+
+Welcome to **PurrfectKit**, a whimsical Python library blending feline charm with powerful NLP, OCR, and document processing! We’re thrilled you’re here to contribute to our Thai cat breed-inspired modules. This guide explains how to set up your environment, submit changes, and align with our purr-fect standards.
+
+## 🐾 Getting Started
+
+### Prerequisites
+- **Python**: Version 3.10 to 3.12.4.
+- **uv**: Recommended for fast dependency management (alternatively, `pip`).
+- **Git**: For cloning and managing the repository.
+
+### Setting Up the Development Environment
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/SUWALUTIONS/PurrfectKit.git
+   cd PurrfectKit
+   ```
+
+2. **Install Dependencies with `uv`** (preferred):
+   ```bash
+   uv sync --extra-index-url https://download.pytorch.org/whl/cpu --extra dev
+   ```
+   This installs core dependencies (`torch==2.7.0`, `surya-ocr`, `spacy`, etc.) and development extras (`pytest>=8.3.5`).
+
+   Alternatively, with `pip`:
+   ```bash
+   pip install .[dev] --extra-index-url https://download.pytorch.org/whl/cpu
+   ```
+
+3. **Verify Setup**:
+   Run tests to ensure everything is set up correctly:
+   ```bash
+   uv run pytest
+   ```
+
+### Project Structure
+- `purrfectmeow/`: Core package with modules (`Kornja`, `WichienMaat`, `KhaoManee`, `Malet`, `Suphalaks`).
+- `tests/`: Test suite using `pytest`.
+- `docs/`: Documentation built with `sphinx` and `furo`.
+
+## 🐱 How to Contribute
+
+### 1. Find or Create an Issue
+- Check the [Issues](https://github.com/SUWALUTIONS/PurrfectKit/issues) page for tasks.
+- Create a new issue for bugs, features, or improvements, describing the problem or idea clearly.
+
+### 2. Fork and Branch
+- Fork the repository to your GitHub account.
+- Create a branch for your changes:
+  ```bash
+  git checkout -b feature/your-feature-name
+  ```
+  Use descriptive names (e.g., `feature/add-ocr-support`, `fix/malet-pdf-parsing`).
+
+### 3. Make Changes
+- Write code in the `purrfectmeow` package, following the Thai cat breed naming convention for new modules.
+- Add tests in `tests/` to cover your changes.
+- Update documentation in `docs/` if needed.
+- Follow these coding guidelines:
+  - Use Python 3.10–3.12.4 compatible syntax.
+  - Write clear, concise commit messages (e.g., `Add text chunking to Kornja module`).
+
+### 4. Test Your Changes
+- Run tests:
+  ```bash
+  uv run pytest
+  ```
+- Ensure all tests pass and cover new functionality (aim for >80% coverage).
+- Test manually if adding features (e.g., run `Malet.loader` for OCR changes).
+
+### 5. Submit a Pull Request
+- Push your branch:
+  ```bash
+  git push origin feature/your-feature-name
+  ```
+- Open a pull request (PR) on GitHub, linking to the relevant issue.
+- Include in your PR description:
+  - What you changed and why.
+  - How you tested it.
+  - Any dependencies affected (e.g., `surya-ocr`, `spacy`).
+- Await review from maintainers [KHARAPSY](https://github.com/KHARAPSY). Be open to feedback!
+
+## 🌟 Contribution Ideas
+- Enhance `Kornja` for advanced text chunking.
+- Improve `WichienMaat` semantic search.
+- Add new OCR loaders to `Malet`.
+- Expand `pythainlp` for multilingual NLP.
+- Write tutorials or examples for the Usage Guide.
+- Improve test coverage or add benchmarks.
+
+## 📜 Code of Conduct
+Be kind, respectful, and collaborative. Reach out to maintainers [KHARAPSY](https://github.com/KHARAPSY) with questions or concerns.
+
+## 📄 License
+By contributing, you agree that your contributions are licensed under the [MIT License](LICENSE).
+
+Thank you for making **PurrfectKit** even more purr-fect! 🐾
