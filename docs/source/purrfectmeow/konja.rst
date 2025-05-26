@@ -1,5 +1,5 @@
-﻿purrfectmeow.konja.splitter
-===========================
+﻿Kornja
+======
 
 .. automodule:: purrfectmeow.konja.splitter
 

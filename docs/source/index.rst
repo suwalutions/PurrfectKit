@@ -1,8 +1,6 @@
 
-Welcome to PurrfectKit's Documentation!
-=======================================
-
-PurrfectKit is a Python library for NLP tasks.
+PurrfectKit's Documentation!
+============================
 
 Getting Started
 ---------------
@@ -15,17 +13,5 @@ See :doc:`usage` for details.
 
    readme
    usage
-   modules/modules
-   modules/purrfectmeow.konja
-   modules/purrfectmeow.meeze
-   modules/purrfectmeow.plort
-   modules/purrfectmeow.sawat
-   modules/purrfectmeow.taeng
+   meow
    api
-
-Indices and Tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
