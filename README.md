@@ -2,23 +2,67 @@
 
 # PurrfectKit
 
-**PurrfectKit** is a whimsical Python library that blends feline charm with powerful natural language processing (NLP), optical character recognition (OCR), and document processing capabilities. Inspired by Thai cat breeds, each module in the `purrfectmeow` package maps to a specific technique, making text processing, semantic search, and data extraction both fun and efficient.
+**PurrfectKit** is a whimsical Python library that combines feline charm with powerful natural language processing (NLP), optical character recognition (OCR), and document processing. Inspired by the elegance of Thai cat breeds, each module in the `purrfectmeow` package is named after a unique breed, making text processing, semantic search, and data extraction both fun and efficient.
+
+## Table of Contents
+- [🐾 Overview](#-overview)
+- [🌟 Why PurrfectKit?](#-why-purrfectkit)
+- [🛠️ System-level Dependencies](#-system-level-dependencies)
+- [🚀 Installation](#-installation)
+- [🐱 Quick Start](#-quick-start)
+- [✨ Features](#-features)
+- [📚 Documentation](#-documentation)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
 
 ## 🐾 Overview
 
-PurrfectKit combines NLP, OCR, and document processing with a playful nod to Thai cat breeds. Its core modules are:
+PurrfectKit blends NLP, OCR, and document processing with a playful nod to Thai cat breeds. Its core modules are:
 
-- `purrfectmeow.Kornja` – Segments text into manageable chunks (*Content Chunking*).
-- `purrfectmeow.WichienMaat` – Interprets query intent for precise results (*Semantic Search*).
-- `purrfectmeow.KhaoManee` – Converts text to vectors and stores them (*Embedding & Storage*).
-- `purrfectmeow.Malet` – Extracts data from PDFs, images, spreadsheets, and Markdown (*Text Extraction*).
-- `purrfectmeow.Suphalaks` – Manages file operations and model/tokenizer loading (*Utility & Infrastructure*).
+- **Kornja**: Segments text into manageable chunks (*Content Chunking*).
+- **WichienMaat**: Interprets query intent for precise results (*Semantic Search*).
+- **KhaoManee**: Converts text to vectors and manages storage (*Embedding & Storage*).
+- **Malet**: Extracts data from PDFs, images, spreadsheets, and Markdown (*Text Extraction*).
+- **Suphalaks**: Handles file operations and model/tokenizer loading (*Utility & Infrastructure*).
 
 > **Note**: All modules are prefixed with `purrfectmeow` for namespace clarity and reflect Thai cat breed names.
 
+## 🌟 Why PurrfectKit?
+
+- **Playful yet Powerful**: Combines robust NLP and OCR capabilities with a delightful, cat-inspired interface.
+- **Multilingual Mastery**: Built-in support for Thai via `pythainlp`, with extensibility for other languages.
+- **Developer-Friendly**: Intuitive APIs and comprehensive documentation make integration a breeze.
+- **Versatile Applications**: Perfect for semantic search, document processing, and retrieval-augmented generation (RAG).
+
+## 🛠️ System-level Dependencies
+
+PurrfectKit relies on the following system-level dependies for OCR and document processing. Install them based on your operating system:
+
+- **tesseract-ocr**: Core OCR engine for text extraction from images.
+- **tesseract-ocr-tha**: Thai language data for Tesseract, enabling Thai text recognition.
+- **poppler**: PDF rendering library for processing PDF documents.
+- **ffmpeg**: Multimedia framework for handling image and video inputs.
+- **libmagic1**: File type identification library for robust file handling.
+
+### Installation on Ubuntu/Debian
+```bash
+sudo apt-get update
+sudo apt-get install tesseract-ocr tesseract-ocr-tha poppler-utils ffmpeg libmagic1
+```
+
+### Installation on macOS (using Homebrew)
+```bash
+brew install tesseract tesseract-lang poppler ffmpeg libmagic
+```
+
+### Installation on Windows
+- **tesseract-ocr**: Download from [UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki). Install with Thai language and add Tesseract-OCR folder to PATH.
+- **Poppler**: Download from [Owen Schwart](https://github.com/oschwartz10612/poppler-windows/releases/). Extract, and add bin folder to PATH.
+- **FFmpeg**: Get a static build from [ffmpeg.org](https://ffmpeg.org/download.html), extract, and add bin folder to PATH.
+
 ## 🚀 Installation
 
-PurrfectKit requires **Python 3.10 to 3.12.4**. We recommend using `uv` for fast dependency management, but `pip` works too.
+PurrfectKit requires **Python 3.10 to 3.12.4**. We recommend using `uv` for faster dependency management, but `pip` is also supported.
 
 ### Using `uv` (Recommended)
 
@@ -48,90 +92,70 @@ pip install .[dev] --extra-index-url https://download.pytorch.org/whl/cpu
 
 ## 🐱 Quick Start
 
-Extract text from a PDF and chunking using the `Malet` & `Kornja` module:
-
 ```python
-from purrfectmeow import Suphalaks, Malet, Kornja, KhaoManee
+from purrfectmeow import Suphalaks, Malet, Kornja, KhaoManee, WichienMaat
 
-file = "example/meowdy.pdf"
-file_name = "meowdy.pdf"
+# Load and process a PDF
+file_path = "example/meowdy.pdf"
+metadata = Suphalaks.get_file_metadata(file_path)
 
-metadata = Suphalaks.get_file_metadata(file)
+with open(file_path, "rb") as f:
+    text = Malet.loader(f, file_path, loader="MARKITDOWN")
 
-with open("meowdy.pdf", "rb") as f:
-    text = Malet.loader(f, "meowdy.pdf", loader="MARKITDOWN")
-
+# Chunk the text
 chunks = Kornja.chunking(
-    text, 
+    text,
     splitter="token",
     model_name="intfloat/multilingual-e5-large-instruct",
     chunk_size=50,
     chunk_overlap=0
 )
 
+# Create document templates and embeddings
 docs = Suphalaks.get_document_template(chunks, metadata)
+embeddings = KhaoManee.get_embeddings(docs, model_name="intfloat/multilingual-e5-large-instruct")
+query_embeddings = KhaoManee.get_query_embeddings(query="howdy", model_name="intfloat/multilingual-e5-large-instruct")
 
-embeddings = KhaoManee.get_embeddings(docs, model_name)
-query_embeddings = KhaoManee.get_query_embeddings(query="howdy", model_name=model_name)
+# Perform semantic search
+results = WichienMaat.get_search(query_embeddings, embeddings, docs, top_k=2)
 
-results = KhaoManee.get_search(query_embeddings, embeddings, docs, 2)
+# Print results
+for result in results:
+    print(f"Score: {result['score']:.4f}")
+    print(f"Content: {result['document'].page_content}\n")
 
 ```
 ### Expected Output
 ```json
 [
-    {
-    "score": 0.814572274684906,
-    "document": Document(
-        metadata={
-            "chunk_info": {
-                "chunk_number": 1, 
-                "chunk_id": "fc690110e8a2407db6b65e7129331ec7", 
-                "chunk_hash": "4b7ffc7f57494fba188f7bc55d348a7c", 
-                "previous_chunk_hash": None, 
-                "next_chunk_hash": "49473745424e819315a4ad8cb2c25fa8", 
-                "chunk_size": 168
-            }, "source_info": {
-                "file_name": "meowdy.pdf", 
-                "file_size": 3981724, 
-                "file_created_date": "2025-05-23 09:46:17", 
-                "file_modified_date": "2025-05-23 09:46:17", 
-                "file_extension": ".pdf", 
-                "file_type": "application/pdf", 
-                "description": "PDF document, version 1.7, 1 pages", 
-                "total_pages": 1, 
-                "file_md5": "bf4db19df52cb3a3e4e3854c9edbdc73"
-            }
-        }, 
-        page_content="   Meowdy, marvelous makers of machine magic!    \n \n  PurrfectKit. Whether you're chunking, searching, embedding, extracting, or orchestrating, \nI've got a cat for that"
-    )
-    },
-    {
-    "score": 0.8024211525917053,
-    "document": Document(
-        metadata={
-            "chunk_info": {
-                "chunk_number": 8, 
-                "chunk_id": "ead74e45027442e58b4cc7af40f6770b", 
-                "chunk_hash": "45b2c9bd82395c4c2179d4700ae72e22", 
-                "previous_chunk_hash": "e41bf2dd4814ac8ef10492374503a4e3", 
-                "next_chunk_hash": None, 
-                "chunk_size": 95
-            }, 
-            "source_info": {
-                "file_name": "meowdy.pdf", 
-                "file_size": 3981724, 
-                "file_created_date": "2025-05-23 09:46:17", 
-                "file_modified_date": "2025-05-23 09:46:17", 
-                "file_extension": ".pdf", 
-                "file_type": "application/pdf", 
-                "description": "PDF document, version 1.7, 1 pages", 
-                "total_pages": 1, 
-                "file_md5": "bf4db19df52cb3a3e4e3854c9edbdc73"
-            }
-        }, page_content=" wonder, your loyal library, \n  PurrfectKit \n \n  Star us on GitHub if we make your tails wag! \n"
-    )
-    },
+  {
+    "score": 0.8146,
+    "document": {
+      "metadata": {
+        "chunk_info": {
+          "chunk_number": 1,
+          "chunk_id": "fc690110e8a2407db6b65e7129331ec7",
+          "chunk_hash": "4b7ffc7f57494fba188f7bc55d348a7c",
+          "previous_chunk_hash": null,
+          "next_chunk_hash": "49473745424e819315a4ad8cb2c25fa8",
+          "chunk_size": 168
+        },
+        "source_info": {
+          "file_name": "meowdy.pdf",
+          "file_size": 3981724,
+          "file_created_date": "2025-05-23 09:46:17",
+          "file_modified_date": "2025-05-23 09:46:17",
+          "file_extension": ".pdf",
+          "file_type": "application/pdf",
+          "description": "PDF document, version 1.7, 1 pages",
+          "total_pages": 1,
+          "file_md5": "bf4db19df52cb3a3e4e3854c9edbdc73"
+        }
+      },
+      "page_content": "Meowdy, marvelous makers of machine magic! PurrfectKit. Whether you're chunking, searching, embedding, extracting, or orchestrating, I've got a cat for that"
+    }
+  },
+  ...
 ]
 ```
 
@@ -139,18 +163,18 @@ Explore more examples in the Usage Guide.
 
 ## 🌟 Features
 
-- **NLP**: Process text with `spacy`, `pythainlp`, and `transformers` for tasks like tokenization and semantic analysis.
+- **NLP**: Tokenization, semantic analysis and more with `spacy`, `pythainlp`, and `transformers`.
 - **OCR**: Extract text from images and PDFs using `surya-ocr`, `easyocr`, and `pytesseract`.
-- **Document Processing**: Handle PDFs, images, and Markdown with `pymupdf` and `pdf2image`.
-- **Multilingual Support**: Thai language processing via `pythainlp`, with extensibility for other languages.
-- **AI & LLMs**: Leverage `torch` and `langchain-core` for retrieval-augmented generation (RAG) and embeddings.
-- **Whimsical Design**: Thai cat breed-inspired module names for a fun developer experience.
+- **Document Processing**: Handle PDFs, images, and Markdown with `pymupdf`, `docling` and `markitdown`.
+- **Multilingual Support**: Thai language processing via `pythainlp`, extensible for other languages.
+- **AI & LLMs**: Leverage `torch` and `langchain-core` for embeddings and RAG workflows.
+- **Whimsical Design**: Thai cat breed-inspired module names for a delightful developer experience.
 
 ## 📚 Documentation
 
-- Usage Guide: Detailed examples for `Malet` and other modules.
-- API Reference: Full documentation for all `purrfectmeow` modules.
-- GitHub Repository: Source code and issue tracker.
+- Usage Guide: Step-by-step examples for all modules.
+- API Reference: Detailed documentation for `purrfectmeow` modules.
+- [GitHub Repository](https://github.com/SUWALUTIONS/PurrfectKit): Source code and issue tracker.
 
 ## 🤝 Contributing
 
@@ -161,7 +185,7 @@ We welcome contributions! To get started:
 3. Commit changes: `git commit -m "Add your feature"`.
 4. Push and open a pull request.
 
-See [CONTRIBUTING](CONTRIBUTING) for details.
+See [CONTRIBUTING](CONTRIBUTING) for detailed guidelines.
 
 ## 📄 License
 

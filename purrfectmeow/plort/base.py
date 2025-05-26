@@ -1,40 +1,53 @@
-import numpy
-from typing import List, Optional, Literal
+from typing import Optional, Literal, List
 from langchain_core.documents import Document
+import numpy
 
 from purrfectmeow.plort.embedder import SimpleHFEmbedder
 from purrfectmeow.plort.tokenization import SimpleTokenization
-from purrfectmeow.plort.vectorstore import SimpleInMemoryVectorStore
 
 class KhaoManee:
     """
-    KhaoManee is a utility class for embedding documents and queries using a 
-    specified embedding model and performing similarity search on embedded vectors.
+    A utility class for text embedding and tokenization.
 
-    This class wraps functionalities from SimpleHFEmbedder and SimpleInMemoryVectorStore
-    to provide easy access to embeddings and search results.
+    KhaoManee provides a high-level interface to internal modules handling:
+    - Generating embeddings for documents or queries using Hugging Face models
+    - Tokenizing text with support for multiple NLP engines
+
+    This class is especially useful in retrieval-focused NLP pipelines such as 
+    semantic search, document ranking, or lightweight Retrieval-Augmented Generation (RAG).
 
     Methods:
-        get_embeddings(documents, model_name): Generate embeddings for one or more documents.
-        get_query_embeddings(query, model_name): Generate embeddings for a query string.
-        get_tokens(text, engine): Tokenizes the given text using the specified NLP engine.
-        get_search(query_embedding, embeddings, documents, top_k): Perform similarity search to find the most relevant documents given a query embedding.
+        get_embeddings(documents: Document, model_name: Optional[str]) -> numpy.ndarray
+            Generate vector embeddings for one or more documents.
+
+        get_query_embeddings(query: str, model_name: Optional[str]) -> numpy.ndarray
+            Generate a vector embedding for a query string.
+
+        get_tokens(text: str, engine: Optional[Literal["spacy", "pythainlp", "huggingface"]]) -> List[str]
+            Tokenize input text using a specified NLP engine.
+
+    Example:
+        >>> from purrfectmeow import KhaoManee
+        >>> docs = [Document(page_content="Hello world"), Document(page_content="Bonjour monde")]
+        >>> embeddings = KhaoManee.get_embeddings(docs)
+        >>> query_embedding = KhaoManee.get_query_embeddings("Hello")
     """
+
     @staticmethod
     def get_embeddings(
         documents: Document, 
         model_name: Optional[str] = "intfloat/multilingual-e5-large-instruct"
-    ):
+    ) -> numpy.ndarray:
         """
-        Generate embeddings for the provided documents using a specified embedding model.
+        Generate embeddings for the given documents using the specified model.
 
         Args:
-            documents (Document): A Document object or a list of Document objects to embed.
-            model_name (str, optional): The model identifier to use for embeddings.
+            documents (Document or List[Document]): Document(s) to embed.
+            model_name (Optional[str]): Hugging Face model name for embedding.
                 Defaults to "intfloat/multilingual-e5-large-instruct".
 
         Returns:
-            numpy.ndarray: An array of embeddings representing the documents.
+            numpy.ndarray: Embeddings array representing the documents.
 
         Example:
             >>> docs = [Document(page_content="Hello world"), Document(page_content="Bonjour monde")]
@@ -47,42 +60,42 @@ class KhaoManee:
     def get_query_embeddings(
         query: Optional[str] = "meow~",
         model_name: Optional[str] = "intfloat/multilingual-e5-large-instruct"
-    ):
+    ) -> numpy.ndarray:
         """
-        Generate an embedding vector for a query string using the specified embedding model.
+        Generate an embedding vector for the input query text.
 
         Args:
-            query (str, optional): The input query text to embed. Defaults to "meow~".
-            model_name (str, optional): The model identifier to use for embeddings.
+            query (Optional[str]): Query string to embed. Defaults to "meow~".
+            model_name (Optional[str]): Hugging Face model name for embedding.
                 Defaults to "intfloat/multilingual-e5-large-instruct".
 
         Returns:
-            numpy.ndarray: An embedding vector representing the query.
+            numpy.ndarray: Embedding vector representing the query.
 
         Example:
             >>> query_embedding = KhaoManee.get_query_embeddings("Find cats")
             >>> print(query_embedding.shape)
         """
         return SimpleHFEmbedder.embed_query(query, model_name)
-    
+
     @staticmethod
     def get_tokens(
         text: str,
         engine: Optional[Literal["spacy", "pythainlp", "huggingface"]] = "pythainlp"
-        ):
+    ) -> List[str]:
         """
-        Tokenizes the given text using the specified NLP engine.
+        Tokenize the input text using the specified NLP engine.
 
         Args:
-            text (str): The input text to tokenize.
-            engine (Optional[Literal["spacy", "pythainlp", "huggingface"]], optional): 
-                The tokenization engine to use. Must be one of:
-                - "spacy": Uses spaCy tokenizer.
-                - "pythainlp": Uses PyThaiNLP tokenizer (default).
-                - "huggingface": Uses a HuggingFace tokenizer.
+            text (str): Text to tokenize.
+            engine (Optional[Literal["spacy", "pythainlp", "huggingface"]]): 
+                Tokenization engine to use. Options:
+                - "spacy": spaCy tokenizer
+                - "pythainlp": PyThaiNLP tokenizer (default)
+                - "huggingface": Hugging Face tokenizer
 
         Returns:
-            List[str]: A list of tokens extracted from the input text.
+            List[str]: List of tokens extracted from the input text.
 
         Raises:
             ValueError: If an unsupported engine name is provided.
@@ -95,36 +108,3 @@ class KhaoManee:
             ['I', 'love', 'Python', '.']
         """
         return SimpleTokenization.tokenize(text, engine)
-
-    @staticmethod
-    def get_search(
-        query_embedding: numpy.ndarray,
-        embeddings: List[numpy.ndarray],
-        documents: List[Document],
-        top_k: int = 5
-    ):
-        """
-        Perform a similarity search to retrieve the top_k most relevant documents to the query.
-
-        Args:
-            query_embedding (numpy.ndarray): The embedding vector for the search query.
-            embeddings (List[numpy.ndarray]): List of document embedding vectors.
-            documents (List[Document]): List of Document objects corresponding to embeddings.
-            top_k (int, optional): The number of top matching documents to return. Defaults to 5.
-
-        Returns:
-            List[Document]: The top_k documents most similar to the query.
-
-        Example:
-            >>> docs = [Document(page_content="Hello world"), Document(page_content="Bonjour monde")]
-            >>> embeddings = KhaoManee.get_embeddings(docs)
-            >>> query_emb = KhaoManee.get_query_embeddings("Hello")
-            >>> top_docs = KhaoManee.get_search(query_emb, embeddings, docs, top_k=1)
-            >>> print(top_docs[0].page_content)
-        """
-        return SimpleInMemoryVectorStore.search(
-            query_embedding=query_embedding,
-            vectors=list(embeddings),
-            documents=documents,
-            top_k=top_k
-        )
