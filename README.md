@@ -112,7 +112,7 @@ chunks = Kornja.chunking(
 )
 
 # Create document templates and embeddings
-docs = Suphalaks.get_document_template(chunks, metadata)
+docs = Suphalaks.document_template(chunks, metadata)
 embeddings = KhaoManee.get_embeddings(docs, model_name="intfloat/multilingual-e5-large-instruct")
 query_embeddings = KhaoManee.get_query_embeddings(query="howdy", model_name="intfloat/multilingual-e5-large-instruct")
 

@@ -24,7 +24,7 @@ class Splitter:
         create_token_splitter(model_name, chunk_size=None, chunk_overlap=None) -> TokenTextSplitter:
             Creates a token-based splitter using either an OpenAI or HuggingFace tokenizer based on the model name.
 
-        create_separator_splitter(separator='\n\n') -> KornjaSeparatorSplitter:
+        create_separator_splitter(separator='\\n\\n') -> KornjaSeparatorSplitter:
             Creates a separator-based splitter using a specified separator (e.g., paragraph or sentence).
 
     Internal Methods:
@@ -230,7 +230,7 @@ class Splitter:
         """Create a KornjaSeparatorSplitter with the specified separator.
 
         Args:
-            separator (str): Separator to split text (e.g., '\n\n' for paragraphs). Defaults to '\n\n'.
+            separator (str): Separator to split text (e.g., '\\n\\n' for paragraphs). Defaults to '\\n\\n'.
 
         Returns:
             KornjaSeparatorSplitter: A configured separator-based text splitter instance.

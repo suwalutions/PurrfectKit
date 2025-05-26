@@ -14,4 +14,3 @@ See :doc:`usage` for details.
    readme
    usage
    meow
-   api

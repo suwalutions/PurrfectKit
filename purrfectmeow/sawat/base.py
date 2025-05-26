@@ -7,31 +7,38 @@ from purrfectmeow.sawat.simple import Simple
 
 class Malet:
     """
-    Unified interface for extracting text from a wide variety of document formats.
+    Processes files using various loader methods for text extraction.
 
-    Named after the elegant Malet breed of Thai cats, this class provides a 
-    graceful abstraction to read text content from files such as PDFs, spreadsheets, images, and URLs. 
-    It dispatches extraction tasks to specialized backends based on the loader specified.
+    Parameters
+    ----------
+    file : BinaryIO
+        The binary file object to process.
+    file_name : str
+        The name of the file, used for temporary storage and processing.
+    loader : str, optional
+        The loader method to use for processing the file. Must be one of
+        'MARKITDOWN', 'DOCLING', 'PYTESSERACT', 'EASYOCR', 'SURYAOCR',
+        'PYMUPDF', 'PYMUPDF_AS_TXT', 'PANDAS_EXCEL', or 'PANDAS_CSV'.
+        Defaults to 'PYMUPDF'.
+    **kwargs : Any
+        Additional keyword arguments to pass to the selected loader method.
 
-    Supported loaders:
-        - 'MARKITDOWN': Convert documents or URLs to Markdown using MarkItDown.
-        - 'DOCLING': Convert documents or URLs to Markdown using Docling.
-        - 'PYTESSERACT': Extract text from images or PDFs using Tesseract OCR.
-        - 'EASYOCR': Extract text using EasyOCR with Thai and English support.
-        - 'SURYAOCR': Extract structured text using SuryaOCR (detection + recognition).
-        - 'PYMUPDF': Extract text from PDFs using PyMuPDF.
-        - 'PYMUPDF_AS_TXT': Extract raw text from PDFs using PyMuPDF in text-only mode.
-        - 'PANDAS_EXCEL': Read and convert Excel spreadsheets to plain text using pandas.
-        - 'PANDAS_CSV': Read and convert CSV files to plain text using pandas.
+    Returns
+    -------
+    str
+        The processed content of the file as a string.
 
-    Methods:
-        loader(file: BinaryIO, file_name: str, loader: str, ``**kwargs``) -> str:
-            Extract text from the given file using the specified loader backend.
+    Raises
+    ------
+    ValueError
+        If the specified loader is not supported.
 
-    Examples:
-        >>> from purrfectmeow import Malet
-        >>> with open("example.pdf", "rb") as f:
-        ...     text = Malet.loader(f, "example.pdf", loader="PYMUPDF")
+    Examples
+    --------
+    >>> from io import BytesIO
+    >>> file = BytesIO(b"Sample content")
+    >>> Malet.loader(file, "sample.pdf", loader="PYMUPDF")
+    'Sample content'
     """
     
     _LOADER_METHODS: dict[str, Callable[[str], str]] = {
@@ -48,27 +55,6 @@ class Malet:
 
     @staticmethod
     def loader(file: BinaryIO, file_name: str, loader: str = "PYMUPDF", **kwargs: Any) -> str:
-        """
-        Load and extract text from a file using the specified loader.
-
-        Args:
-            file (BinaryIO): File-like object opened in binary mode.
-            file_name (str): Name of the file (used for saving and reference).
-            loader (str, optional): Loader type to use for extraction. Defaults to "PYMUPDF".
-            ``**kwargs`` (Any): Additional keyword arguments passed to the loader.
-
-        Returns:
-            str: Extracted text content.
-
-        Raises:
-            FileNotFoundError: If the file does not exist or cannot be accessed.
-            ValueError: If the specified loader is invalid or unsupported.
-
-        Examples:
-            >>> with open("example.pdf", "rb") as f:
-            ...     text = Malet.loader(f, "example.pdf", loader="PYMUPDF")
-            >>> print(text[:200])  # Print first 200 characters
-        """
         file_path = HandleFile.save_temp_file(file, file_name)
         try:
             if loader not in Malet._LOADER_METHODS:

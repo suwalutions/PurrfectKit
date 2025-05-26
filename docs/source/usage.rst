@@ -64,7 +64,7 @@ Wrap the chunks into a document template for embedding and search:
 
 .. code-block:: python
 
-   docs = Suphalaks.get_document_template(chunks, metadata)
+   docs = Suphalaks.document_template(chunks, metadata)
 
 🧠 Embeddings
 --------------
