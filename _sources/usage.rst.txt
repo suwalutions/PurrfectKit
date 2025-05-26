@@ -1,76 +1,149 @@
-Usage
-=====
+.. _usage:
 
-🐱 Quick Start
---------------
+Usage Guide
+===========
 
-Extract text from a PDF and chunking using the ``Malet`` & ``Kornja`` module:
+Welcome to the **PurrfectKit** usage guide! This document walks you through basic and advanced functionality using the Thai-cat-inspired `purrfectmeow` modules. From loading files to performing semantic search, you'll learn how to orchestrate your document intelligence pipeline with elegance and ease.
+
+🚀 Getting Started
+-------------------
+
+To begin using PurrfectKit, ensure you've followed the installation steps in the README.
+
+🗂️ File Metadata Extraction
+----------------------------
+
+Use ``Suphalaks.get_file_metadata`` to retrieve detailed metadata from a supported file:
 
 .. code-block:: python
 
-    from purrfectmeow import Suphalaks, Malet, Kornja, KhaoManee
+    from purrfectmeow import Suphalaks
 
-    file = "example/meowdy.pdf"
-    file_name = "meowdy.pdf"
+    file_path = "example/meowdy.pdf"
+    metadata = Suphalaks.get_file_metadata(file_path)
 
-    metadata = Suphalaks.get_file_metadata(file)
+    print(metadata)
 
-    with open("meowdy.pdf", "rb") as f:
-        text = Malet.loader(f, "meowdy.pdf", loader="MARKITDOWN")
+📝 Text Extraction
+-------------------
+
+Extract text from PDFs, Markdown, or images using the ``Malet.loader`` function:
+
+.. code-block:: python
+
+    from purrfectmeow import Malet
+
+    with open(file_path, "rb") as f:
+        text = Malet.loader(f, file_path, loader="MARKITDOWN")
+
+    print(text[:300])  # Print first 300 characters
+
+✂️ Chunking Text
+-----------------
+
+Split the raw text into meaningful chunks with ``Kornja.chunking``. This improves performance for downstream tasks like embedding and search.
+
+.. code-block:: python
+    
+    from purrfectmeow import Kornja
 
     chunks = Kornja.chunking(
-        text, 
+        text,
         splitter="token",
         model_name="intfloat/multilingual-e5-large-instruct",
         chunk_size=50,
-        chunk_overlap=0
+        chunk_overlap=10
     )
 
-    docs = Suphalaks.get_document_template(chunks, metadata)
+    print(f"Number of chunks: {len(chunks)}")
 
-    embeddings = KhaoManee.get_embeddings(docs, model_name)
-    query_embeddings = KhaoManee.get_query_embeddings(query="howdy", model_name=model_name)
+🧾 Document Templating
+-----------------------
 
-    results = KhaoManee.get_search(query_embeddings, embeddings, docs, 2)
+Wrap the chunks into a document template for embedding and search:
 
-Expected Output
----------------
+.. code-block:: python
 
-.. code-block:: json
+   docs = Suphalaks.document_template(chunks, metadata)
 
-    [
-        {
-            "score": 0.814572274684906,
-            "document": "<Document with metadata and content>"
-        },
-        {
-            "score": 0.8024211525917053,
-            "document": "<Document with metadata and content>"
-        }
-    ]
+🧠 Embeddings
+--------------
 
-.. code-block:: text
+Generate embeddings for both your documents and queries with ``KhaoManee``:
 
-    Document(
-        metadata={
-            "chunk_info": {
-                "chunk_number": 1, 
-                "chunk_id": "fc690110e8a2407db6b65e7129331ec7", 
-                "chunk_hash": "4b7ffc7f57494fba188f7bc55d348a7c", 
-                "previous_chunk_hash": None, 
-                "next_chunk_hash": "49473745424e819315a4ad8cb2c25fa8", 
-                "chunk_size": 168
-            }, "source_info": {
-                "file_name": "meowdy.pdf", 
-                "file_size": 3981724, 
-                "file_created_date": "2025-05-23 09:46:17", 
-                "file_modified_date": "2025-05-23 09:46:17", 
-                "file_extension": ".pdf", 
-                "file_type": "application/pdf", 
-                "description": "PDF document, version 1.7, 1 pages", 
-                "total_pages": 1, 
-                "file_md5": "bf4db19df52cb3a3e4e3854c9edbdc73"
-            }
-        }, 
-        page_content="   Meowdy, marvelous makers of machine magic!    \n \n  PurrfectKit. Whether you're chunking, searching, embedding, extracting, or orchestrating, \nI've got a cat for that"
+.. code-block:: python
+
+    from purrfectmeow import KhaoManee
+
+    # Embed documents
+    doc_embeddings = KhaoManee.get_embeddings(
+        docs,
+        model_name="intfloat/multilingual-e5-large-instruct"
     )
+
+    # Embed a query
+    query_embeddings = KhaoManee.get_query_embeddings(
+        query="Where is the best cat café?",
+        model_name="intfloat/multilingual-e5-large-instruct"
+    )
+
+🔍 Semantic Search
+-------------------
+
+Find the most relevant documents using ``WichienMaat.get_search``:
+
+.. code-block:: python
+
+    from purrfectmeow import WichienMaat
+
+    results = WichienMaat.get_search(
+        query_embeddings=query_embeddings,
+        doc_embeddings=doc_embeddings,
+        docs=docs,
+        top_k=3
+    )
+
+    for result in results:
+        print(f"Score: {result['score']:.4f}")
+        print(f"Content: {result['document'].page_content[:200]}\n")
+
+🖼️ Working with Other File Types
+---------------------------------
+
+PurrfectKit supports various file formats out-of-the-box. Examples:
+
+- Markdown: ``loader="MARKITDOWN"``
+- PDF: ``loader="PYMUPDF"``, or ``loader="EASYOCR"``
+- Image: ``loader="PYTESSERACT"``, or ``loader="SURYAOCR"``
+
+Example for image OCR:
+
+.. code-block:: python
+
+   image_path = "example/catnote.jpg"
+   with open(image_path, "rb") as f:
+       text = Malet.loader(f, image_path)
+
+   print(text)
+
+🧬 Advanced Use: Custom Models
+-------------------------------
+
+You can use your own embedding model if it supports HuggingFace-compatible API:
+
+.. code-block:: python
+
+   embeddings = KhaoManee.get_embeddings(
+       docs,
+       model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+   )
+
+💡 Notes & Tips
+----------------
+
+- Use ``chunk_overlap > 0`` to preserve context between text chunks.
+- The `loader` argument in ``Malet.loader`` determines which backend parser is used.
+- Thai text support is best with ``pythainlp`` installed and Tesseract's Thai data.
+- Explore `purrfectmeow.suphalaks` for file utilities like hashing, extension checks, and format detection.
+
+For deeper exploration, see the full API Reference and test scripts under the ``examples/`` and ``tests/`` directories of the repository.
