@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 project = 'PurrfectKit'
 copyright = '2025, SUWALUTIONS'
 author = 'SUWALUTIONS'
-version = '0.1.1'
+version = '0.1.2'
 
 # -- General configuration ---------------------------------------------------
 
