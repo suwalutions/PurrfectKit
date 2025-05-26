@@ -2131,6 +2131,7 @@ dependencies = [
     { name = "pytesseract" },
     { name = "pythainlp" },
     { name = "python-magic" },
+    { name = "rich" },
     { name = "scikit-learn" },
     { name = "sentence-transformers" },
     { name = "spacy" },
@@ -2142,6 +2143,8 @@ dependencies = [
     { name = "torchvision" },
     { name = "transformers", version = "4.42.4", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'darwin'" },
     { name = "transformers", version = "4.52.3", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine != 'x86_64' or sys_platform != 'darwin'" },
+    { name = "typer", version = "0.12.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12' and platform_machine == 'x86_64' and sys_platform == 'darwin'" },
+    { name = "typer", version = "0.15.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12' or platform_machine != 'x86_64' or sys_platform != 'darwin'" },
 ]
 
 [package.optional-dependencies]
@@ -2177,6 +2180,7 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = "<=8.3.5" },
     { name = "pythainlp", specifier = "<=5.1.2" },
     { name = "python-magic", specifier = "<=0.4.27" },
+    { name = "rich", specifier = ">=14.0.0" },
     { name = "scikit-learn", specifier = ">=1.6.1" },
     { name = "sentence-transformers", specifier = ">=4.1.0" },
     { name = "spacy", specifier = "<=3.8.7" },
@@ -2187,6 +2191,7 @@ requires-dist = [
     { name = "torchaudio", specifier = "<=2.7.0" },
     { name = "torchvision", specifier = "<=0.22.0" },
     { name = "transformers", specifier = "<=4.52.3" },
+    { name = "typer", specifier = ">=0.12.5" },
 ]
 provides-extras = ["dev", "docs"]
 

@@ -58,6 +58,10 @@ docs = [
     "sphinx<=8.2.3",
     "furo<=2024.8.6",
 ]
+cli = [
+    "rich>=14.0.0",
+    "typer>=0.12.5",
+]
 
 [project.urls]
 Homepage = "https://github.com/SUWALUTIONS/PurrfectKit"
