@@ -7,40 +7,60 @@ from purrfectmeow.sawat.simple import Simple
 
 class Malet:
     """
-    Processes files using various loader methods for text extraction.
+    A class provides a static interface to load and convert files into text.
 
-    Parameters
+    This class provides a unified interface for extracting text from various file formats 
+    using a range of loader backends such as Markdown converters, OCR engines, 
+    and simple data parsers.
+
+    Supported Loaders
+    -----------------
+    MARKITDOWN : Callable
+        Converts Markdown using the Markitdown engine.
+    DOCLING : Callable
+        Converts Markdown using the Docling engine.
+    PYTESSERACT : Callable
+        Extracts text from images or PDFs using Tesseract OCR.
+    EASYOCR : Callable
+        Extracts text using the EasyOCR engine.
+    SURYAOCR : Callable
+        Extracts text using the SuryaOCR engine.
+    PYMUPDF : Callable
+        Parses PDF content using PyMuPDF.
+    PYMUPDF_AS_TXT : Callable
+        Extracts plain text from PDFs using PyMuPDF as text.
+    PANDAS_EXCEL : Callable
+        Reads Excel files using pandas.
+    PANDAS_CSV : Callable
+        Reads CSV files using pandas.
+
+    Public API
     ----------
-    file : BinaryIO
-        The binary file object to process.
-    file_name : str
-        The name of the file, used for temporary storage and processing.
-    loader : str, optional
-        The loader method to use for processing the file. Must be one of
-        'MARKITDOWN', 'DOCLING', 'PYTESSERACT', 'EASYOCR', 'SURYAOCR',
-        'PYMUPDF', 'PYMUPDF_AS_TXT', 'PANDAS_EXCEL', or 'PANDAS_CSV'.
-        Defaults to 'PYMUPDF'.
-    **kwargs : Any
-        Additional keyword arguments to pass to the selected loader method.
+    loader(file, file_name, loader, **kwargs)
+        Load and convert a binary file using the specifed loader backend.
 
-    Returns
-    -------
-    str
-        The processed content of the file as a string.
+        Parameters
+        ----------
+        file: BinaryIO
+            The binary file to be converted.
+        file_name: str
+            The name to use for the file.
+        loader: str
+            The loader backend
+        **kwargs
+            Any arguments needed for the loader.
 
-    Raises
-    ------
-    ValueError
-        If the specified loader is not supported.
+        Returns
+        -------
+        str
+            The extracted text.
 
-    Examples
-    --------
-    >>> from io import BytesIO
-    >>> file = BytesIO(b"Sample content")
-    >>> Malet.loader(file, "sample.pdf", loader="PYMUPDF")
-    'Sample content'
+        Examples
+        --------
+        >>> with open("example.pdf", "rb") as f:
+        ...     text = Malet.loader(f, "example.pdf", loader="PYMUPDF")
+        >>> print(text)
     """
-    
     _LOADER_METHODS: dict[str, Callable[[str], str]] = {
         "MARKITDOWN": Markdown.convert_with_markitdown,
         "DOCLING": Markdown.convert_with_docling,
@@ -52,9 +72,13 @@ class Malet:
         "PANDAS_EXCEL": Simple.convert_with_pandas_excel,
         "PANDAS_CSV": Simple.convert_with_pandas_csv,
     }
-
     @staticmethod
-    def loader(file: BinaryIO, file_name: str, loader: str = "PYMUPDF", **kwargs: Any) -> str:
+    def loader(
+        file: BinaryIO, 
+        file_name: str, 
+        loader: str = "PYMUPDF", 
+        **kwargs: Any
+    ) -> str:
         file_path = HandleFile.save_temp_file(file, file_name)
         try:
             if loader not in Malet._LOADER_METHODS:

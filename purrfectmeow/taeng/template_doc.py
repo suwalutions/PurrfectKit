@@ -6,40 +6,54 @@ from purrfectmeow.kitty import kitty_logger
 
 class DocTemplate:
     """
-    A utility class for generating structured document chunks with metadata.
+    A class for creating structured LangChain Document objects from text chunks and metadata.
 
-    This class provides a method to split text content into smaller chunks,
-    compute hashes for each chunk, and encapsulate them into LangChain `Document`
-    objects enriched with metadata, including chunk-specific and source-specific details.
+    Public Methods
+    --------------
+    create_template(chunks, metadata)
+        Create a structured LangChain Document object from chunks and metadata.
+
+    Examples
+    --------
+    >>> chunks = ["This is the first chunk.", "This is the second chunk."]
+    >>> metadata = {"source": "example.txt", "author": "John Doe"}
+    >>> documents = DocTemplate.create_template(chunks, metadata)
+    >>> for doc in documents:
+    ...     print(doc.page_content, doc.metadata)
     """
+
     _logger = kitty_logger(__name__)
 
     @classmethod
     def create_template(cls, chunks: list[str], metadata: dict) -> Document:
         """
-        Create a list of LangChain `Document` objects from text chunks and metadata.
+        Create a structured LangChain Document object from chunks and metadata.
 
-        Each chunk is assigned a unique UUID, an MD5 hash, and positional metadata
-        including the previous and next chunk hashes (if applicable). The resulting
-        documents are useful for traceable, chunk-wise processing in language models
-        or knowledge systems.
+        Parameters
+        ----------
+        chunks : list[str]
+            A list of text chunks to be included in the document.
 
-        Args:
-            chunks (list[str]): List of string text chunks to convert into documents.
-            metadata (dict): Dictionary containing metadata about the source of the content.
+        metadata : dict
+            A dictionary containing metadata associated with the document, such as source information.
 
-        Returns:
-            list[Document]: List of LangChain `Document` objects with structured metadata.
+        Returns
+        -------
+        list[Document]
+            A list of LangChain `Document` objects, each representing a chunk with its metadata.
 
-        Example:
-            >>> chunks = ["Hello world.", "This is a test."]
-            >>> metadata = {"source": "example.txt", "type": "text", "desc": "Sample file"}
-            >>> docs = DocTemplate.create_template(chunks, metadata)
-            >>> for doc in docs:
-            >>>     print(doc.page_content)
-            >>>     print(doc.metadata)
+        Raises
+        ------
+        ValueError
+            If chunks are empty or metadata is not provided.
+
+        Notes
+        -----
+        - Each chunk is assigned a unique ID and hash.
+        - The first chunk has no previous hash, and the last chunk has no next hash.
+        - The size of each chunk is recorded in the metadata.
+        - The method logs detailed information about each chunk and its metadata.
         """
-
         docs = []
         chunk_hashes = []
 

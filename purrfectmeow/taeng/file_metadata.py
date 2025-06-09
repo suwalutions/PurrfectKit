@@ -4,59 +4,80 @@ import time
 import magic
 import hashlib
 import subprocess
+from typing import Dict
 
 from purrfectmeow.kitty import kitty_logger
 
 class MetadataFile:
     """
-    A class to extract and store metadata from a given file.
+    A utility class for extracting metadata from files.
 
-    Supports extraction of basic file system metadata (name, size, creation
-    and modification dates, extension) as well as file type detection using
-    the `magic` library. Additionally, it attempts to determine the total page
-    count for PDF files using the `pdfinfo` tool, and defaults to 1 page for images.
+    Public Methods
+    --------------
+    get_metadata()
+        Extracts metadata from the specified file and returns it as a dictionary.
 
-    Attributes:
-        file_path (str): Path to the target file.
-        metadata (dict): Dictionary storing extracted metadata.
-
-    Methods:
-        get_metadata():
-            Extract metadata from the file, return the stored metadata dictionary..
+    Example
+    -------
+    >>> metadata_extractor = MetadataFile('path/to/file.txt')
+    >>> metadata = metadata_extractor.get_metadata()
+    >>> print(metadata)
+    {
+        'file_name': 'file.txt',
+        'file_size': 12345,
+        'file_created_date': '2023-10-01 12:00:00',
+        'file_modified_date': '2023-10-02 12:00:00',
+        'file_extension': '.txt',
+        'file_type': 'text/plain',
+        'description': 'Text file',
+        'total_pages': 1,
+        'file_md5': 'd41d8cd98f00b204e9800998ecf8427e'
+    }
     """
     _logger = kitty_logger(__name__)
 
-    def __init__(self, file_path):
+    def __init__(self, file_path: str) -> None:
         """
-        Initialize MetadataFile with the path to a file.
+        Initializes the MetadataFile instance with the specified file path.
 
-        Args:
-            file_path (str): The full path to the file to extract metadata from.
+        Parameters
+        ----------
+        file_path : str
+            The path to the file for which metadata will be extracted.
         """
         self.file_path = file_path
         self.metadata = {}
 
-    def get_metadata(self):
+    def get_metadata(self) -> Dict[str, str]:
         """
-        Internal method to extract metadata from the file.
+        Extracts metadata from the specified file.
+        
+        Returns
+        -------
+        Dict[str, str]
+            A dictionary containing extracted metadata fields:
+            - 'file_name': str
+            - 'file_size': int
+            - 'file_created_date': str
+            - 'file_modified_date': str
+            - 'file_extension': str
+            - 'file_type': str
+            - 'description': str
+            - 'total_pages': int or str
+            - 'file_md5': str
 
-        This method collects:
-            - File name
-            - File size (in bytes)
-            - File creation date and modification date (formatted as YYYY-MM-DD HH:MM:SS)
-            - File extension (or "none" if no extension)
-            - MIME type and description (using `magic` library)
-            - Total pages:
-                - For PDFs, uses `pdfinfo` to get the page count.
-                - For images, defaults to 1.
-                - For other file types, defaults to 1.
+        Raises
+        ------
+        FileNotFoundError
+            If the specified file does not exist.
+        RuntimeError
+            If metadata extraction fails due to unexpected error.
 
-        Raises:
-            FileNotFoundError: If the specified file does not exist.
-            RuntimeError: If metadata extraction fails for any other reason.
-
-        Returns:
-            dict: A dictionary containing extracted metadata.
+        Notes
+        -----
+        - This method uses `os.stat`, `magic`, `subprocess`, and `hashlib` to extract file details.
+        - PDF page count is determined using `pdfinfo`; non-PDF files default to 1 page.
+        - Falls back to safe defaults if type detection or page count extraction fails.
         """
         try:
             self._logger.debug(f"Starting metadata extraction for file: {self.file_path}")

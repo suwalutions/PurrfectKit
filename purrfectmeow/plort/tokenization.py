@@ -11,17 +11,21 @@ class SimpleTokenization:
     """
     A simple tokenization utility class for processing Thai text using different tokenization engines.
 
-    This class supports the following tokenization engines:
-        - spaCy (using a blank Thai model)
-        - PyThaiNLP (newmm tokenizer)
-        - HuggingFace tokenizer (requires tokenizer path)
+    Public Methods
+    --------------
+    tokenize(text, engine, huggingface_tokenizer_path)
+        Tokenizes the given text using the specified engine.
 
-    Attributes:
-        _DEFAULT_MODEL_NAME (str): The default model name used for HuggingFace tokenizer.
+    Examples
+    --------
+    >>> SimpleTokenization.tokenize("สวัสดีครับ", engine="spacy")
+    ['สวัสดี', 'ครับ']
 
-    Methods:
-        tokenize(text: str, engine: str = "spacy", huggingface_tokenizer_path: Optional[str] = None) -> List[str]:
-            Tokenizes the given text using the specified engine.
+    >>> SimpleTokenization.tokenize("สวัสดีครับ", engine="pythainlp")
+    ['สวัสดี', 'ครับ']
+
+    >>> SimpleTokenization.tokenize("สวัสดีครับ", engine="huggingface", huggingface_tokenizer_path="path/to/tokenizer.json")
+    ['▁สวั', 'สดี', 'ครับ']
     """
     _logger = kitty_logger(__name__)
     _DEFAULT_MODEL_NAME: str = "intfloat/multilingual-e5-large-instruct"
@@ -34,8 +38,15 @@ class SimpleTokenization:
         """
         Load and return a blank spaCy NLP model for Thai language.
 
-        Returns:
-            spacy.Language: A blank Thai language pipeline.
+        Returns
+        -------
+        spacy.Language
+            A blank Thai language pipeline.
+
+        Notes
+        -----
+        - This method initializes a blank spaCy model for Thai if not already loaded.
+        - It uses spaCy's `spacy.blank("th")` to avoid reloading the model multiple times.
         """
         if cls._spacy_nlp is None:
             cls._logger.debug("Loading blank spaCy model for Thai...")
@@ -49,14 +60,20 @@ class SimpleTokenization:
         """
         Load and return a HuggingFace tokenizer from a specified path.
 
-        Args:
-            tokenizer_path (str): The path to the tokenizer JSON file.
+        Parameters
+        ----------
+        tokenizer_path : str
+            The path to the tokenizer JSON file.
 
-        Returns:
-            Tokenizer: A HuggingFace tokenizer instance.
+        Returns
+        -------
+        Tokenizer
+            A HuggingFace tokenizer instance.
 
-        Raises:
-            ValueError: If the path is not provided or tokenizer loading fails.
+        Notes
+        -----
+        - This method loads a tokenizer from the given path only if it hasn't been loaded yet.
+        - It uses `Tokenizer.from_file()` from the `tokenizers` library.
         """
         if cls._huggingface_tokenizer is None:
             cls._logger.debug(f"Loading HuggingFace tokenizer from: {tokenizer_path}")
@@ -75,20 +92,31 @@ class SimpleTokenization:
         """
         Tokenizes the input text using the specified engine.
 
-        Args:
-            text (str): The text to tokenize.
-            engine (str): Tokenization engine to use. One of "spacy", "pythainlp", or "huggingface".
-            huggingface_tokenizer_path (str, optional): Required for the "huggingface" engine if tokenizer is not already loaded.
+        Parameters
+        ----------
+        text : str
+            The text to tokenize.
+        engine : str
+            Tokenization engine to use. One of "spacy", "pythainlp", or "huggingface".
+        huggingface_tokenizer_path : Optional[str]
+            Required for the "huggingface" engine if tokenizer is not already loaded.
 
-        Returns:
-            List[str]: A list of tokenized words or subwords.
+        Returns
+        -------
+        List[str]
+            A list of tokenized words or subwords.
 
-        Raises:
-            ValueError: If an unknown engine is specified or required parameters are missing.
+        Raises
+        ------
+        ValueError
+            If an unknown engine is specified or required parameters are missing.
 
-        Example:
-            >>> SimpleTokenization.tokenize("ฉันรักแมว", engine="pythainlp")
-            ['ฉัน', 'รัก', 'แมว']
+        Notes
+        -----
+        This method depending on the engine specified.
+        - spaCy (using a blank Thai model),
+        - PyThaiNLP (using "newmm" engine),
+        - or HuggingFace (using a preloaded or path-provided tokenizer).
         """
         cls._logger.debug(f"Tokenizing text with engine: {engine}")
         cls._logger.debug(f"Input text: {text}")

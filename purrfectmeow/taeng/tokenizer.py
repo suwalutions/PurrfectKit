@@ -9,40 +9,31 @@ from purrfectmeow.kitty import kitty_logger
 
 class HFTokeniker:
     """
-    A class to manage Hugging Face tokenizers with local caching and preloading support.
+    Lightweight manager for Hugging Face tokenizers with in-memory caching.
 
-    This class allows efficient loading and reuse of Hugging Face tokenizers by caching
-    them locally and maintaining a limited-size in-memory cache for quick access. It also
-    supports preloading a predefined set of model tokenizers to speed up subsequent use.
+    Attributes
+    ----------
+    HF_MODEL_PATH : str
+        Local path for storing cached tokenizer models.
 
-    Attributes:
-        HF_MODEL_PATH (str): Default path to store cached Hugging Face models.
-        _cache_dir (Path): Directory path object pointing to the tokenizer cache location.
-        _cache_lock (threading.Lock): Thread-safe lock for managing access to the tokenizer cache.
-        _persistent_cache (OrderedDict): In-memory cache storing loaded tokenizers.
-        _max_cache_size (int): Maximum number of tokenizers to hold in the in-memory cache.
-        _is_initialized (bool): Flag to prevent repeated preloading of tokenizers.
-        _preloaded_model_ids (List[str]): List of model names to preload on first use.
-        _logger: Logger instance for logging events and errors.
+    Public Methods
+    --------------
+    set_model_path(path)
+        Set a custom path for the Hugging Face model cache directory.
+    get_tokenizer(model_name)
+        Retrieve a Hugging Face tokenizer by model name, using an in-memory cache for efficiency.
 
-    Methods:
-        set_model_path(path: str) -> None:
-            Set a custom directory path for tokenizer cache storage.
-
-        get_tokenizer(model_name: str) -> PreTrainedTokenizerBase:
-            Retrieve a tokenizer by model name, loading from cache or Hugging Face Hub as needed.
-
-    Internal Methods:
-        _is_model_cached(model_dir: Path) -> bool:
-            Check if the tokenizer is already cached locally.
-
-        _preload_tokenizers() -> None:
-            Preload tokenizers defined in `_preloaded_model_ids` into the in-memory cache.
-
-        _load_tokenizer(model_name: str) -> PreTrainedTokenizerBase:
-            Load a tokenizer from the local cache or download it from the Hugging Face Hub.
+    Examples
+    --------
+    >>> hft = HFTokenizer()
+    >>> hft.set_model_path("/paht/to/your/cache")
+    >>> tokenizer = htf.get_tokenizer("bert-base-uncased")
+    >>> tokenizer("Hello, World")
     """
-    HF_MODEL_PATH = 'models_hf/'
+    _logger = kitty_logger(__name__)
+    
+    HF_MODEL_PATH: str = '.cache/models/'
+
     _cache_dir = Path(HF_MODEL_PATH)
     _cache_lock = threading.Lock()
     _persistent_cache = OrderedDict()
@@ -57,67 +48,71 @@ class HFTokeniker:
         "Snowflake/snowflake-arctic-embed-l-v2.0",
     ]
 
-    _logger = kitty_logger(__name__)
     os.makedirs(HF_MODEL_PATH, exist_ok=True)
-
-    @staticmethod
-    def set_model_path(path: str) -> None:
-        """
-        Set the directory path for tokenizer cache storage.
-
-        Args:
-            path (str): Filesystem path to store or access cached tokenizers.
-
-        Raises:
-            ValueError: If the given path is not a valid directory.
-        """
-        path_obj = Path(path).resolve()
-        if not path_obj.is_dir():
-            HFTokeniker._logger.error("Invalid cache path: %s", path)
-            raise ValueError(f"Invalid cache path: `{path}` is not a directory")
-
-        with HFTokeniker._cache_lock:
-            HFTokeniker._cache_dir = path_obj
-            HFTokeniker._cache_dir.mkdir(parents=True, exist_ok=True)
-            HFTokeniker._persistent_cache.clear()
-            HFTokeniker._is_initialized = False
-            HFTokeniker._logger.info("Cache path set to: %s", path_obj)
+    _logger.debug("Hugging Face model cache directory initialized at: %s", HF_MODEL_PATH)
 
     @classmethod
     def _is_model_cached(cls, model_dir: Path) -> bool:
         """
-        Check if the specified model directory contains a cached tokenizer.
+        Check if a Hugging Face model or tokenizer is cached in the specified directory.
 
-        Args:
-            model_dir (Path): Path to the model's cache directory.
+        Parameters
+        ----------
+        model_dir : Path
+            The directory where the model or tokenizer is expected to be cached.
 
-        Returns:
-            bool: True if the tokenizer is cached, False otherwise.
+        Returns
+        -------
+        bool
+            True if the model or tokenizer is cached, False otherwise.
+
+        Notes
+        -----
+        This method checks for the presencs of a `tokenizer_config.json` file insise the model directory,
+        which is an indicator that the tokenizer files are cached locally.
         """
-        return (model_dir / "tokenizer_config.json").exists()
+        cls._logger.debug("Checking cache for model: %s", model_dir)
+        cache_tokenizer = (model_dir / "tokenizer_config.json").exists()
+        cls._logger.debug("Cache status for %s: %s", model_dir, "found" if cache_tokenizer else "not found")
+        return cache_tokenizer
 
     @classmethod
     def _preload_tokenizers(cls) -> None:
         """
-        Preload tokenizers listed in `_preloaded_model_ids` into the in-memory cache.
+        Preload a predefined list of Hugging Face tokenizers into the in-memory cache.
 
-        Tokenizers are downloaded or loaded from the cache and stored in an LRU-style
-        in-memory cache for fast access.
+        Notes
+        -----
+        - This method ensures that commonly used tokenizers are loaded into memory at startup to reduce latency during actual use.
+        - It skips loading if tokenizers have already been initialized (controlled by `_is_initialized`).
+        - It validates model IDs with a regex to ensure they conform to expecetd format ('namespace/model').
+        - Tokenizers are stored in thread-safe manner within `_persistent_cache`.
+        - When the cache exceeds its maximum size, the oldest tokenizer entry is evicted to manage memory usage.
         """
+        cls._logger.debug("Preloading tokenizers...")
         if cls._is_initialized:
+            cls._logger.debug("Tokenizers already preloaded, skipping.")
             return
 
-        cls._logger.info("Preloading tokenizers")
         for model_id in cls._preloaded_model_ids:
             if not re.match(r'^[\w.-]+/[\w.-]+$', model_id):
-                cls._logger.warning("Invalid model ID: %s", model_id)
+                cls._logger.warning("Invalid model ID format: %s", model_id)
+                cls._logger.debug("Skipping invalid model ID: %s", model_id)
                 continue
             try:
+                cls._logger.debug("Preloading tokenizer for model: %s", model_id)
                 tokenizer = cls._load_tokenizer(model_id)
+               
                 with cls._cache_lock:
                     cls._persistent_cache[model_id] = tokenizer
+                    cls._logger.debug("Preloaded tokenizer: %s", model_id)
+
                     if len(cls._persistent_cache) > cls._max_cache_size:
                         cls._persistent_cache.popitem(last=False)
+                        cls._logger.debug("Cache size exceeded, removed oldest tokenizer.")
+                    else:
+                        cls._logger.debug("Current cache size: %d", len(cls._persistent_cache))
+
             except Exception as e:
                 cls._logger.warning("Failed to preload %s: %s", model_id, str(e))
 
@@ -126,48 +121,94 @@ class HFTokeniker:
     @classmethod
     def _load_tokenizer(cls, model_name: str) -> PreTrainedTokenizerBase:
         """
-        Load a tokenizer by name from cache or Hugging Face Hub.
+        Load a Hugging Face tokenizer by its model name, checking the cache first.
 
-        If the tokenizer exists in the local cache, it is loaded from disk.
-        Otherwise, it is downloaded from the Hugging Face Hub and cached.
+        Parameters
+        ----------
+        model_name : str
+            The Hugging Face model ID, e.g., 'bert-base-uncased'.
 
-        Args:
-            model_name (str): Model ID in the format 'org/model-name'.
+        Returns
+        -------
+        PreTrainedTokenizerBase
+            The loaded tokenizer instance.
 
-        Returns:
-            PreTrainedTokenizerBase: The loaded tokenizer instance.
-
-        Raises:
-            Exception: If loading fails from both cache and remote source.
+        Notes
+        -----
+        - Attempts to load the tokenizer from a local cache directory first to avoid unnecessary downloads.
+        - If the local cache is missing or corrupted, it falls back to downloading from the Hugging Face Hub.
+        - The cache directory name replaces '/' with '_' to form a valid folder name.
         """
+        cls._logger.debug("Loading tokenizer for model: %s", model_name)
         model_dir = cls._cache_dir / model_name.replace("/", "_")
+
         if cls._is_model_cached(model_dir):
             try:
                 cls._logger.debug("Loading from cache: %s", model_dir)
-                return AutoTokenizer.from_pretrained(model_dir)
+                tokenizer = AutoTokenizer.from_pretrained(model_name)
+                cls._logger.debug("Tokenizer loaded from cache: %s", model_name)
+                return tokenizer
+            
             except Exception as e:
                 cls._logger.warning("Cache load failed for %s: %s. Trying HF Hub.", model_dir, str(e))
+        
+        cls._logger.debug("Downloading tokenizer from Hugging Face Hub: %s", model_name)
+        tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=model_dir)
+        cls._logger.debug("Tokenizer loaded successfully: %s", model_name)
+        return tokenizer
 
-        cls._logger.debug("Downloading tokenizer: %s", model_name)
-        return AutoTokenizer.from_pretrained(model_name, cache_dir=model_dir)
+    @staticmethod
+    def set_model_path(path: str) -> None:
+        """
+        Set a custom directory for caching Hugging Face tokenizers.
+
+        Parameters
+        ----------
+        path : str
+            A path to store cache.
+
+        Notes
+        -----
+        This method resets the internal cache and reinitializes the tokenizer configuration. Any previously cached tokenizers will be cleared.
+        """
+        HFTokeniker._logger.debug("Setting custom cache path: %s", path)
+        path_obj = Path(path).resolve()
+
+        with HFTokeniker._cache_lock:
+            HFTokeniker._cache_dir = path_obj
+            HFTokeniker._cache_dir.mkdir(parents=True, exist_ok=True)
+            HFTokeniker._persistent_cache.clear()
+            HFTokeniker._is_initialized = False
+            HFTokeniker._logger.debug("Cache path set to: %s", path_obj)
 
     @staticmethod
     def get_tokenizer(model_name: str) -> PreTrainedTokenizerBase:
         """
-        Retrieve a tokenizer for the specified Hugging Face model.
+        Retrieve a Hugging Face tokenizer by model name, using an in-memory cache for efficiency.
 
-        The tokenizer is returned from the in-memory cache if available.
-        Otherwise, it is loaded from disk or downloaded, and then cached.
+        Parameters
+        ----------
+        model_name : str
+            The Hugging Face model ID, e.g., 'bert-base-uncased'.
 
-        Args:
-            model_name (str): The Hugging Face model ID, e.g., 'bert-base-uncased'.
+        Returns
+        -------
+        PreTrainedTokenizerBase
+            The loaded tokenizer instance.
 
-        Returns:
-            PreTrainedTokenizerBase: The tokenizer instance.
+        Raises
+        ------
+        ValueError
+            If the provided model name is not a valid string or if loading fails.
 
-        Raises:
-            ValueError: If the model name is invalid or tokenizer cannot be loaded.
+        Notes
+        -----
+        - Uses an internal cache to improve performance.
+        - `model_name` must follow the 'namespace/model' patterns.
+        - Raises `ValueError` if the tokenizer cannot be loaded.
+        - This static method relies on internal helpers and cahces.
         """
+        HFTokeniker._logger.debug("Getting tokenizer for model: %s", model_name)
         HFTokeniker._preload_tokenizers()
 
         if not isinstance(model_name, str) or not re.match(r'^[\w-]+/[\w-]+$', model_name):
@@ -180,11 +221,13 @@ class HFTokeniker:
                 HFTokeniker._persistent_cache.move_to_end(model_name)
                 return HFTokeniker._persistent_cache[model_name]
 
-        HFTokeniker._logger.info("Loading tokenizer: %s", model_name)
+        HFTokeniker._logger.debug("Loading tokenizer: %s", model_name)
         try:
             tokenizer = HFTokeniker._load_tokenizer(model_name)
+            HFTokeniker._logger.debug("Tokenizer loaded successfully: %s", model_name)
             with HFTokeniker._cache_lock:
                 HFTokeniker._persistent_cache[model_name] = tokenizer
+                
                 if len(HFTokeniker._persistent_cache) > HFTokeniker._max_cache_size:
                     HFTokeniker._persistent_cache.popitem(last=False)
             return tokenizer

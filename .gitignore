@@ -1,6 +1,8 @@
 logs/
 tmp_dir/
-models_hf/
+.cache/models/
+.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

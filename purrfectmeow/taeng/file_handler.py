@@ -5,21 +5,22 @@ from purrfectmeow.kitty import kitty_logger
 
 class HandleFile:
     """
-    A utility class for handling temporary file operations.
+    A utility class for handling file operations such as saving and removing files.
 
-    This class provides methods to save a binary file to a temporary directory
-    and to remove it when no longer needed. The temporary directory is created
-    automatically if it does not exist.
+    Public Methods
+    --------------
+    save_temp_file(file, file_name)
+        Save a binary file to a temporary directory.
+    remove_temp_file(file_path)
+        Remove a specified file from the filesystem if it exists.
 
-    Attributes:
-        TMP_DIR (str): Path to the temporary directory where files are stored.
-
-    Methods:
-        save_temp_file(file: BinaryIO, file_name: str) -> str:
-            Saves a binary file to the temporary directory and returns its path.
-
-        remove_temp_file(file_path: str) -> None:
-            Removes the specified file from the filesystem if it exists.
+    Examples
+    --------
+    >>> with open('example.txt', 'rb') as f:
+    ...     file_path = HandleFile.save_temp_file(f, 'example.txt')
+    >>> print(file_path)
+    tmp_dir/example.txt
+    >>> HandleFile.remove_temp_file('tmp_dir/example.txt')
     """
     _logger = kitty_logger(__name__)
 
@@ -30,14 +31,29 @@ class HandleFile:
     @classmethod
     def save_temp_file(cls, file: BinaryIO, file_name: str) -> str:
         """
-        Saves an uploaded file to a temporary directory.
+        Save a binary file to a temporary directory.
 
-        Args:
-            file (BinaryIO): A file-like object.
-            file_name (str): Name of the file to be saved.
+        Parameters
+        ----------
+        file : BinaryIO
+            The binary file to be saved.
 
-        Returns:
-            str: Full path to the saved file.
+        file_name : str
+            The name to use for the saved file.
+
+        Returns
+        -------
+        str
+            The path to the saved file.
+
+        Raises
+        ------
+        Exception
+            If there is an error during file saving.
+
+        Notes
+        -----
+        This method saves the file to a predefined temporary directory (`tmp_dir/`).
         """
         file_path = os.path.join(cls.TMP_DIR, file_name)
         try:
@@ -53,13 +69,27 @@ class HandleFile:
     @classmethod
     def remove_temp_file(cls, file_path: str) -> None:
         """
-        Deletes a file from the filesystem if it exists.
+        Remove a specified file from the filesystem if it exists.
 
-        Args:
-            file_path (str): The path of the file to delete.
+        Parameters
+        ----------
+        file_path : str
+            The path of the file to be removed.
 
-        Returns:
-            None
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        Exception
+            If there is an error during file removal.
+
+        Notes
+        -----
+        - This method attempts to remove the file at the specified path. 
+        - If the file does not exist, it logs a warning. 
+        - If an error occurs during removal, it logs the error and raises an exception.
         """
         try:
             if os.path.exists(file_path):

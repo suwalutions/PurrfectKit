@@ -6,49 +6,53 @@ from purrfectmeow.kitty import kitty_logger
 
 class Simple:
     """
-    A utility class for extracting textual content from various file formats.
+    Utility class for extracting text content from various file formats.
 
-    This class provides static methods to convert content from:
-        - PDF files using PyMuPDF
-        - Excel files using pandas
-        - CSV files using pandas
-
-    Each conversion method logs the process, including timing and success status. The `_convert`
-    helper method standardizes the logging and execution of all file conversion operations.
-
-    Methods:
-        convert_with_pymupdf(input_path: str) -> str:
-            Extracts text from a PDF file using PyMuPDF's default `get_text()`.
-
-        convert_with_pymupdf_as_txt(input_path: str) -> str:
-            Extracts text from a PDF using PyMuPDF with `filetype="txt"` for raw output.
-
-        convert_with_pandas_excel(input_path: str) -> str:
-            Reads and converts the first sheet of an Excel file to a text string using pandas.
-
-        convert_with_pandas_csv(input_path: str) -> str:
-            Reads and converts a CSV file to a text string using pandas.
-
-    Internal Methods:
-        _convert(input_path: str, converter: callable) -> str:
-            Wraps file conversion logic with timing and logging.
+    Public Methods
+    --------------
+    convert_with_pymupdf(input_path)
+        Extract text from PDFs perserving layout via PyMuPDF
+    convert_with_pymupdf_as_txt(input_path)
+        Extract plain text from PDFs using PyMuPDF legacy plain text mode.
+    convert_with_pandas_excel(input_path)
+        Convert first sheet of an Excel file to a formatted text table.
+    convert_with_pandas_csv(input_path)
+        Convert CSV files to a formatted text table.
+    
+    Examples
+    --------
+    >>> Simple.convert_with_pymupdf("sample.pdf")
+    >>> Simple.convert_with_pymupdf_as_txt("document.pdf")
+    >>> Simple.convert_with_pandas_excel("spreadsheet.xlsx")
+    >>> Simple.convert_with_pandas_csv("data.csv")
     """
     _logger = kitty_logger(__name__)
+    
     @staticmethod
     def _convert(input_path: str, converter: callable) -> str:
         """
-        Converts a file to text using the provided converter function.
+        Helper method to convert a file to text using a provided converter function.
 
-        Args:
-            input_path (str): Path to the input file (e.g., PDF, Excel, CSV).
-            converter (callable): A callable that processes the file and returns extracted text.
+        Parameters
+        ----------
+        input_path : str
+            Path to the input file.
+        converter : callable
+            A function that takes the input path and returns the converted text.
 
-        Returns:
-            str: The extracted text from the file.
+        Returns
+        -------
+        str
+            Extracted text from the input file.
 
-        Notes:
-            Logs the conversion start, success, and elapsed time.
-            Ensures timing is logged even if an exception occurs.
+        Raises
+        ------
+        Exception
+            Any exception raised by the converter function will propagate.
+
+        Notes
+        -----
+        The method is designed to be flexible and reusable for different types of file conversions.
         """
         Simple._logger.debug(f"Starting conversion for '{input_path}'")
         start = time.time()
@@ -62,7 +66,23 @@ class Simple:
 
     @staticmethod
     def convert_with_pymupdf(input_path: str) -> str:
-        """Extracts text from a PDF file using PyMuPDF."""
+        """
+        Perform text conversion using PyMuPDF
+
+        Parameters
+        ----------
+        input_path : str
+            Path to the input file.
+
+        Returns
+        ------
+        str
+            Extracted text from the input file.
+
+        Notes
+        -----
+        This method uses the default layout-aware text extraction, which tries to preserve the visual structure of the document.
+        """
         return Simple._convert(
             input_path,
             lambda path: "".join(page.get_text() for page in pymupdf.open(path))
@@ -70,7 +90,23 @@ class Simple:
 
     @staticmethod
     def convert_with_pymupdf_as_txt(input_path: str) -> str:
-        """Extracts raw text from a PDF using PyMuPDF with `filetype="txt"`."""
+        """
+        Perform text conversion using PyMuPDF with `filetype="txt"` option.
+
+        Parameters
+        ----------
+        input_path : str
+            Path to the input file.
+
+        Returns
+        ------
+        str
+            Extracted text from the input file.
+
+        Notes
+        -----
+        This method uses `filetype="txt"` parameter for plain text extraction.
+        """
         return Simple._convert(
             input_path,
             lambda path: "".join(page.get_text() for page in pymupdf.open(path, filetype="txt"))
@@ -78,7 +114,24 @@ class Simple:
 
     @staticmethod
     def convert_with_pandas_excel(input_path: str) -> str:
-        """Extracts table data from an Excel file using pandas."""
+        """
+        Perform Excel conversion using pandas.
+
+        Parameters
+        ----------
+        input_path : str
+            Path to the input file.
+
+        Returns
+        ------
+        str
+            Extracted text from the input file.
+
+        Notes
+        -----
+        - This method load only the first sheet of the Excel file.
+        - The content is returned as a table-like string without the index.
+        """
         return Simple._convert(
             input_path,
             lambda path: pandas.read_excel(path).to_string(index=False)
@@ -86,7 +139,24 @@ class Simple:
 
     @staticmethod
     def convert_with_pandas_csv(input_path: str) -> str:
-        """Extracts table data from a CSV file using pandas."""
+        """
+        Perform CSV conversion using pandas.
+
+        Parameters
+        ----------
+        input_path : str
+            Path to the input file.
+
+        Returns
+        ------
+        str
+            Extracted text from the input file.
+
+        Notes
+        -----
+        - The method reads the entire CSV and output it as a formatted string.
+        - Index column is omitted from the output.
+        """
         return Simple._convert(
             input_path,
             lambda path: pandas.read_csv(path).to_string(index=False)

@@ -73,7 +73,7 @@ build-backend = "hatchling.build"
 exclude = [
     "logs",
     "tmp_dir",
-    "models_hf",
+    ".cache/models/",
 ]
 packages = ["purrfectmeow"]
 

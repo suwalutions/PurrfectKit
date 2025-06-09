@@ -13,47 +13,53 @@ from purrfectmeow.kitty import kitty_logger
 
 class OCR:
     """
-    A utility class for performing Optical Character Recognition (OCR) on image and PDF files.
+    Utility class for performing Optical Character Recognition (OCR) on image and PDF files.
 
-    This class provides a unified interface to extract text using different OCR engines:
-        - PyTesseract (Tesseract OCR)
-        - EasyOCR
-        - SuryaOCR (custom OCR pipeline using detection and recognition models)
+    Public Methods
+    --------------
+    convert_with_pytesseract(input_path)
+        Extracts text using the PyTesseract OCR engine for English and Thai.
+    convert_with_easyocr(input_path)
+        Extracts text using the EasyOCR engine for English and Thai.
+    convert_with_suryaocr(input_path)
+        Extracts text using the SuryaOCR system, which combines custom detection and recognition models.
 
-    It supports input formats including PDFs and image files (PNG, JPG, JPEG), and automatically
-    handles page-by-page processing for multi-page PDFs.
-
-    Methods:
-        convert_with_pytesseract(input_path: str) -> List[str]:
-            Extracts text using the PyTesseract OCR engine for English and Thai.
-
-        convert_with_easyocr(input_path: str) -> List[str]:
-            Extracts text using the EasyOCR engine for English and Thai.
-
-        convert_with_suryaocr(input_path: str) -> List[str]:
-            Extracts text using the SuryaOCR system, which combines custom detection and recognition models.
-
-    Internal Methods:
-        _convert(input_path: str, converter: callable) -> str:
-            Handles the core logic for converting input files into text using the provided converter.
-            Supports both image and multi-page PDF input with logging and timing.
+    Examples
+    --------
+    >>> text = OCR.convert_with_pytesseract("document.pdf")
+    >>> text = OCR.convert_with_easyocr("image.jpg")
+    >>> text = OCR.convert_with_suryaocr("scan.png")
     """
     _logger = kitty_logger(__name__)
-    @staticmethod
+    
     def _convert(input_path: str, converter: callable) -> str:
         """
-        Converts an image or PDF file to text using the provided OCR converter.
+        Helper method to convert a file to text using a provided converter function.
 
-        Args:
-            input_path (str): Path to the input file (PDF, PNG, JPG, or JPEG).
-            converter (callable): A callable that processes an image and returns extracted text.
+        Parameters
+        ----------
+        input_path : str
+            Path to the input file.
+        converter : callable
+            A callable that processes an image and returns extracted text.
 
-        Returns:
-            str: The extracted text from all pages, joined with newlines.
+        Returns
+        -------
+        str
+            The extracted text from all pages, joined with newlines.
 
-        Notes:
-            Logs the conversion start, success, and elapsed time.
-            Ensures timing is logged even if an exception occurs.
+        Raises
+        ------
+        FileNotFoundError
+            If the input file does not exist.
+        ValueError
+            If the input file format is not supported.
+        Exception
+            If the converter function fails during processing.
+
+        Notes
+        -----
+        The method is designed to be flexible and reusable for different types of file conversions.
         """
         OCR._logger.debug(f"Starting conversion for '{input_path}'")
         start = time.time()
@@ -87,11 +93,20 @@ class OCR:
         """
         Perform OCR using pytesseract.
 
-        Args:
-            input_path (str): Path to an image or PDF file.
+        Parameters
+        ----------
+        input_path : str
+            Path to the input file.
 
-        Returns:
-            List[str]: Extracted text lines.
+        Returns
+        ------
+        str
+            Extracted text from the input file.
+
+        Notes
+        -----
+        - This method uses the `pytesseract` library and supports both English and Thai languages.
+        - It is best suited for well-scanned text images or PDFs with minimal noise.
         """
         def tesseract_converter(img) -> str:
             return pytesseract.image_to_string(img, lang="tha+eng")
@@ -103,11 +118,20 @@ class OCR:
         """
         Perform OCR using EasyOCR.
 
-        Args:
-            input_path (str): Path to an image or PDF file.
+        Parameters
+        ----------
+        input_path : str
+            Path to the input file.
 
-        Returns:
-            List[str]: Extracted text lines.
+        Returns
+        ------
+        str
+            Extracted text from the input file.
+
+        Notes
+        -----
+        - This method initializes the model only once per call.
+        - EasyOCR works well with various fonts and image styles and supports multilingual OCR.
         """
         reader = easyocr.Reader(['th', 'en'], gpu=False)
 
@@ -122,11 +146,20 @@ class OCR:
         """
         Perform OCR using SuryaOCR.
 
-        Args:
-            input_path (str): Path to an image or PDF file.
+        Parameters
+        ----------
+        input_path : str
+            Path to the input file.
 
-        Returns:
-            List[str]: Extracted text lines.
+        Returns
+        ------
+        str
+            Extracted text from the input file.
+
+        Notes
+        -----
+        - This method my be slower than other methods due to model complixity.
+        - SuryaOCR combines custom-trained detection and recognition models, which makes it more accurate for domain-specific or noisy documents.
         """
         recognition_predictor = RecognitionPredictor()
         detection_predictor = DetectionPredictor()
