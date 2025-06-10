@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Meow Package" href="meow.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>📦 How to Release a New Version - PurrfectKit documentation</title>
+        <title>Versioning - PurrfectKit documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -181,7 +181,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -206,10 +206,7 @@
 <li class="toctree-l1"><a class="reference internal" href="readme.html">PurrfectKit</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="meow.html">Meow Package</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">📦 How to Release a New Version</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#steps-to-release">🚀 Steps to Release</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#bumping-examples">🛠 Bumping Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#notes">💡 Notes</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Versioning</a></li>
 </ul>
 
 </div>
@@ -244,78 +241,83 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="how-to-release-a-new-version">
-<span id="version"></span><h1>📦 How to Release a New Version<a class="headerlink" href="#how-to-release-a-new-version" title="Link to this heading">¶</a></h1>
-<p>This guide outlines the steps for bumping the version, tagging a release, and optionally publishing the package to GitHub.</p>
-</section>
+          <section id="versioning">
+<span id="version"></span><h1>Versioning<a class="headerlink" href="#versioning" title="Link to this heading">¶</a></h1>
+<p>This guide outlines the process for bumping the version, generating a changelog, tagging a release, and pushing it to GitHub.</p>
 <section id="steps-to-release">
-<h1>🚀 Steps to Release<a class="headerlink" href="#steps-to-release" title="Link to this heading">¶</a></h1>
-<ol class="arabic">
-<li><p>Ensure working directory is clean</p>
-<blockquote>
-<div><dl>
-<dt>Make sure all your changes are committed::</dt><dd><p>git status</p>
-<p># There should be no uncommitted changes.</p>
-</dd>
-</dl>
-</div></blockquote>
-</li>
-<li><p>Bump the version</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Run the following command, replacing <cite>patch</cite> with <cite>minor</cite> or <cite>major</cite> as needed::</dt><dd><p>make release part=patch</p>
-</dd>
-</dl>
-<p>This will:
-- Check for a clean Git working tree
-- Update the version in all relevant files (e.g., <cite>pyproject.toml</cite>, <cite>__init__.py</cite>, <cite>uv.lock</cite>)
-- Generate a changelog based on Git commit history
-- Commit and tag the new version
-- Push the commit and tag to GitHub</p>
-</div></blockquote>
-</li>
+<h2>🚀 Steps to Release<a class="headerlink" href="#steps-to-release" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Ensure a clean working tree</strong></p></li>
+</ol>
+<p>Before releasing, make sure your working directory is clean—no uncommitted or staged changes.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>status
+
+<span class="c1"># Ensure there are no uncommitted changes.</span>
+<span class="c1"># The working tree and index must be clean.</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>Bump the version and release</strong></p></li>
+</ol>
+<p>Use the <cite>make release</cite> command with the appropriate version part (<cite>patch</cite>, <cite>minor</cite>, or <cite>major</cite>).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>release<span class="w"> </span>v-part<span class="o">=</span>patch
+</pre></div>
+</div>
+<p>This command will:</p>
+<ol class="arabic simple">
+<li><p>Ensure the Git working directory is clean</p></li>
+<li><p>Update the version in all relevant files (<cite>pyproject.toml</cite>, <cite>uv.lock</cite>, <cite>__init__.py</cite>)</p></li>
+<li><p>Generate a changelog based on commit history since the last tag</p></li>
+<li><p>Commit all changes and tag the new version</p></li>
+<li><p>Push the commit and tag to GitHub</p></li>
 </ol>
 </section>
 <section id="bumping-examples">
-<h1>🛠 Bumping Examples<a class="headerlink" href="#bumping-examples" title="Link to this heading">¶</a></h1>
+<h2>🛠 Bumping Examples<a class="headerlink" href="#bumping-examples" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Type</p></th>
 <th class="head"><p>Command</p></th>
-<th class="head"><p>Effect</p></th>
+<th class="head"><p>Resulting Version</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Patch</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">release</span> <span class="pre">part=patch</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">release</span> <span class="pre">v-part=patch</span></code></p></td>
 <td><p>0.1.2 → 0.1.3</p></td>
+<td><p>Fixes or small changes</p></td>
 </tr>
 <tr class="row-odd"><td><p>Minor</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">release</span> <span class="pre">part=minor</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">release</span> <span class="pre">v-part=minor</span></code></p></td>
 <td><p>0.1.2 → 0.2.0</p></td>
+<td><p>New features, no breaking</p></td>
 </tr>
 <tr class="row-even"><td><p>Major</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">release</span> <span class="pre">part=major</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">release</span> <span class="pre">v-part=major</span></code></p></td>
 <td><p>0.1.2 → 1.0.0</p></td>
+<td><p>Breaking changes</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </section>
 <section id="notes">
-<h1>💡 Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h1>
+<h2>💡 Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>The version is managed by <cite>bumpversion</cite>, and must match across all configured files.</p></li>
-<li><p>You can find the current version in <cite>pyproject.toml</cite> and <cite>__init__.py</cite>.</p></li>
-<li><p>The changelog is generated automatically from commit messages since the last tag.</p></li>
+<li><p>Versioning is handled by <cite>bumpversion</cite> (or <cite>bump2version</cite>) and updates all configured files.</p></li>
+<li><p>The current version is typically found in <cite>pyproject.toml</cite>, <cite>__init__.py</cite>, and optionally <cite>uv.lock</cite>.</p></li>
+<li><p>The changelog is generated automatically using recent Git commit messages since the last tag.</p></li>
+<li><p>It’s a good practice to write meaningful commit messages, especially if they follow Conventional Commits, to improve changelog quality.</p></li>
 </ul>
+</section>
 </section>
 
         </article>
@@ -356,8 +358,29 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Versioning</a><ul>
+<li><a class="reference internal" href="#steps-to-release">🚀 Steps to Release</a></li>
+<li><a class="reference internal" href="#bumping-examples">🛠 Bumping Examples</a></li>
+<li><a class="reference internal" href="#notes">💡 Notes</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
