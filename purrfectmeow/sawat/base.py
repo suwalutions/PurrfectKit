@@ -47,23 +47,23 @@ class Malet:
 
         Supported Loaders
         -----------------
-        **MARKITDOWN** : Callable
+        MARKITDOWN : Callable
             Converts Markdown using the Markitdown engine.
-        **DOCLING** : Callable
+        DOCLING : Callable
             Converts Markdown using the Docling engine.
-        **PYTESSERACT** : Callable
+        PYTESSERACT : Callable
             Extracts text from images or PDFs using Tesseract OCR.
-        **EASYOCR** : Callable
+        EASYOCR : Callable
             Extracts text using the EasyOCR engine.
-        **SURYAOCR** : Callable
+        SURYAOCR : Callable
             Extracts text using the SuryaOCR engine.
-        **PYMUPDF** : Callable
+        PYMUPDF : Callable
             Parses PDF content using PyMuPDF.
-        **PYMUPDF_AS_TXT** : Callable
+        PYMUPDF_AS_TXT : Callable
             Extracts plain text from PDFs using PyMuPDF as text.
-        **PANDAS_EXCEL** : Callable
+        PANDAS_EXCEL : Callable
             Reads Excel files using pandas.
-        **PANDAS_CSV** : Callable
+        PANDAS_CSV : Callable
             Reads CSV files using pandas.
         
         Returns
