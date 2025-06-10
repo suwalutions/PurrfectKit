@@ -3,12 +3,14 @@
 Usage Guide
 ===========
 
-Welcome to the **PurrfectKit** usage guide! This document walks you through basic and advanced functionality using the Thai-cat-inspired `purrfectmeow` modules. From loading files to performing semantic search, you'll learn how to orchestrate your document intelligence pipeline with elegance and ease.
+Welcome to the **PurrfectKit** usage guide! This document walks you through basic and advanced functionality using 
+the Thai-cat-inspired `purrfectmeow` modules. From loading files to performing semantic search, you'll learn 
+how to orchestrate your document intelligence pipeline with elegance and ease.
 
 🚀 Getting Started
 -------------------
 
-To begin using PurrfectKit, ensure you've followed the installation steps in the README.
+To begin using PurrfectKit, ensure you've followed the installation steps in the :doc:`README <readme>`.
 
 🗂️ File Metadata Extraction
 ----------------------------

@@ -185,7 +185,7 @@ We welcome contributions! To get started:
 3. Commit changes: `git commit -m "Add your feature"`.
 4. Push and open a pull request.
 
-See [CONTRIBUTING](CONTRIBUTING) for detailed guidelines.
+See [CONTRIBUTING](CONTRIBUTING.md) for detailed guidelines.
 
 ## 📄 License
 

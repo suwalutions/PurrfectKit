@@ -1,11 +1,13 @@
 # Contributing to PurrfectKit
 
-Welcome to **PurrfectKit**, a whimsical Python library blending feline charm with powerful NLP, OCR, and document processing! We’re thrilled you’re here to contribute to our Thai cat breed-inspired modules. This guide explains how to set up your environment, submit changes, and align with our purr-fect standards.
+Welcome to **PurrfectKit**, we’re thrilled you’re here to contribute to our Thai cat breed-inspired modules. 
+
+This guide explains how to set up your environment, submit changes, and align with our purr-fect standards.
 
 ## 🐾 Getting Started
 
 ### Prerequisites
-- **Python**: Version 3.10 to 3.12.4.
+- **Python**: Version 3.12.4.
 - **uv**: Recommended for fast dependency management (alternatively, `pip`).
 - **Git**: For cloning and managing the repository.
 
@@ -18,6 +20,7 @@ Welcome to **PurrfectKit**, a whimsical Python library blending feline charm wit
 
 2. **Install Dependencies with `uv`** (preferred):
    ```bash
+   uv pip install -e .
    uv sync --extra-index-url https://download.pytorch.org/whl/cpu --extra dev
    ```
    This installs core dependencies (`torch==2.7.0`, `surya-ocr`, `spacy`, etc.) and development extras (`pytest>=8.3.5`).
@@ -26,17 +29,6 @@ Welcome to **PurrfectKit**, a whimsical Python library blending feline charm wit
    ```bash
    pip install .[dev] --extra-index-url https://download.pytorch.org/whl/cpu
    ```
-
-3. **Verify Setup**:
-   Run tests to ensure everything is set up correctly:
-   ```bash
-   uv run pytest
-   ```
-
-### Project Structure
-- `purrfectmeow/`: Core package with modules (`Kornja`, `WichienMaat`, `KhaoManee`, `Malet`, `Suphalaks`).
-- `tests/`: Test suite using `pytest`.
-- `docs/`: Documentation built with `sphinx` and `furo`.
 
 ## 🐱 How to Contribute
 
@@ -54,21 +46,12 @@ Welcome to **PurrfectKit**, a whimsical Python library blending feline charm wit
 
 ### 3. Make Changes
 - Write code in the `purrfectmeow` package, following the Thai cat breed naming convention for new modules.
-- Add tests in `tests/` to cover your changes.
 - Update documentation in `docs/` if needed.
 - Follow these coding guidelines:
-  - Use Python 3.10–3.12.4 compatible syntax.
+  - Use Python 3.12.4 compatible syntax.
   - Write clear, concise commit messages (e.g., `Add text chunking to Kornja module`).
 
-### 4. Test Your Changes
-- Run tests:
-  ```bash
-  uv run pytest
-  ```
-- Ensure all tests pass and cover new functionality (aim for >80% coverage).
-- Test manually if adding features (e.g., run `Malet.loader` for OCR changes).
-
-### 5. Submit a Pull Request
+### 4. Submit a Pull Request
 - Push your branch:
   ```bash
   git push origin feature/your-feature-name

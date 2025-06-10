@@ -16,8 +16,9 @@ Before releasing, make sure your working directory is clean—no uncommitted or 
 
     git status
 
-    # Ensure there are no uncommitted changes.
-    # The working tree and index must be clean.
+.. note::
+
+    The working tree and index must be clean. See `CONTRIBUTING <../../../CONTRIBUTING.md>`_ for detailed guidelines.
 
 2. **Bump the version and release**
 
