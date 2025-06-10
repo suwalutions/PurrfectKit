@@ -1,4 +1,4 @@
-.. _guide:
+.. _version:
 
 📦 How to Release a New Version
 ================================
