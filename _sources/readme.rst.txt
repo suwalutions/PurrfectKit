@@ -1,12 +1,14 @@
 .. _readme:
 
-.. image:: _static/repo-logo.png
-   :alt: PurrfectMeow Logo
-
 PurrfectKit
 ===========
 
-**PurrfectKit** is a whimsical Python library that combines feline charm with powerful natural language processing (NLP), optical character recognition (OCR), and document processing. Inspired by the elegance of Thai cat breeds, each module in the ``purrfectmeow`` package is named after a unique breed, making text processing, semantic search, and data extraction both fun and efficient.
+.. image:: _static/repo-logo.png
+   :alt: PurrfectMeow Logo
+
+**PurrfectKit** is a whimsical Python library that combines feline charm with powerful natural language processing (NLP), 
+optical character recognition (OCR), and document processing. Inspired by the elegance of Thai cat breeds, each module in 
+the ``purrfectmeow`` package is named after a unique breed, making text processing, semantic search, and data extraction.
 
 Contents
 --------
@@ -79,6 +81,7 @@ Using ``uv`` (Recommended)::
 
    git clone https://github.com/SUWALUTIONS/PurrfectKit.git
    cd PurrfectKit
+   uv pip install -e .
    uv sync --extra-index-url https://download.pytorch.org/whl/cpu
 
 Using ``pip``::
@@ -189,9 +192,9 @@ We welcome contributions! To get started:
 3. Commit changes: ``git commit -m "Add your feature"``.
 4. Push and open a pull request.
 
-See `CONTRIBUTING <CONTRIBUTING>`_ for detailed guidelines.
+See `CONTRIBUTING <../../../CONTRIBUTING.md>`_ for detailed guidelines.
 
 📄 License
 -----------
 
-PurrfectKit is released under the `MIT License <LICENSE>`_.
+PurrfectKit is released under the `MIT License <../../../LICENSE>`_.
