@@ -11,3 +11,5 @@ __all__ = [
     "Malet",
     "Suphalaks",
 ]
+
+__version__ = "0.1.2"
