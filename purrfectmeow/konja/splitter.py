@@ -1,8 +1,8 @@
 from typing import Optional, List
-from langchain_text_splitters import TokenTextSplitter
 from functools import lru_cache
+from langchain_text_splitters import TokenTextSplitter
+from purrfectmeow.taeng.model_loader import LoadingModel
 
-from purrfectmeow.taeng import Suphalaks
 from purrfectmeow.kitty import kitty_logger
 
 class Splitter:
@@ -66,10 +66,10 @@ class Splitter:
         Notes
         -----
         - This method helps improve performance when called repeatedly with the same model name.
-        - Tokenizer is loaded through `Suphalaks.get_tokenizer()` and cached using lru_cache.
+        - Tokenizer is loaded through `LoadingModel.get_hf_tokenizer()` and cached using lru_cache.
         """
         cls._logger.debug(f"Loading HuggingFace tokenizer for model '{model_name}'")
-        tokenizer = Suphalaks.get_tokenizer(model_name)
+        tokenizer = LoadingModel.get_hf_tokenizer(model_name)
         if tokenizer is None:
             cls._logger.error(f"No tokenizer found for model '{model_name}'")
             raise RuntimeError(f"No tokenizer found for model '{model_name}'")

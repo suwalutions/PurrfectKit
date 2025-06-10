@@ -8,11 +8,15 @@ class Kornja:
 
     This class provides a unified API for splitting large text inputs into smaller, manageable chunks using either
     token-based or separator-based strategies. It supports configuration of chunk size, overlap, and model-specific
-    parameters for token-aware splitting, as well as simple string-based segmentation for more structured inputs.
-
-    Public API
-    ----------
-    chunking(text, splitter, **kwargs)
+    parameters for token-aware splitting, as well as simple string-based segmentation for more structured inputs.        
+    """
+    @staticmethod
+    def chunking(
+        text: str,
+        splitter: Optional[Literal["token", "separator"]] = "token",
+        **kwargs
+    ) -> List[str]:
+        """
         Handles text chunking with token or separator-based splitting.
 
         Parameters
@@ -54,13 +58,7 @@ class Kornja:
         ['This is a sample text.', 'Another paragraph.']
         >>> Kornja.chunking(text, splitter="token", model_name="text-embedding-ada-002", chunk_size=10)
         ['This is a', 'sample text.', 'Another', 'paragraph.']
-    """
-    @staticmethod
-    def chunking(
-        text: str,
-        splitter: Optional[Literal["token", "separator"]] = "token",
-        **kwargs
-    ) -> List[str]:
+        """
         match splitter:
             case "token":
                 model_name = kwargs.get("model_name", "text-embedding-ada-002")

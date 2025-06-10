@@ -10,15 +10,15 @@ from purrfectmeow.taeng.template_doc import DocTemplate
 
 class Suphalaks:
     """
-    A utility class for handling files, loading models, and creating document templates.
+    A class for handling files, loading models, and creating document templates.
 
     This class consolidates methods from `HandleFile`, `LoadingModel`, `MetadataFile`, and `DocTemplate`
     to perform common operations such as saving/removing files, retrieving models and tokenizers, 
     extracting file metadata, and creating structured LangChain document templates.
-
-    Public API
-    ----------
-    save_file(file, file_name)
+    """
+    @staticmethod
+    def save_file(file: BinaryIO, file_name: str) -> str:
+        """
         Save a binary file to a temporary directory.
 
         Parameters
@@ -32,15 +32,19 @@ class Suphalaks:
         -------
         str
             The path to the saved file.
-
+        
         Examples
         --------
         >>> with open('example.txt', 'rb') as f:
         ...     file_path = Suphalaks.save_file(f, 'example.txt')
         >>> print(file_path)
         tmp_dir/example.txt
+        """
+        return HandleFile.save_temp_file(file, file_name)
 
-    remove_file(file_path)
+    @staticmethod
+    def remove_file(file_path: str) -> None:
+        """
         Remove a specified file from the filesystem if it exists.
 
         Parameters
@@ -51,8 +55,12 @@ class Suphalaks:
         Examples
         --------
         >>> Suphalaks.remove_file('tmp_dir/example.txt')
+        """
+        HandleFile.remove_temp_file(file_path)
 
-    get_tokenizer(model_name)
+    @staticmethod
+    def get_tokenizer(model_name: str = None) -> PreTrainedTokenizerBase:
+        """
         Retrieve a Hugging Face tokenizer by model name.
 
         Parameters
@@ -68,8 +76,13 @@ class Suphalaks:
         Examples
         --------
         >>> tokenizer = Suphalaks.get_tokenizer('bert-base-uncased')
+        """
+        model_name = model_name or "intfloat/multilingual-e5-large-instruct"
+        return LoadingModel.get_hf_tokenizer(model_name)
 
-    get_model_hf(model_name)
+    @staticmethod
+    def get_model_hf(model_name: str = None) -> PreTrainedModel:
+        """
         Retrieve a Hugging Face model by model name.
 
         Parameters
@@ -85,8 +98,13 @@ class Suphalaks:
         Examples
         --------
         >>> model = Suphalaks.get_model_hf('bert-base-uncased')
-
-    get_model_st(model_name)
+        """
+        model_name = model_name or "intfloat/multilingual-e5-large-instruct"
+        return LoadingModel.get_hf_model(model_name)
+    
+    @staticmethod
+    def get_model_st(model_name: str = None) -> SentenceTransformer:
+        """
         Retrieve a SentenceTransformer model by model name.
 
         Parameters
@@ -102,8 +120,13 @@ class Suphalaks:
         Examples
         --------
         >>> st_model = Suphalaks.get_model_st('all-MiniLM-L6-v2')
+        """
+        model_name = model_name or "intfloat/multilingual-e5-large-instruct"
+        return LoadingModel.get_st_model(model_name)
 
-    get_file_metadata(file_path)
+    @staticmethod
+    def get_file_metadata(file_path: str) -> Dict:
+        """
         Extract metadata from a file including size, timestamps, and type.
 
         Parameters
@@ -119,8 +142,12 @@ class Suphalaks:
         Examples
         --------
         >>> metadata = Suphalaks.get_file_metadata('tmp_dir/example.txt')
+        """
+        return MetadataFile(file_path).get_metadata()
 
-    document_template(chunks, metadata)
+    @staticmethod
+    def document_template(chunks: List[str], metadata: Dict[str, Any]) -> Document:
+        """
         Create a structured LangChain Document object from chunks and metadata.
 
         Parameters
@@ -141,36 +168,7 @@ class Suphalaks:
         >>> metadata = {"source": "example.txt", "author": "John Doe"}
         >>> document = Suphalaks.document_template(chunks, metadata)
         >>> print(document.page_content, document.metadata)
-    """
-    @staticmethod
-    def save_file(file: BinaryIO, file_name: str) -> str:
-        return HandleFile.save_temp_file(file, file_name)
-
-    @staticmethod
-    def remove_file(file_path: str) -> None:
-        HandleFile.remove_temp_file(file_path)
-
-    @staticmethod
-    def get_tokenizer(model_name: str = None) -> PreTrainedTokenizerBase:
-        model_name = model_name or "intfloat/multilingual-e5-large-instruct"
-        return LoadingModel.get_hf_tokenizer(model_name)
-
-    @staticmethod
-    def get_model_hf(model_name: str = None) -> PreTrainedModel:
-        model_name = model_name or "intfloat/multilingual-e5-large-instruct"
-        return LoadingModel.get_hf_model(model_name)
-    
-    @staticmethod
-    def get_model_st(model_name: str = None) -> SentenceTransformer:
-        model_name = model_name or "intfloat/multilingual-e5-large-instruct"
-        return LoadingModel.get_st_model(model_name)
-
-    @staticmethod
-    def get_file_metadata(file_path: str) -> Dict:
-        return MetadataFile(file_path).get_metadata()
-
-    @staticmethod
-    def document_template(chunks: List[str], metadata: Dict[str, Any]) -> Document:
+        """
         chunks = chunks or []
         metadata = metadata or {}
         return DocTemplate.create_template(chunks, metadata)

@@ -3,8 +3,8 @@ import numpy
 from typing import List, Optional, Tuple
 from langchain_core.documents import Document
 from transformers import PreTrainedModel, PreTrainedTokenizer
-
 from purrfectmeow.taeng.model_loader import LoadingModel
+
 from purrfectmeow.kitty import kitty_logger
 
 class SimpleHFEmbedder:

@@ -3,8 +3,8 @@ import spacy
 from spacy.language import Language
 from tokenizers import Tokenizer
 from pythainlp.tokenize import word_tokenize
-
 from purrfectmeow.taeng.model_loader import LoadingModel
+
 from purrfectmeow.kitty import kitty_logger
 
 class SimpleTokenization:
@@ -31,7 +31,7 @@ class SimpleTokenization:
     _DEFAULT_MODEL_NAME: str = "intfloat/multilingual-e5-large-instruct"
 
     _spacy_nlp: Optional[Language] = None
-    _huggingface_tokenizer: Optional[Tokenizer] = LoadingModel.get_tokenizer(_DEFAULT_MODEL_NAME)
+    _huggingface_tokenizer: Optional[Tokenizer] = LoadingModel.get_hf_tokenizer(_DEFAULT_MODEL_NAME)
 
     @classmethod
     def _load_spacy(cls) -> Language:

@@ -11,10 +11,15 @@ class WichienMaat:
     This class for performing similarity searches between a query embedding and a set of document embeddings. 
     Ideal for use cases involving small- to medium-scale semantic search applications, it abstracts
     the search logic while maintaining flexibility and interpretability of results.
-
-    Public Methods
-    --------------
-    get_search(query_emb, embeddings, docs, top_k)
+    """
+    @staticmethod
+    def get_search(
+        query_embedding: numpy.ndarray,
+        embeddings: List[numpy.ndarray],
+        documents: List[Document],
+        top_k: int = 5
+    ):
+        """
         Performs similarity searches using embeddings and documents.
 
         Parameters
@@ -42,14 +47,7 @@ class WichienMaat:
         >>> docs = [Document(page_content="Doc 1"), Document(page_content="Doc 2")]
         >>> WichienMaat.get_search(query_emb, embeddings, docs, top_k=2)
         [Document(page_content="Doc 1"), Document(page_content="Doc 2")]
-    """
-    @staticmethod
-    def get_search(
-        query_embedding: numpy.ndarray,
-        embeddings: List[numpy.ndarray],
-        documents: List[Document],
-        top_k: int = 5
-    ):
+        """
         return SimpleInMemoryVectorStore.search(
             query_embedding=query_embedding,
             vectors=list(embeddings),

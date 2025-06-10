@@ -1,23 +1,26 @@
+import numpy
 from typing import Optional, Literal, List
 from langchain_core.documents import Document
-import numpy
 
 from purrfectmeow.plort.embedder import SimpleHFEmbedder
 from purrfectmeow.plort.tokenization import SimpleTokenization
 
 class KhaoManee:
     """
-    A utility class for text embedding and tokenization.
+    A class provides underlying complexity of embedding and tokenization processes.
 
-    This class for encoding documents and query strings into dense vector using pre-trained transformer models, 
-    as well as tokenizing text through various supported engines such as spaCy, PyThaiNLP, and Hugging Face. 
-    It abstracts away the underlying complexity of embedding and tokenization processes.
-
-    Public API
-    ----------
-    get_embeddings(documents, model_name)
+    This class consolidates methods from `SimpleHFEmbedder`, and `SimpleTokenization` to perform
+    encoding documents and query strings into dense vector using pre-trained transformer models, 
+    as well as tokenizing text through various supported engines.
+    """
+    @staticmethod
+    def get_embeddings(
+        documents: Document, 
+        model_name: Optional[str] = "intfloat/multilingual-e5-large-instruct"
+    ) -> numpy.ndarray:
+        """
         Generates embeddings and tokenizes text using various engines.
-            
+
         Parameters
         ----------
         documents : Document
@@ -36,10 +39,17 @@ class KhaoManee:
         >>> doc = Document(page_content="This is a test document.")
         >>> KhaoManee.get_embeddings(doc)
         array([[0.1, 0.2, ...], ...])
-    
-    get_query_embeddings(query, model_name)
-        Generates embeddings for a query string using a specified model.
+        """
+        return SimpleHFEmbedder.embed_documents(documents, model_name)
 
+    @staticmethod
+    def get_query_embeddings(
+        query: Optional[str] = "meow~",
+        model_name: Optional[str] = "intfloat/multilingual-e5-large-instruct"
+    ) -> numpy.ndarray:
+        """
+        Generates embeddings for a query string using a specified model.
+        
         Parameters
         ----------
         query : str, optional
@@ -57,10 +67,17 @@ class KhaoManee:
         --------
         >>> KhaoManee.get_query_embeddings(query="What is this?")
         array([0.1, 0.2, ...])
-    
-    get_tokens(text, engine)
-        Tokenizes input text using a specified tokenization engine.
+        """
+        return SimpleHFEmbedder.embed_query(query, model_name)
 
+    @staticmethod
+    def get_tokens(
+        text: str,
+        engine: Optional[Literal["spacy", "pythainlp", "huggingface"]] = "pythainlp"
+    ) -> List[str]:
+        """
+        Tokenizes input text using a specified tokenization engine.
+        
         Parameters
         ----------
         text : str
@@ -83,24 +100,5 @@ class KhaoManee:
         --------
         >>> KhaoManee.get_tokens("Hello world", engine="pythainlp")
         ['Hello', 'world']
-    """
-    @staticmethod
-    def get_embeddings(
-        documents: Document, 
-        model_name: Optional[str] = "intfloat/multilingual-e5-large-instruct"
-    ) -> numpy.ndarray:
-        return SimpleHFEmbedder.embed_documents(documents, model_name)
-
-    @staticmethod
-    def get_query_embeddings(
-        query: Optional[str] = "meow~",
-        model_name: Optional[str] = "intfloat/multilingual-e5-large-instruct"
-    ) -> numpy.ndarray:
-        return SimpleHFEmbedder.embed_query(query, model_name)
-
-    @staticmethod
-    def get_tokens(
-        text: str,
-        engine: Optional[Literal["spacy", "pythainlp", "huggingface"]] = "pythainlp"
-    ) -> List[str]:
+        """
         return SimpleTokenization.tokenize(text, engine)

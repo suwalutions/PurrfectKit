@@ -1,10 +1,9 @@
 import numpy
-from pathlib import Path
-from typing import Optional, Union, List
+from typing import Optional, List
 from sentence_transformers import SentenceTransformer
+from purrfectmeow.taeng.model_loader import LoadingModel
 
 from purrfectmeow.kitty import kitty_logger
-from purrfectmeow.taeng.model_loader import LoadingModel
 
 class SimpleEmbeddings:
     """
