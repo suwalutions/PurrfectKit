@@ -370,7 +370,7 @@ wheels = [
 
 [[package]]
 name = "confection"
-version = "0.1.6"
+version = "0.1.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
