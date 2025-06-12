@@ -370,7 +370,7 @@ wheels = [
 
 [[package]]
 name = "confection"
-version = "0.1.5"
+version = "0.1.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
@@ -2332,7 +2332,7 @@ wheels = [
 
 [[package]]
 name = "purrfectkit"
-version = "0.1.5"
+version = "0.1.6"
 source = { editable = "." }
 dependencies = [
     { name = "docling" },
