@@ -266,9 +266,7 @@
         <span class="s2">&quot;EASYOCR&quot;</span><span class="p">:</span> <span class="n">OCR</span><span class="o">.</span><span class="n">convert_with_easyocr</span><span class="p">,</span>
         <span class="s2">&quot;SURYAOCR&quot;</span><span class="p">:</span> <span class="n">OCR</span><span class="o">.</span><span class="n">convert_with_suryaocr</span><span class="p">,</span>
         <span class="s2">&quot;PYMUPDF&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pymupdf</span><span class="p">,</span>
-        <span class="s2">&quot;PYMUPDF_AS_TXT&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pymupdf_as_txt</span><span class="p">,</span>
-        <span class="s2">&quot;PANDAS_EXCEL&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pandas_excel</span><span class="p">,</span>
-        <span class="s2">&quot;PANDAS_CSV&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pandas_csv</span><span class="p">,</span>
+        <span class="s2">&quot;PANDAS&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pandas</span><span class="p">,</span>
         <span class="s2">&quot;ENCODING&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_encoding</span>
     <span class="p">}</span>
 <div class="viewcode-block" id="Malet.loader">
@@ -307,13 +305,9 @@
 <span class="sd">        SURYAOCR : Callable</span>
 <span class="sd">            Extracts text using the SuryaOCR engine.</span>
 <span class="sd">        PYMUPDF : Callable</span>
-<span class="sd">            Parses PDF content using PyMuPDF.</span>
-<span class="sd">        PYMUPDF_AS_TXT : Callable</span>
-<span class="sd">            Extracts plain text from PDFs using PyMuPDF as text.</span>
-<span class="sd">        PANDAS_EXCEL : Callable</span>
-<span class="sd">            Reads Excel files using pandas.</span>
-<span class="sd">        PANDAS_CSV : Callable</span>
-<span class="sd">            Reads CSV files using pandas.</span>
+<span class="sd">            Parses PDF, text file content using PyMuPDF.</span>
+<span class="sd">        PANDAS : Callable</span>
+<span class="sd">            Reads Spreadsheet, CSV files using pandas.</span>
 <span class="sd">        ENCODING : Callable</span>
 <span class="sd">            Reads files using endcoding uft-8.</span>
 <span class="sd">        </span>
