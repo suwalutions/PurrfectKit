@@ -13,3 +13,4 @@ Getting Started
    usage
    version
    meow
+   dev-guide

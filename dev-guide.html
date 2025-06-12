@@ -1,13 +1,13 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="./">
-  <head>
-<meta charset="utf-8"/>
+  <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="#" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Meow Package" href="meow.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-<meta name="robots" content="noindex" />
-<title>Search - PurrfectKit  documentation</title><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+        <title>Developer Guide - PurrfectKit documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -182,7 +182,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -196,19 +196,19 @@
   
   <span class="sidebar-brand-text">PurrfectKit  documentation</span>
   
-</a><form class="sidebar-search-container" method="get" action="#" role="search">
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="readme.html">PurrfectKit</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="version.html">Versioning</a></li>
 <li class="toctree-l1"><a class="reference internal" href="meow.html">Meow Package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dev-guide.html">Developer Guide</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Developer Guide</a></li>
 </ul>
 
 </div>
@@ -228,7 +228,13 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/dev-guide.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
@@ -237,23 +243,73 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          
-<noscript>
-<div class="admonition error">
-  <p class="admonition-title">Error</p>
-  <p>
-    Please activate JavaScript to enable the search functionality.
-  </p>
+          <section id="developer-guide">
+<span id="dev-guide"></span><h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Link to this heading">¶</a></h1>
+<p>Welcome to the Developer Guide! This document provides step-by-step instructions
+for contributing to the project. It covers issue creation, branching, development workflow,
+and submitting pull requests.</p>
+<section id="step-1-create-an-issue">
+<h2>Step 1: Create an Issue<a class="headerlink" href="#step-1-create-an-issue" title="Link to this heading">¶</a></h2>
+<p>Open a new issue with a concise, descriptive title and a detailed description of the bug,
+feature, or improvement you propose. Use labels to categorize the issue
+(e.g., <code class="docutils literal notranslate"><span class="pre">bug</span></code>, <code class="docutils literal notranslate"><span class="pre">enhancement</span></code>, <code class="docutils literal notranslate"><span class="pre">documentation</span></code>).</p>
+</section>
+<section id="step-2-create-a-branch">
+<h2>Step 2: Create a Branch<a class="headerlink" href="#step-2-create-a-branch" title="Link to this heading">¶</a></h2>
+<p>Create a new branch for your work based on the issue number:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>fix-issue-&lt;issue-number&gt;
+</pre></div>
 </div>
-</noscript>
-
-<div id="search-results"></div>
+<p>Replace <code class="docutils literal notranslate"><span class="pre">&lt;issue-number&gt;</span></code> with the relevant GitHub issue number.</p>
+</section>
+<section id="step-3-implement-your-changes">
+<h2>Step 3: Implement Your Changes<a class="headerlink" href="#step-3-implement-your-changes" title="Link to this heading">¶</a></h2>
+<p>Write your code following the project’s style and conventions. Include comments
+and update documentation for any new functionality.</p>
+</section>
+<section id="step-4-commit-your-changes">
+<h2>Step 4: Commit Your Changes<a class="headerlink" href="#step-4-commit-your-changes" title="Link to this heading">¶</a></h2>
+<p>Stage and commit your changes with a clear, descriptive message:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Fixes #&lt;issue-number&gt;: Brief description of the fix&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="step-5-push-your-branch">
+<h2>Step 5: Push Your Branch<a class="headerlink" href="#step-5-push-your-branch" title="Link to this heading">¶</a></h2>
+<p>Push your branch to your forked repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>fix-issue-&lt;issue-number&gt;
+</pre></div>
+</div>
+</section>
+<section id="step-6-open-a-pull-request">
+<h2>Step 6: Open a Pull Request<a class="headerlink" href="#step-6-open-a-pull-request" title="Link to this heading">¶</a></h2>
+<p>Open a Pull Request (PR) from your fork’s branch to the <code class="docutils literal notranslate"><span class="pre">meow</span></code> branch in the upstream repository.</p>
+<ul class="simple">
+<li><p>Reference the issue in your PR description (e.g., “Closes #&lt;issue-number&gt;”).</p></li>
+<li><p>Complete the PR template.</p></li>
+<li><p>Request a review from a maintainer.</p></li>
+</ul>
+</section>
+<section id="step-7-address-feedback">
+<h2>Step 7: Address Feedback<a class="headerlink" href="#step-7-address-feedback" title="Link to this heading">¶</a></h2>
+<p>Respond to feedback from reviewers. Make any requested changes and push updates to your branch.</p>
+</section>
+<section id="step-8-merge">
+<h2>Step 8: Merge<a class="headerlink" href="#step-8-merge" title="Link to this heading">¶</a></h2>
+<p>After approval and successful checks, your PR will be merged into the <code class="docutils literal notranslate"><span class="pre">meow</span></code> branch.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you need help at any step, feel free to reach out to the maintainers or ask in the project’s communication channels.</p>
+</div>
+</section>
+</section>
 
         </article>
       </div>
@@ -261,7 +317,17 @@
         
         <div class="related-pages">
           
-          
+          <a class="prev-page" href="meow.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Meow Package</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -283,8 +349,34 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Developer Guide</a><ul>
+<li><a class="reference internal" href="#step-1-create-an-issue">Step 1: Create an Issue</a></li>
+<li><a class="reference internal" href="#step-2-create-a-branch">Step 2: Create a Branch</a></li>
+<li><a class="reference internal" href="#step-3-implement-your-changes">Step 3: Implement Your Changes</a></li>
+<li><a class="reference internal" href="#step-4-commit-your-changes">Step 4: Commit Your Changes</a></li>
+<li><a class="reference internal" href="#step-5-push-your-branch">Step 5: Push Your Branch</a></li>
+<li><a class="reference internal" href="#step-6-open-a-pull-request">Step 6: Open a Pull Request</a></li>
+<li><a class="reference internal" href="#step-7-address-feedback">Step 7: Address Feedback</a></li>
+<li><a class="reference internal" href="#step-8-merge">Step 8: Merge</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -295,8 +387,5 @@
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
-    
-<script src="_static/searchtools.js"></script>
-<script src="_static/language_data.js"></script>
-<script src="searchindex.js"></script></body>
+    </body>
 </html>
