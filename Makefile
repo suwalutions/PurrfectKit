@@ -14,7 +14,7 @@ bump:
 
 changelog:
 	@echo "Generating changelog..."
-	@git log $(VERSION)^..HEAD --pretty=format:"* %s (%an)" > CHANGELOG.md || echo "Failed to generate changelog"
+	@git log $(shell git describe --tags --abbrev=0 --exclude $(VERSION))..HEAD --pretty=format:"* %s (%an)" > CHANGELOG.md || echo "Failed to generate changelog"
 	@git add CHANGELOG.md
 	@git commit -m "Update changelog for version $(VERSION)"
 
