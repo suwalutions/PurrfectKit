@@ -20,9 +20,7 @@ class Malet:
         "EASYOCR": OCR.convert_with_easyocr,
         "SURYAOCR": OCR.convert_with_suryaocr,
         "PYMUPDF": Simple.convert_with_pymupdf,
-        "PYMUPDF_AS_TXT": Simple.convert_with_pymupdf_as_txt,
-        "PANDAS_EXCEL": Simple.convert_with_pandas_excel,
-        "PANDAS_CSV": Simple.convert_with_pandas_csv,
+        "PANDAS": Simple.convert_with_pandas,
         "ENCODING": Simple.convert_with_encoding
     }
     @staticmethod
@@ -59,13 +57,9 @@ class Malet:
         SURYAOCR : Callable
             Extracts text using the SuryaOCR engine.
         PYMUPDF : Callable
-            Parses PDF content using PyMuPDF.
-        PYMUPDF_AS_TXT : Callable
-            Extracts plain text from PDFs using PyMuPDF as text.
-        PANDAS_EXCEL : Callable
-            Reads Excel files using pandas.
-        PANDAS_CSV : Callable
-            Reads CSV files using pandas.
+            Parses PDF, text file content using PyMuPDF.
+        PANDAS : Callable
+            Reads Spreadsheet, CSV files using pandas.
         ENCODING : Callable
             Reads files using endcoding uft-8.
         
