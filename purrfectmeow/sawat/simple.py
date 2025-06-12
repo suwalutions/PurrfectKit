@@ -18,6 +18,8 @@ class Simple:
         Convert first sheet of an Excel file to a formatted text table.
     convert_with_pandas_csv(input_path)
         Convert CSV files to a formatted text table.
+    convert_with_encoding(input_path)
+        Convert files to with encoding UTF-8.
     
     Examples
     --------
@@ -25,6 +27,7 @@ class Simple:
     >>> Simple.convert_with_pymupdf_as_txt("document.pdf")
     >>> Simple.convert_with_pandas_excel("spreadsheet.xlsx")
     >>> Simple.convert_with_pandas_csv("data.csv")
+    >>> Simple.convert_with_encoding("readme.md")
     """
     _logger = kitty_logger(__name__)
     
@@ -160,4 +163,33 @@ class Simple:
         return Simple._convert(
             input_path,
             lambda path: pandas.read_csv(path).to_string(index=False)
+        )
+    
+    @staticmethod
+    def convert_with_encoding(input_path: str) -> str:
+        """
+        Perform conversion using UTF-8 encoding.
+
+        Parameters
+        ----------
+        input_path : str
+            Path to the input file.
+
+        Returns
+        ------
+        str
+            Extracted text from the input file.
+
+        Notes
+        -----
+        - This method assumes the input file is UTF-8 encoded.
+        - Useful for handling `.md`, `.txt` or similar structure text files.
+        """
+        def encoding_read(path):
+            with open(path, "r", encoding="utf-8") as f:
+                return f.read()
+            
+        return Simple._convert(
+            input_path,
+            lambda path: encoding_read(path)
         )

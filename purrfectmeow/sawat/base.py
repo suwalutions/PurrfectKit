@@ -23,6 +23,7 @@ class Malet:
         "PYMUPDF_AS_TXT": Simple.convert_with_pymupdf_as_txt,
         "PANDAS_EXCEL": Simple.convert_with_pandas_excel,
         "PANDAS_CSV": Simple.convert_with_pandas_csv,
+        "ENCODING": Simple.convert_with_encoding
     }
     @staticmethod
     def loader(
@@ -65,6 +66,8 @@ class Malet:
             Reads Excel files using pandas.
         PANDAS_CSV : Callable
             Reads CSV files using pandas.
+        ENCODING : Callable
+            Reads files using endcoding uft-8.
         
         Returns
         -------
