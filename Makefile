@@ -22,8 +22,22 @@ tag-push:
 	@git push origin HEAD
 	@git push origin --tags
 
-release: check-clean bump changelog tag-push
-	@echo "Release $(VERSION) completed."
+latest-tag:
+	@if ! echo "patch minor major" | grep -qw "$(SemVer)"; then \
+		echo "Skipping 'latest' tag update for SemVer=$(SemVer)"; \
+		exit 0; \
+	fi
+	@if git rev-parse "refs/tags/latest" >/dev/null 2>&1; then \
+		echo "Removing existing 'latest' tag..."; \
+		git tag -d latest; \
+		git push origin :refs/tags/latest; \
+	fi
+	@echo "Creating new 'latest' tag at current commit..."
+	@git tag latest
+	@git push origin latest
+
+release: check-clean bump changelog tag-push latest-tag
+	@echo "Release $(VERSION) completed and 'latest' tag updated."
 
 # Deploying new documentation
 # Usage: make tag TAG=docs
