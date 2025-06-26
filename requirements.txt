@@ -16,3 +16,4 @@ markitdown
 langchain-text-splitters
 pythainlp
 spacy # python =<3.12
+python-doctr[torch]
