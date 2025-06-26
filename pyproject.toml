@@ -35,6 +35,7 @@ dependencies = [
     "pymupdf<=1.26.0",
     "pytesseract<=0.3.13",
     "pythainlp<=5.1.2",
+    "python-doctr[torch]>=0.12.0",
     "python-magic<=0.4.27",
     "scikit-learn>=1.6.1",
     "sentence-transformers>=4.1.0",

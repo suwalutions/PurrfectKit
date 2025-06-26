@@ -1,5 +1,5 @@
+import os
 from typing import BinaryIO, Any, Callable
-from purrfectmeow.taeng.file_handler import HandleFile
 
 from purrfectmeow.sawat.markdown import Markdown
 from purrfectmeow.sawat.ocr import OCR
@@ -19,6 +19,7 @@ class Malet:
         "PYTESSERACT": OCR.convert_with_pytesseract,
         "EASYOCR": OCR.convert_with_easyocr,
         "SURYAOCR": OCR.convert_with_suryaocr,
+        "DOCTR": OCR.convert_with_doctr,
         "PYMUPDF": Simple.convert_with_pymupdf,
         "PANDAS": Simple.convert_with_pandas,
         "ENCODING": Simple.convert_with_encoding
@@ -56,6 +57,8 @@ class Malet:
             Extracts text using the EasyOCR engine.
         SURYAOCR : Callable
             Extracts text using the SuryaOCR engine.
+        DOCTR: Callable
+            Extracts text using the docTR engine.
         PYMUPDF : Callable
             Parses PDF, text file content using PyMuPDF.
         PANDAS : Callable
@@ -74,12 +77,16 @@ class Malet:
         ...     text = Malet.loader(f, "example.pdf", loader="PYMUPDF")
         >>> print(text)
         """
-        file_path = HandleFile.save_temp_file(file, file_name)
+        tmp_path = '.cache/tmp'
+        os.makedirs(tmp_path, exist_ok=True)
+        file_path = os.path.join(tmp_path, file_name)
         try:
+            with open(file_path, "wb") as f:
+                f.write(file.read())
             if loader not in Malet._LOADER_METHODS:
                 raise ValueError(f"Unsupported loader: {loader}")
             
             method = Malet._LOADER_METHODS[loader]
             return method(file_path, **kwargs)
         finally:
-            HandleFile.remove_temp_file(file_path)
+            os.remove(file_path)

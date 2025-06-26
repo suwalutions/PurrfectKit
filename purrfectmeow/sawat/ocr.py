@@ -2,9 +2,12 @@ import os
 import time
 import numpy
 import easyocr
+import tempfile
 import pytesseract
 from typing import List
 from PIL import Image
+from doctr.io import DocumentFile
+from doctr.models import ocr_predictor
 from pdf2image import convert_from_path
 from surya.recognition import RecognitionPredictor
 from surya.detection import DetectionPredictor
@@ -174,3 +177,48 @@ class OCR:
             return "\n".join(line.text for line in prediction[0].text_lines)
 
         return OCR._convert(input_path, surya_converter)
+
+    @staticmethod
+    def convert_with_doctr(input_path: str) -> List[str]:
+        """
+        Perform OCR using the Doctr library.
+
+        Parameters
+        ----------
+        input_path : str
+            Path to the input image or PDF file.
+
+        Returns
+        -------
+        List[str]
+            Extracted text from the input file, with each page's text joined by newlines.
+
+        Notes
+        -----
+        - This method uses the `doctr` library's OCR predictor, which supports multilingual text extraction.
+        - The input file can be an image (PNG, JPG, JPEG) or a PDF.
+        - Temporary files are used for processing images.
+        - Best suited for high-quality scans and documents with clear text.
+        """
+        def doctr_converter(img) -> str:
+            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+                img.save(tmp.name)
+                temp_image_path = tmp.name
+
+            model = ocr_predictor(pretrained=True)
+            doc = DocumentFile.from_images(temp_image_path)
+            result = model(doc)
+            data = result.export()
+            combined_text = "\n".join(
+                word["value"]
+                for page in data["pages"]
+                for block in page.get("blocks", [])
+                for line in block.get("lines", [])
+                for word in line.get("words", [])
+                if "value" in word
+            )
+            if os.path.exists(temp_image_path):
+                os.remove(temp_image_path)
+            return combined_text
+        
+        return OCR._convert(input_path, doctr_converter)
