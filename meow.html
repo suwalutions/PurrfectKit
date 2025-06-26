@@ -480,6 +480,7 @@ Markdown converters, OCR engines, and simple data parsers.</p>
 <li><p><strong>PYTESSERACT</strong> (<em>Callable</em>) – Extracts text from images or PDFs using Tesseract OCR.</p></li>
 <li><p><strong>EASYOCR</strong> (<em>Callable</em>) – Extracts text using the EasyOCR engine.</p></li>
 <li><p><strong>SURYAOCR</strong> (<em>Callable</em>) – Extracts text using the SuryaOCR engine.</p></li>
+<li><p><strong>DOCTR</strong> (<em>Callable</em>) – Extracts text using the docTR engine.</p></li>
 <li><p><strong>PYMUPDF</strong> (<em>Callable</em>) – Parses PDF, text file content using PyMuPDF.</p></li>
 <li><p><strong>PANDAS</strong> (<em>Callable</em>) – Reads Spreadsheet, CSV files using pandas.</p></li>
 <li><p><strong>ENCODING</strong> (<em>Callable</em>) – Reads files using endcoding uft-8.</p></li>
@@ -507,7 +508,7 @@ Markdown converters, OCR engines, and simple data parsers.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.</span></span><span class="sig-name descname"><span class="pre">Suphalaks</span></span><a class="reference internal" href="_modules/purrfectmeow/taeng/base.html#Suphalaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A class for handling files, loading models, and creating document templates.</p>
-<p>This class consolidates methods from <cite>HandleFile</cite>, <cite>LoadingModel</cite>, <cite>MetadataFile</cite>, and <cite>DocTemplate</cite>
+<p>This class consolidates methods from <cite>LoadingModel</cite>, <cite>DocTemplate</cite> and <cite>MetadataFile</cite>
 to perform common operations such as saving/removing files, retrieving models and tokenizers,
 extracting file metadata, and creating structured LangChain document templates.</p>
 <dl class="py method">
@@ -617,48 +618,6 @@ extracting file metadata, and creating structured LangChain document templates.<
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Suphalaks</span><span class="o">.</span><span class="n">get_tokenizer</span><span class="p">(</span><span class="s1">&#39;bert-base-uncased&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remove_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/purrfectmeow/taeng/base.html#Suphalaks.remove_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Remove a specified file from the filesystem if it exists.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The path of the file to be removed.</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Suphalaks</span><span class="o">.</span><span class="n">remove_file</span><span class="p">(</span><span class="s1">&#39;tmp_dir/example.txt&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.BinaryIO" title="(in Python v3.13)"><span class="pre">BinaryIO</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="_modules/purrfectmeow/taeng/base.html#Suphalaks.save_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Save a binary file to a temporary directory.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>file</strong> (<em>BinaryIO</em>) – The binary file to be saved.</p></li>
-<li><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name to use for the saved file.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The path to the saved file.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;example.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="n">file_path</span> <span class="o">=</span> <span class="n">Suphalaks</span><span class="o">.</span><span class="n">save_file</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;example.txt&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
-<span class="go">tmp_dir/example.txt</span>
 </pre></div>
 </div>
 </dd></dl>

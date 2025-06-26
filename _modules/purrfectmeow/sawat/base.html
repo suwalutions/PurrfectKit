@@ -243,8 +243,8 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for purrfectmeow.sawat.base</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.taeng.file_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">HandleFile</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.sawat.markdown</span><span class="w"> </span><span class="kn">import</span> <span class="n">Markdown</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.sawat.ocr</span><span class="w"> </span><span class="kn">import</span> <span class="n">OCR</span>
@@ -266,6 +266,7 @@
         <span class="s2">&quot;PYTESSERACT&quot;</span><span class="p">:</span> <span class="n">OCR</span><span class="o">.</span><span class="n">convert_with_pytesseract</span><span class="p">,</span>
         <span class="s2">&quot;EASYOCR&quot;</span><span class="p">:</span> <span class="n">OCR</span><span class="o">.</span><span class="n">convert_with_easyocr</span><span class="p">,</span>
         <span class="s2">&quot;SURYAOCR&quot;</span><span class="p">:</span> <span class="n">OCR</span><span class="o">.</span><span class="n">convert_with_suryaocr</span><span class="p">,</span>
+        <span class="s2">&quot;DOCTR&quot;</span><span class="p">:</span> <span class="n">OCR</span><span class="o">.</span><span class="n">convert_with_doctr</span><span class="p">,</span>
         <span class="s2">&quot;PYMUPDF&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pymupdf</span><span class="p">,</span>
         <span class="s2">&quot;PANDAS&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_pandas</span><span class="p">,</span>
         <span class="s2">&quot;ENCODING&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">convert_with_encoding</span>
@@ -305,6 +306,8 @@
 <span class="sd">            Extracts text using the EasyOCR engine.</span>
 <span class="sd">        SURYAOCR : Callable</span>
 <span class="sd">            Extracts text using the SuryaOCR engine.</span>
+<span class="sd">        DOCTR: Callable</span>
+<span class="sd">            Extracts text using the docTR engine.</span>
 <span class="sd">        PYMUPDF : Callable</span>
 <span class="sd">            Parses PDF, text file content using PyMuPDF.</span>
 <span class="sd">        PANDAS : Callable</span>
@@ -323,15 +326,19 @@
 <span class="sd">        ...     text = Malet.loader(f, &quot;example.pdf&quot;, loader=&quot;PYMUPDF&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; print(text)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">file_path</span> <span class="o">=</span> <span class="n">HandleFile</span><span class="o">.</span><span class="n">save_temp_file</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="n">tmp_path</span> <span class="o">=</span> <span class="s1">&#39;.cache/tmp&#39;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
             <span class="k">if</span> <span class="n">loader</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Malet</span><span class="o">.</span><span class="n">_LOADER_METHODS</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported loader: </span><span class="si">{</span><span class="n">loader</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             
             <span class="n">method</span> <span class="o">=</span> <span class="n">Malet</span><span class="o">.</span><span class="n">_LOADER_METHODS</span><span class="p">[</span><span class="n">loader</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">method</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
-            <span class="n">HandleFile</span><span class="o">.</span><span class="n">remove_temp_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
