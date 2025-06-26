@@ -12,18 +12,6 @@ bump:
 	@echo "Bumping version ($(v-part)) to $(VERSION)"
 	@bumpversion --allow-dirty $(v-part)
 
-changelog:
-	@echo "Generating changelog..."
-	@{ \
-		base_tag=$$(git describe --tags --abbrev=0 2>/dev/null || echo ""); \
-		if [ -n "$$base_tag" ]; then \
-			git log $$base_tag..HEAD --pretty=format:"* %s (%an)" > CHANGELOG.md; \
-		else \
-			echo "* Initial release (no previous tag)" > CHANGELOG.md; \
-		fi \
-	}
-	@git add CHANGELOG.md
-	@git commit -m "Update changelog for version $(VERSION)" || true
 
 tag-push:
 	@git push origin HEAD
@@ -43,7 +31,7 @@ latest-tag:
 	@git tag latest
 	@git push origin latest
 
-release: check-clean bump changelog tag-push latest-tag
+release: check-clean bump tag-push latest-tag
 	@echo "Release $(VERSION) completed and 'latest' tag updated."
 
 # Deploying new documentation
