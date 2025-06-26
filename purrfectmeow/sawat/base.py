@@ -19,6 +19,7 @@ class Malet:
         "PYTESSERACT": OCR.convert_with_pytesseract,
         "EASYOCR": OCR.convert_with_easyocr,
         "SURYAOCR": OCR.convert_with_suryaocr,
+        "DOCTR": OCR.convert_with_doctr,
         "PYMUPDF": Simple.convert_with_pymupdf,
         "PANDAS": Simple.convert_with_pandas,
         "ENCODING": Simple.convert_with_encoding
@@ -56,6 +57,8 @@ class Malet:
             Extracts text using the EasyOCR engine.
         SURYAOCR : Callable
             Extracts text using the SuryaOCR engine.
+        DOCTR: Callable
+            Extracts text using the docTR engine.
         PYMUPDF : Callable
             Parses PDF, text file content using PyMuPDF.
         PANDAS : Callable
