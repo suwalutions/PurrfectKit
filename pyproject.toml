@@ -1,6 +1,6 @@
 [project]
 name = "purrfectkit"
-version = "0.1.8"
+version = "0.1.9"
 description = "**PurrfectKit** is a whimsical Python library that blends feline charm with powerful NLP functionality."
 readme = "README.md"
 authors = [{ name = "SUWALUTIONS", email = "suwa@suwalutions.com" }]

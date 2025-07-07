@@ -1565,7 +1565,7 @@ wheels = [
 
 [[package]]
 name = "matplotlib-inline"
-version = "0.1.8"
+version = "0.1.9"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "traitlets" },
@@ -2426,7 +2426,7 @@ wheels = [
 
 [[package]]
 name = "purrfectkit"
-version = "0.1.8"
+version = "0.1.9"
 source = { editable = "." }
 dependencies = [
     { name = "docling" },
