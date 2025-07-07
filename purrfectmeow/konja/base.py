@@ -74,7 +74,7 @@ class Kornja:
                 
                 if not isinstance(separator, str) or separator == "":
                     raise ValueError("separator must be a non-empty string for separator splitter")
-                sptr = Splitter.create_separator_splitter(separator)
+                sptr = Splitter.create_separate_splitter(separator)
                 
             case _:
                 raise ValueError(f"Invalid splitter type: {splitter}. Must be 'token' or 'separate'.")
