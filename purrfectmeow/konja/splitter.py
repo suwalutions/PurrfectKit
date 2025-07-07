@@ -100,9 +100,9 @@ class Splitter:
         This method pervents silent failures or misbehavior due to invalid string inputs.
         """
         cls._logger.debug(f"Validating parameter '{param_name}' in {method} with value: {param}")
-        if not param or not isinstance(param, str) or not param.strip():
-            cls._logger.error(f"{param_name} must be a non-empty, non-whitespace string in {method}")
-            raise ValueError(f"{param_name} must be a non-empty, non-whitespace string")
+        if not isinstance(param, str) or param == "":
+            cls._logger.error(f"{param_name} must be a non-empty string in {method}")
+            raise ValueError(f"{param_name} must be a non-empty string")
 
     @classmethod
     def _validate_and_set_chunk_params(
