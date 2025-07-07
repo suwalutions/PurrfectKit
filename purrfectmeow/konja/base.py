@@ -4,27 +4,27 @@ from purrfectmeow.konja.splitter import Splitter
 
 class Kornja:
     """
-    A flexible interface for text segmentation based on tokenization or custom separators.
+    A flexible interface for text segmentation based on tokenization or custom separation.
 
     This class provides a unified API for splitting large text inputs into smaller, manageable chunks using either
-    token-based or separator-based strategies. It supports configuration of chunk size, overlap, and model-specific
+    token-based or separate-based strategies. It supports configuration of chunk size, overlap, and model-specific
     parameters for token-aware splitting, as well as simple string-based segmentation for more structured inputs.        
     """
     @staticmethod
     def chunking(
         text: str,
-        splitter: Optional[Literal["token", "separator"]] = "token",
+        splitter: Optional[Literal["token", "separate"]] = "token",
         **kwargs
     ) -> List[str]:
         """
-        Handles text chunking with token or separator-based splitting.
+        Handles text chunking with token or separate-based splitting.
 
         Parameters
         ----------
         text : str
             The input text to be chunked.
         splitter : str, optional
-            The type of splitter to use for chunking. Must be either 'token' or 'separator'.
+            The type of splitter to use for chunking. Must be either 'token' or 'separate'.
         **kwargs : dict
             Additional parameters for the splitter:
             
@@ -36,7 +36,7 @@ class Kornja:
                 chunk_overlap : int, optional
                     Number of overlapping tokens between chunks.
             
-            For 'separator' splitter:
+            For 'separate' splitter:
                 separator : str, optional
                     String used to split the text.
 
@@ -48,13 +48,13 @@ class Kornja:
         Raises
         ------
         ValueError
-            If `splitter` is not 'token' or 'separator', or if required parameters
-            (`model_name` for 'token', `separator` for 'separator') are invalid or empty.
+            If `splitter` is not 'token' or 'separate', or if required parameters
+            (`model_name` for 'token', `separator` for 'separate') are invalid or empty.
 
         Examples
         --------
         >>> text = "This is a sample text.\\n\\nAnother paragraph."
-        >>> Kornja.chunking(text, splitter="separator")
+        >>> Kornja.chunking(text, splitter="separate")
         ['This is a sample text.', 'Another paragraph.']
         >>> Kornja.chunking(text, splitter="token", model_name="text-embedding-ada-002", chunk_size=10)
         ['This is a', 'sample text.', 'Another', 'paragraph.']
@@ -69,15 +69,15 @@ class Kornja:
                     raise ValueError("model_name must be a non-empty string for token splitter")
                 sptr = Splitter.create_token_splitter(model_name, chunk_size, chunk_overlap)
 
-            case "separator":
+            case "separate":
                 separator = kwargs.get("separator", "\n\n")
                 
-                if not separator or not isinstance(separator, str) or not separator.strip():
+                if not isinstance(separator, str) or separator == "":
                     raise ValueError("separator must be a non-empty string for separator splitter")
                 sptr = Splitter.create_separator_splitter(separator)
                 
             case _:
-                raise ValueError(f"Invalid splitter type: {splitter}. Must be 'token' or 'separator'.")
+                raise ValueError(f"Invalid splitter type: {splitter}. Must be 'token' or 'separate'.")
 
         chunks = sptr.split_text(text)
         return chunks

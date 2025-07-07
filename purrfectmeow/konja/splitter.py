@@ -7,7 +7,7 @@ from purrfectmeow.kitty import kitty_logger
 
 class Splitter:
     """
-    A utility class for creating text splitters for token-based and separator-based segmentation.
+    A utility class for creating text splitters for token-based and separate-based segmentation.
 
     Attributes
     ----------
@@ -20,16 +20,16 @@ class Splitter:
     --------------
     create_token_splitter(model_name, chunk_size, chunk_overlap)
         Creates a token-based splitter using either an OpenAI or HuggingFace tokenizer based on the model name.
-    create_separator_splitter(separator)
-        Creates a separator-based splitter using a specified separator (e.g., paragraph or sentence).
+    create_separate_splitter(separator)
+        Creates a separate-based splitter using a specified separator (e.g., paragraph or sentence).
 
     Examples
     --------
-    >>> splitter = Splitter.create_token_splitter("text-embedding-ada-002", chunk_size=256, chunk_overlap=32)
-    >>> chunks = splitter.split_text("สวัสดีครับ นี่คือข้อความที่เราจะทำการแบ่งออกเป็นหลายตอน...")
+    >>> token_splitter = Splitter.create_token_splitter("text-embedding-ada-002", chunk_size=256, chunk_overlap=32)
+    >>> chunks = token_splitter.split_text("สวัสดีครับ นี่คือข้อความที่เราจะทำการแบ่งออกเป็นหลายตอน...")
 
-    >>> separator_splitter = Splitter.create_separator_splitter("\n\n")
-    >>> parts = separator_splitter.split_text("ย่อหน้าแรก\n\nย่อหน้าที่สอง\n\nย่อหน้าที่สาม")
+    >>> separate_splitter = Splitter.create_separate_splitter("\n\n")
+    >>> parts = separate_splitter.split_text("ย่อหน้าแรก\n\nย่อหน้าที่สอง\n\nย่อหน้าที่สาม")
     """
     _logger = kitty_logger(__name__)
 
@@ -278,7 +278,7 @@ class Splitter:
 
             Notes
             -----
-            This method retains the separator at the ennd.
+            This method retains the separator at the end.
             """
             if not isinstance(text, str):
                 Splitter._logger.error("Text must be a string")
@@ -291,7 +291,7 @@ class Splitter:
             return chunks
         
     @classmethod
-    def create_separator_splitter(
+    def create_separate_splitter(
         cls,
         separator: str = "\n\n",
     ) -> KornjaSeparatorSplitter:
@@ -317,8 +317,8 @@ class Splitter:
         -----
         This method is useful for custom logic like paragraph-level or sentence-level chunking without relying on token count.
         """
-        cls._logger.debug(f"Starting create_separator_splitter with separator='{separator}'")
-        cls._validate_string_param(separator, "Separator", "create_separator_splitter")
+        cls._logger.debug(f"Starting create_separate_splitter with separator='{separator}'")
+        cls._validate_string_param(separator, "Separator", "create_separate_splitter")
         cls._log_splitter_creation("separator splitter", {"separator": separator})
 
         splitter = cls.KornjaSeparatorSplitter(separator)
