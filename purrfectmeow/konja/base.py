@@ -37,7 +37,7 @@ class Kornja:
                     Number of overlapping tokens between chunks.
             
             For 'separate' splitter:
-                separator : str, optional
+                chunk_separator : str, optional
                     String used to split the text.
 
         Returns
@@ -49,19 +49,19 @@ class Kornja:
         ------
         ValueError
             If `splitter` is not 'token' or 'separate', or if required parameters
-            (`model_name` for 'token', `separator` for 'separate') are invalid or empty.
+            (`model_name` for 'token', `chunk_separator` for 'separate') are invalid or empty.
 
         Examples
         --------
         >>> text = "This is a sample text.\\n\\nAnother paragraph."
-        >>> Kornja.chunking(text, splitter="separate")
+        >>> Kornja.chunking(text, splitter="separate", chunk_separator="\\n\\n")
         ['This is a sample text.', 'Another paragraph.']
         >>> Kornja.chunking(text, splitter="token", model_name="text-embedding-ada-002", chunk_size=10)
         ['This is a', 'sample text.', 'Another', 'paragraph.']
         """
         match splitter:
             case "token":
-                model_name = kwargs.get("model_name", "text-embedding-ada-002")
+                model_name = kwargs.get("model_name", "text-embedding-3-large")
                 chunk_size = kwargs.get("chunk_size", 500)
                 chunk_overlap = kwargs.get("chunk_overlap", 0)
 
@@ -70,7 +70,7 @@ class Kornja:
                 sptr = Splitter.create_token_splitter(model_name, chunk_size, chunk_overlap)
 
             case "separate":
-                separator = kwargs.get("separator", "\n\n")
+                separator = kwargs.get("chunk_separator") or kwargs.get("separator", "\n\n")
                 
                 if not isinstance(separator, str) or separator == "":
                     raise ValueError("separator must be a non-empty string for separator splitter")
