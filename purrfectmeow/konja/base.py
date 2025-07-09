@@ -13,6 +13,7 @@ class Kornja:
     @staticmethod
     def chunking(
         text: str,
+        model_name: Optional[str],
         splitter: Optional[Literal["token", "separate"]] = "token",
         **kwargs
     ) -> List[str]:
