@@ -264,19 +264,19 @@ Meow provides streamlined components to support robust and scalable natural lang
 <dt class="sig sig-object py">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.</span></span><span class="sig-name descname"><span class="pre">Kornja</span></span><a class="reference internal" href="_modules/purrfectmeow/konja/base.html#Kornja"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>A flexible interface for text segmentation based on tokenization or custom separators.</p>
+<p>A flexible interface for text segmentation based on tokenization or custom separation.</p>
 <p>This class provides a unified API for splitting large text inputs into smaller, manageable chunks using either
-token-based or separator-based strategies. It supports configuration of chunk size, overlap, and model-specific
+token-based or separate-based strategies. It supports configuration of chunk size, overlap, and model-specific
 parameters for token-aware splitting, as well as simple string-based segmentation for more structured inputs.</p>
 <dl class="py method">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chunking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">splitter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'token'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'separator'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'token'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/purrfectmeow/konja/base.html#Kornja.chunking"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Handles text chunking with token or separator-based splitting.</p>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chunking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">splitter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'token'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'separate'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'token'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/purrfectmeow/konja/base.html#Kornja.chunking"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Handles text chunking with token or separate-based splitting.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The input text to be chunked.</p></li>
-<li><p><strong>splitter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The type of splitter to use for chunking. Must be either ‘token’ or ‘separator’.</p></li>
+<li><p><strong>splitter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The type of splitter to use for chunking. Must be either ‘token’ or ‘separate’.</p></li>
 <li><p><strong>**kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – <p>Additional parameters for the splitter:</p>
 <dl class="simple">
 <dt>For ‘token’ splitter:</dt><dd><dl class="simple">
@@ -288,8 +288,8 @@ parameters for token-aware splitting, as well as simple string-based segmentatio
 </dd>
 </dl>
 </dd>
-<dt>For ‘separator’ splitter:</dt><dd><dl class="simple">
-<dt>separator<span class="classifier">str, optional</span></dt><dd><p>String used to split the text.</p>
+<dt>For ‘separate’ splitter:</dt><dd><dl class="simple">
+<dt>chunk_separator<span class="classifier">str, optional</span></dt><dd><p>String used to split the text.</p>
 </dd>
 </dl>
 </dd>
@@ -304,13 +304,13 @@ parameters for token-aware splitting, as well as simple string-based segmentatio
 <dd class="field-odd"><p>List[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If <cite>splitter</cite> is not ‘token’ or ‘separator’, or if required parameters
-    (<cite>model_name</cite> for ‘token’, <cite>separator</cite> for ‘separator’) are invalid or empty.</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If <cite>splitter</cite> is not ‘token’ or ‘separate’, or if required parameters
+    (<cite>model_name</cite> for ‘token’, <cite>chunk_separator</cite> for ‘separate’) are invalid or empty.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;This is a sample text.</span><span class="se">\n\n</span><span class="s2">Another paragraph.&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Kornja</span><span class="o">.</span><span class="n">chunking</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">splitter</span><span class="o">=</span><span class="s2">&quot;separator&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Kornja</span><span class="o">.</span><span class="n">chunking</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">splitter</span><span class="o">=</span><span class="s2">&quot;separate&quot;</span><span class="p">,</span> <span class="n">chunk_separator</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="go">[&#39;This is a sample text.&#39;, &#39;Another paragraph.&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Kornja</span><span class="o">.</span><span class="n">chunking</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">splitter</span><span class="o">=</span><span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;text-embedding-ada-002&quot;</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="go">[&#39;This is a&#39;, &#39;sample text.&#39;, &#39;Another&#39;, &#39;paragraph.&#39;]</span>
@@ -540,14 +540,25 @@ extracting file metadata, and creating structured LangChain document templates.<
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_file_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><span class="pre">Dict</span></a></span></span><a class="reference internal" href="_modules/purrfectmeow/taeng/base.html#Suphalaks.get_file_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Extract metadata from a file including size, timestamps, and type.</p>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_file_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/io.html#io.BytesIO" title="(in Python v3.13)"><span class="pre">BytesIO</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><span class="pre">Dict</span></a></span></span><a class="reference internal" href="_modules/purrfectmeow/taeng/base.html#Suphalaks.get_file_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Extract metadata from a file, supporting both file paths and in-memory file-like objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The path to the file.</p>
+<dd class="field-odd"><p><strong>file</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/io.html#io.BytesIO" title="(in Python v3.13)"><em>io.BytesIO</em></a><em>]</em>) – The file to extract metadata from. Can be:
+- A string path to a file on disk.
+- A BytesIO object representing an in-memory file.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A dictionary containing metadata such as size, creation date, modification date, and file type.</p>
+<dd class="field-even"><p>A dictionary containing metadata such as:
+- ‘file_name’
+- ‘file_size’
+- ‘file_created_date’
+- ‘file_modified_date’
+- ‘file_extension’
+- ‘file_type’
+- ‘description’
+- ‘total_pages’
+- ‘file_md5’</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Dict</p>
@@ -555,6 +566,9 @@ extracting file metadata, and creating structured LangChain document templates.<
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Suphalaks</span><span class="o">.</span><span class="n">get_file_metadata</span><span class="p">(</span><span class="s1">&#39;tmp_dir/example.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;tmp_dir/example.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">metadata</span> <span class="o">=</span> <span class="n">Suphalaks</span><span class="o">.</span><span class="n">get_file_metadata</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
 </pre></div>
 </div>
 </dd></dl>
