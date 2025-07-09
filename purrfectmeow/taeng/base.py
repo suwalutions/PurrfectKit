@@ -1,4 +1,5 @@
-from typing import Dict, List, Any
+import io
+from typing import Dict, List, Any, Union
 from langchain_core.documents import Document
 from sentence_transformers import SentenceTransformer
 from transformers import PreTrainedTokenizerBase, PreTrainedModel
@@ -83,25 +84,39 @@ class Suphalaks:
         return LoadingModel.get_st_model(model_name)
 
     @staticmethod
-    def get_file_metadata(file_path: str) -> Dict:
+    def get_file_metadata(file: Union[str, io.BytesIO]) -> Dict:
         """
-        Extract metadata from a file including size, timestamps, and type.
+        Extract metadata from a file, supporting both file paths and in-memory file-like objects.
 
         Parameters
         ----------
-        file_path : str
-            The path to the file.
+        file : Union[str, io.BytesIO]
+            The file to extract metadata from. Can be:
+            - A string path to a file on disk.
+            - A BytesIO object representing an in-memory file.
 
         Returns
         -------
         Dict
-            A dictionary containing metadata such as size, creation date, modification date, and file type.
+            A dictionary containing metadata such as:
+            - 'file_name'
+            - 'file_size'
+            - 'file_created_date'
+            - 'file_modified_date'
+            - 'file_extension'
+            - 'file_type'
+            - 'description'
+            - 'total_pages'
+            - 'file_md5'
 
         Examples
         --------
         >>> metadata = Suphalaks.get_file_metadata('tmp_dir/example.txt')
+        >>> from io import BytesIO
+        >>> with open('tmp_dir/example.txt', 'rb') as f:
+        ...     metadata = Suphalaks.get_file_metadata(BytesIO(f.read()))
         """
-        return MetadataFile(file_path).get_metadata()
+        return MetadataFile(file).get_metadata()
 
     @staticmethod
     def document_template(chunks: List[str], metadata: Dict[str, Any]) -> Document:
