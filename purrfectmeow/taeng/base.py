@@ -1,4 +1,4 @@
-import io
+from io import BytesIO
 from typing import Dict, List, Any, Union
 from langchain_core.documents import Document
 from sentence_transformers import SentenceTransformer
@@ -84,13 +84,13 @@ class Suphalaks:
         return LoadingModel.get_st_model(model_name)
 
     @staticmethod
-    def get_file_metadata(file: Union[str, io.BytesIO]) -> Dict:
+    def get_file_metadata(file: Union[str, BytesIO]) -> Dict:
         """
         Extract metadata from a file, supporting both file paths and in-memory file-like objects.
 
         Parameters
         ----------
-        file : Union[str, io.BytesIO]
+        file : Union[str, BytesIO]
             The file to extract metadata from. Can be:
             - A string path to a file on disk.
             - A BytesIO object representing an in-memory file.
@@ -112,9 +112,8 @@ class Suphalaks:
         Examples
         --------
         >>> metadata = Suphalaks.get_file_metadata('tmp_dir/example.txt')
-        >>> from io import BytesIO
         >>> with open('tmp_dir/example.txt', 'rb') as f:
-        ...     metadata = Suphalaks.get_file_metadata(BytesIO(f.read()))
+        ...     metadata = Suphalaks.get_file_metadata(f.read())
         """
         return MetadataFile(file).get_metadata()
 

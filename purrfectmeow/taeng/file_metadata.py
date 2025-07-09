@@ -1,11 +1,11 @@
 import os
-import io
 import re
 import time
 import magic
 import hashlib
 import subprocess
-from typing import Dict, Union, BinaryIO
+from io import BytesIO
+from typing import Dict, Union
 
 from purrfectmeow.kitty import kitty_logger
 
@@ -14,13 +14,13 @@ class MetadataFile:
     A utility class for extracting metadata from files or file-like objects.
 
     This class supports both file paths (as strings) and in-memory file-like objects
-    such as `io.BytesIO`. It extracts various metadata fields including file name,
+    such as `BytesIO`. It extracts various metadata fields including file name,
     size, type, MD5 checksum, and more. For PDF files, it attempts to detect the
     total number of pages.
 
     Parameters
     ----------
-    file : Union[str, io.BytesIO]
+    file : Union[str, BytesIO]
         The file to extract metadata from. Can be a file path (str) or a BytesIO object.
 
     Public Methods
@@ -57,13 +57,13 @@ class MetadataFile:
     """
     _logger = kitty_logger(__name__)
 
-    def __init__(self, file: Union[str, io.BytesIO]) -> None:
+    def __init__(self, file: Union[str, BytesIO]) -> None:
         """
         Initializes the MetadataFile instance with either a file path or a file-like object.
 
         Parameters
         ----------
-        file : Union[str, io.BytesIO]
+        file : Union[str, BytesIO]
             The file to extract metadata from. Can be:
             - A string representing the file path on disk.
             - A BytesIO object representing an in-memory binary file.
@@ -76,7 +76,7 @@ class MetadataFile:
         if isinstance(file, str):
             self.file_path = file
             self.file_obj = None
-        elif isinstance(file, io.BytesIO):
+        elif isinstance(file, BytesIO):
             self.file_obj = file
             self.file_path = None
         else:
