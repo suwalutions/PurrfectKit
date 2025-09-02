@@ -1,19 +1,32 @@
-langchain-core
+# base
 transformers
-python-magic # libmagic1
-pymupdf
-pandas
+
+# reading
+
+## markdown
+markitdown[all]
+docling
+pymupdf4llm
+
+## ocr
+pillow
+numpy
 pdf2image
---index-url https://download.pytorch.org/whl/cpu
-torch
-torchvision
-torchaudio
+pytesseract
 easyocr
-docling # click 8.1.8
-surya-ocr # pillow 10.4.0 # click 8.2.1
-pytesseract # poppler # pillow 11.2.1
-markitdown
+surya-ocr
+python-doctr
+
+## simple
+PyMuPDF
+pandas
+
+# chunking
 langchain-text-splitters
-pythainlp
-spacy # python =<3.12
-python-doctr[torch]
+
+# embedding
+sentence_transformers
+
+# searching
+scikit-learn
+

@@ -1,17 +1,18 @@
-# Releasing new versions
-# Usage: make release v-part=patch  # or v-part=minor or v-part=major
+# Usage:
+# make release SemVer=patch
+# make release SemVer=minor
+# make release SemVer=major
 
-v-part ?= patch
-VERSION := $(shell bumpversion --dry-run --list $(v-part) | grep new_version= | sed -r s,"^.*=",,)
+SemVer ?= patch
+VERSION := $(shell bumpversion --dry-run --list $(SemVer) | grep new_version= | sed -r s,"^.*=",,)
 
 check-clean:
 	@git diff --quiet || (echo "Working tree is not clean. Commit or stash changes first." && exit 1)
 	@git diff --cached --quiet || (echo "Index has staged changes. Commit or reset them first." && exit 1)
 
 bump:
-	@echo "Bumping version ($(v-part)) to $(VERSION)"
-	@bumpversion --allow-dirty $(v-part)
-
+	@echo "Bumping version ($(SemVer)) to $(VERSION)"
+	bumpversion --allow-dirty $(SemVer)
 
 tag-push:
 	@git push origin HEAD
@@ -34,15 +35,19 @@ latest-tag:
 release: check-clean bump tag-push latest-tag
 	@echo "Release $(VERSION) completed and 'latest' tag updated."
 
-# Deploying new documentation
-# Usage: make tag TAG=docs
+# Usage:
+# make tag TAG=test
+# make tag TAG=docs
+# make tag TAG=latest
 
-ALLOWED_TAGS := docs
+ALLOWED_TAGS := docs test latest
 TAG ?=
+
+.PHONY: tag check-tag
 
 check-tag:
 	@if [ -z "$(TAG)" ]; then \
-		echo "Error: TAG is required. Usage: make tag TAG=docs"; \
+		echo "Error: TAG is required. Usage: make tag TAG=docs|test|latest"; \
 		exit 1; \
 	fi
 	@if ! echo "$(ALLOWED_TAGS)" | grep -qw "$(TAG)"; then \
@@ -67,5 +72,3 @@ tag: check-tag
 	git tag $(TAG)
 	@echo "Pushing tag '$(TAG)' to remote..."
 	git push origin $(TAG)
-
-.PHONY: release check-clean bump changelog tag-push tag check-tag

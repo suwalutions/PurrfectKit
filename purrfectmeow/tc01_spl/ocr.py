@@ -1,0 +1,141 @@
+import time
+from typing import Callable
+
+from purrfectmeow.meow.kitty import kitty_logger
+
+class Ocr:
+
+    _logger = kitty_logger(__name__)
+    _image_type = [
+        ".apng", ".png",
+        ".avif",
+        ".gif",
+        ".jpg", ".jpeg", ".jfif", ".pjpeg", ".pjp",
+        ".png",
+        ".svg",
+        ".webp",
+        ".bmp",
+        ".ico", ".cur",
+        ".tif", ".tiff"
+    ]
+
+    @classmethod
+    def _convert(cls, file_path: str, converter: Callable) -> str:
+        cls._logger.debug(f"Starting conversion for '{file_path}'")
+        start = time.time()
+
+        try:
+            content = []
+            match file_path.lower():
+                case path if path.endswith(".pdf"):
+                    
+                    from pdf2image import convert_from_path
+
+                    images = convert_from_path(file_path, fmt="png")
+                    for idx, image in enumerate(images):
+                        try:
+                            text = converter(image)
+                            cls._logger.debug(f"Text: {text}")
+                            content.append(text)
+                            cls._logger.debug(f"Page {idx+1} processed")
+                        except Exception as e:
+                            cls._logger.exception(f"Page {idx+1} failed: {e}")
+                            raise
+                case path if path.endswith(tuple(cls._image_type)):
+
+                    from PIL import Image
+
+                    image = Image.open(file_path)
+                    try:
+                        text = converter(image)
+                        cls._logger.debug(f"Text: {text}")
+                        content.append(text)
+                        cls._logger.debug("Page 1 processed")
+                    except Exception as e:
+                        cls._logger.debug(f"Page 1 failed: {e}")
+                        raise
+
+            cls._logger.debug(f"Successfully converted '{file_path}'")
+            return "\n".join(content)
+
+        finally:
+            elasped = time.time() - start
+            cls._logger.debug(f"Conversion time spent '{elasped:.2f}' seconds.")
+    
+    @classmethod
+    def pytesseract_convert(cls, file_path: str) -> str:
+        cls._logger.debug("Using PyTesseract for Conversion")
+
+        def converter(image):
+            import pytesseract
+
+            return pytesseract.image_to_string(image, lang="tha+eng")
+        
+        return cls._convert(file_path, converter)
+
+    @classmethod
+    def easyocr_convert(cls, file_path: str) -> str:
+        cls._logger.debug("Using EasyOCR for Conversion")
+        
+        def converter(image):
+            import easyocr
+            import numpy
+
+            reader = easyocr.Reader(
+                ['th', 'en'], 
+                gpu=False
+            )
+            res = reader.readtext(numpy.array(image))
+            return "\n".join(text for _, text, _ in res)
+        return cls._convert(file_path, converter)
+
+    @classmethod
+    def suryaocr_convert(cls, file_path: str) -> str:
+        cls._logger.debug("Using SuryaOCR for Conversion")
+        
+        def converter(image):
+            from surya.recognition import RecognitionPredictor
+            from surya.detection import DetectionPredictor
+
+            rec_pred = RecognitionPredictor()
+            det_pred = DetectionPredictor()
+
+            prediction = rec_pred(
+                [image],
+                det_predictor=det_pred,
+                detection_batch_size=1,
+                recognition_batch_size=1,
+            )
+            return "\n".join(line.text for line in prediction[0].text_lines)
+        return cls._convert(file_path, converter)
+
+    @classmethod
+    def doctr_convert(cls, file_path: str) -> str:
+        cls._logger.debug("Using docTR for Conversion")
+
+        def converter(image):
+            import os
+            import tempfile
+            from doctr.io import DocumentFile
+            from doctr.models import ocr_predictor
+
+            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+                image.save(tmp.name)
+                temp_image_path = tmp.name
+
+            model = ocr_predictor(pretrained=True)
+            doc = DocumentFile.from_images(temp_image_path)
+            result = model(doc)
+            data = result.export()
+            combined_text = "\n".join(
+                word["value"]
+                for page in data["pages"]
+                for block in page.get('blocks', [])
+                for line in block.get('lines', [])
+                for word in line.get('words', [])
+                if "value" in word
+            )
+            if os.path.exists(temp_image_path):
+                os.remove(temp_image_path)
+            return combined_text
+        return cls._convert(file_path, converter)

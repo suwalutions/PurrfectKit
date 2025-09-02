@@ -29,8 +29,8 @@ def kitty_logger(name: str, log_file: str = "kitty.log", log_level: str = "INFO"
     logger.setLevel(getattr(logging, log_level.upper(), logging.INFO))
 
     if not logger.handlers:
-        default_fmt = "%(asctime)s [%(levelname)s] %(name)s:%(lineno)d - %(message)s"
-        info_fmt = "%(asctime)s [%(levelname)s] - %(message)s"
+        default_fmt = "PurrfectKit | %(asctime)s [%(levelname)s] %(name)s:%(lineno)d - %(message)s"
+        info_fmt = "PurrfectKit | %(asctime)s [%(levelname)s] - %(message)s"
         datefmt = "%Y-%m-%d %H:%M:%S"
 
         formatter = LevelBasedFormatter(default_fmt, info_fmt, datefmt)
@@ -39,7 +39,7 @@ def kitty_logger(name: str, log_file: str = "kitty.log", log_level: str = "INFO"
         console_handler.setFormatter(formatter)
         logger.addHandler(console_handler)
 
-        log_dir = Path("logs")
+        log_dir = Path(".cache/logs")
         log_dir.mkdir(exist_ok=True)
         log_path = log_dir / log_file
 

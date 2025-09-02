@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [{ name = "SUWALUTIONS", email = "suwa@suwalutions.com" }]
 maintainers = [{ name = "KHARAPSY", email = "kharapsy@suwalutions.com" }]
 license = "MIT"
-requires-python = ">=3.10,<=3.12.4"
+requires-python = ">=3.10"
 keywords = ["rag", "nlp", "llms", "python", "ai", "ocr", "document-processing", "multilingual", "text-extraction"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -22,60 +22,54 @@ classifiers = [
     "Topic :: Text Processing :: Linguistic",
     "Topic :: Text Processing :: General",
 ]
+
 dependencies = [
-    "pythainlp<=5.1.2",
-    "python-magic<=0.4.27",
-    "sentence-transformers>=4.1.0",
-    "spacy<=3.8.7",
-    "transformers<=4.52.3",
+    "transformers<=4.56.0",
 ]
 
 [project.optional-dependencies]
-Kornja = [
-    "langchain-text-splitters<=0.3.8",
-    "tiktoken>=0.9.0",
-]
+Suphalak = [ # reading
+    "torch<=2.7.0",
+    "torchaudio<=2.7.0",
+    "torchvision<=0.22.0"
+    
+    "docling<=2.31.1",
+    "markitdown<=0.1.1",
+    "pymupdf4llm<=0.0.27",
 
-WichienMaat = [
-    "faiss-cpu>=1.11.0",
-    "langchain-core<=0.3.61",
-    "pandas<=2.2.3",
-    "scikit-learn>=1.6.1",
-    "numpy>=1.24.0",
-]
-
-KhaoManee = [
-    "torch<=2.7.0", # Pinned to CPU wheel version
-    "torchvision<=0.22.0", # Pinned to CPU wheel version
-    "torchaudio<=2.7.0", # Pinned to CPU wheel version
-]
-
-Malet = [
-    "docling<=2.34.0",
-    "markitdown[all]<=0.1.1",
+    "pillow<=10.4.0",
     "pdf2image<=1.17.0",
-    "pillow<=10.4.0", # For pytesseract and surya-ocr
-    "pymupdf<=1.26.0",
-    "easyocr<=1.7.2",
     "pytesseract<=0.3.13",
-    "python-doctr[torch]>=0.12.0",
-    "surya-ocr<=0.14.2",
+    "easyocr<=1.7.2",
+    "surya-ocr<=0.14.0",
+    "python-doctr<=1.0.0",
+
+    "PyMuPDF<=1.26.4",
+    "pandas<=2.2.3"
+]
+
+Malet = [ # chunking
+    "langchain-text-splitters<=0.3.8"
+]
+
+WichienMaat = [ # embedding
+    "sentence_transformers<=5.1.0"
+]
+
+KhaoManee = [ # searching
+    "scikit-learn<=1.7.1"
+]
+
+Kornja = [ # generating
 ]
 
 Dev = [
-    "pytest<=8.3.5",
-    "ipykernel>=6.29.5",
-    "ipywidgets>=8.1.7",
-    "jupyterlab-widgets>=3.0.15",
 ]
 Docs = [
-    "sphinx<=8.2.3",
-    "furo<=2024.8.6",
-    "sphinx-copybutton>=0.5.2",
 ]
 
 All = [
-    "purrfectkit[Kornja,WichienMaat,KhaoManee,Malet,Dev,Docs]"
+    "purrfectkit[Suphalak, Malet, WichienMaat, KhaoManee]"
 ]
 
 [project.urls]
@@ -90,9 +84,7 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build]
 exclude = [
-    "logs",
-    "tmp_dir",
-    ".cache/models/",
+    ".cache"
 ]
 packages = ["purrfectmeow"]
 
