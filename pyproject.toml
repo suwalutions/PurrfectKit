@@ -24,52 +24,22 @@ classifiers = [
 ]
 
 dependencies = [
-    "transformers<=4.56.0",
-]
-
-[project.optional-dependencies]
-Suphalak = [ # reading
-    "torch<=2.7.0",
-    "torchaudio<=2.7.0",
-    "torchvision<=0.22.0"
-    
+    "sentence_transformers<=5.1.0",
     "docling<=2.31.1",
     "markitdown<=0.1.1",
     "pymupdf4llm<=0.0.27",
-
-    "pillow<=10.4.0",
     "pdf2image<=1.17.0",
     "pytesseract<=0.3.13",
     "easyocr<=1.7.2",
     "surya-ocr<=0.14.0",
     "python-doctr<=1.0.0",
-
-    "PyMuPDF<=1.26.4",
-    "pandas<=2.2.3"
+    "pandas<=2.2.3",
 ]
 
-Malet = [ # chunking
-    "langchain-text-splitters<=0.3.8"
-]
-
-WichienMaat = [ # embedding
-    "sentence_transformers<=5.1.0"
-]
-
-KhaoManee = [ # searching
-    "scikit-learn<=1.7.1"
-]
-
-Kornja = [ # generating
-]
-
+[project.optional-dependencies]
 Dev = [
 ]
 Docs = [
-]
-
-All = [
-    "purrfectkit[Suphalak, Malet, WichienMaat, KhaoManee]"
 ]
 
 [project.urls]
