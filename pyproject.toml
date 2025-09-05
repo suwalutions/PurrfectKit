@@ -24,6 +24,7 @@ classifiers = [
 ]
 
 dependencies = [
+    "python-magic<=0.4.27",
     "sentence_transformers<=5.1.0",
     "docling<=2.31.1",
     "markitdown<=0.1.1",
@@ -33,7 +34,7 @@ dependencies = [
     "easyocr<=1.7.2",
     "surya-ocr<=0.14.0",
     "python-doctr<=1.0.0",
-    "pandas<=2.2.3",
+    "pandas<=2.3.2",
 ]
 
 [project.optional-dependencies]

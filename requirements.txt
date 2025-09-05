@@ -53,7 +53,7 @@ multiprocess==0.70.18
 networkx==3.5
 ninja==1.13.0
 nodeenv==1.9.1
-numpy==2.2.6
+numpy==2.3.2
 nvidia-cublas-cu12==12.8.4.1
 nvidia-cuda-cupti-cu12==12.8.90
 nvidia-cuda-nvrtc-cu12==12.8.93
@@ -70,11 +70,11 @@ nvidia-nvjitlink-cu12==12.8.93
 nvidia-nvtx-cu12==12.8.90
 onnx==1.19.0
 onnxruntime==1.22.1
-opencv-python==4.12.0.88
-opencv-python-headless==4.12.0.88
+opencv-python==4.11.0.86
+opencv-python-headless==4.11.0.86
 openpyxl==3.1.5
 packaging==25.0
-pandas==2.2.3
+pandas==2.3.2
 pdf2image==1.17.0
 pillow==10.4.0
 platformdirs==4.4.0
@@ -98,6 +98,7 @@ python-dateutil==2.9.0.post0
 python-doctr==1.0.0
 python-docx==1.2.0
 python-dotenv==1.1.1
+python-magic==0.4.27
 python-pptx==1.0.2
 pytz==2025.2
 pyyaml==6.0.2
