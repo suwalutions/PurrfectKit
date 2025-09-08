@@ -6,8 +6,10 @@ on:
     tags: [ 'latest', 'v*' ]
 
 jobs:
-  build:
+  check-branch:
     runs-on: self-hosted
+    outputs:
+      valid: ${{ steps.set-branch-valid.outputs.valid_branch }}
 
     steps:
       - name: Checkout code
@@ -16,26 +18,30 @@ jobs:
           fetch-depth: 0
     
       - name: Check if tag is from meow branch
-        id: tagcheck
+        id: set-branch-valid
         run: |
           echo "Checking if tag ${{ github.ref_name }} is from meow..."
 
           TAG_COMMIT=$(git rev-list -n 1 ${{ github.ref_name }})
 
-          if git merge-base --is-ancestor $TAG_COMMIT origin/meow; then
+          if git merge-base --is-ancestor $TAG_COMMIT origin/meow0.2; then
             echo "Tag is from meow branch."
-            echo "is_from_meow=true" >> $GITHUB_OUTPUT
+            echo "valid_branch=true" >> $GITHUB_OUTPUT
           else
             echo "Tag is NOT from meow branch."
-            echo "is_from_meow=false" >> $GITHUB_OUTPUT
+            echo "valid_branch=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Stop if tag is not from meow
-        if: steps.tagcheck.outputs.is_from_meow == 'false'
-        run: |
-          echo "Stoping: Tags was not created from meow."
-          exit 1
+  build-image:
+    runs-on: self-hosted
+    needs: check-branch
+    if: needs.check-branch.outputs.valid_branch == 'true'
 
-      - name: Proceed if from main
-        if: steps.tagcheck.outputs.is_from_meow == 'true'
-        run: echo "Tag is from meow. Proceeding with build."
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Build Docker image
+        run: |
+          echo "Building Docker image with tag: ${{ github.ref_name }}"
+          docker build -t purrfectkit:${{ github.ref_name }} .
