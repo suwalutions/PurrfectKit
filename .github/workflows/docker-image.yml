@@ -2,16 +2,40 @@ name: Docker Image
 
 on:
   push:
-    branches: 'meow0.2'
-    #tags: [ 'latest', 'v*' ]
+    #branches: 'meow0.2'
+    tags: [ 'latest', 'v*' ]
 
 jobs:
   build:
     runs-on: self-hosted
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
-      with:
-        fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+    
+      - name: Check if tag is from meow branch
+        id: tagcheck
+        run: |
+          echo "Checking if tag ${{ github.ref_name }} is from meow..."
 
+          TAG_COMMIT=$(git rev-list -n 1 ${{ github.ref_name }})
+
+        if git merge-base --is-ancestor $TAG_COMMIT origin/meow; then
+          echo "Tag is from meow branch."
+          echo "is_from_meow=true" >> $GITHUB_OUTPUT
+        else
+          echo "Tag is NOT from meow branch."
+          echo "is_from_meow=false" >> $GITHUB_OUTPUT
+        fi
+
+      - name: Stop if tag is not from meow
+        if: steps.tagcheck.outputs.is_from_meow == 'false'
+        run: |
+          echo "Stoping: Tags was not created from meow."
+          exit 1
+
+      - name: Proceed if from main
+        if: steps.tagcheck.outputs.is_from_meow == 'true'
+        run: echo "Tag is from meow. Proceeding with build."
