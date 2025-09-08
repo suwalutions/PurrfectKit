@@ -22,13 +22,13 @@ jobs:
 
           TAG_COMMIT=$(git rev-list -n 1 ${{ github.ref_name }})
 
-        if git merge-base --is-ancestor $TAG_COMMIT origin/meow; then
-          echo "Tag is from meow branch."
-          echo "is_from_meow=true" >> $GITHUB_OUTPUT
-        else
-          echo "Tag is NOT from meow branch."
-          echo "is_from_meow=false" >> $GITHUB_OUTPUT
-        fi
+          if git merge-base --is-ancestor $TAG_COMMIT origin/meow; then
+            echo "Tag is from meow branch."
+            echo "is_from_meow=true" >> $GITHUB_OUTPUT
+          else
+            echo "Tag is NOT from meow branch."
+            echo "is_from_meow=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Stop if tag is not from meow
         if: steps.tagcheck.outputs.is_from_meow == 'false'
