@@ -22,7 +22,7 @@ jobs:
 
           TAG_COMMIT=$(git rev-list -n 1 ${{ github.ref_name }})
 
-          if git merge-base --is-ancestor $TAG_COMMIT origin/meow; then
+          if git merge-base --is-ancestor $TAG_COMMIT origin/meow0.2; then
             echo "Tag is from meow branch."
             echo "is_from_meow=true" >> $GITHUB_OUTPUT
           else
