@@ -4,13 +4,13 @@
 # make release SemVer=major
 
 SemVer ?= patch
-VERSION := $(shell bumpversion --dry-run --list $(SemVer) | grep new_version= | sed -r s,"^.*=",,)
 
 check-clean:
 	@git diff --quiet || (echo "Working tree is not clean. Commit or stash changes first." && exit 1)
 	@git diff --cached --quiet || (echo "Index has staged changes. Commit or reset them first." && exit 1)
 
 bump:
+	VERSION := $(shell bumpversion --dry-run --list $(SemVer) | grep new_version= | sed -r s,"^.*=",,)
 	@echo "Bumping version ($(SemVer)) to $(VERSION)"
 	bumpversion --allow-dirty $(SemVer)
 
@@ -72,3 +72,35 @@ tag: check-tag
 	git tag $(TAG)
 	@echo "Pushing tag '$(TAG)' to remote..."
 	git push origin $(TAG)
+
+
+# Usage
+# make image-build   # Build the image
+# make image-save    # Save the image as a tarball
+# make image-clean   # Remove build cache
+# make image-run     # Run the container
+
+IMAGE_NAME := purrfectkit
+IMAGE_TAG := latest
+TAR_NAME := $(IMAGE_NAME)_$(IMAGE_TAG).tar
+
+# 1. Build Docker image
+.PHONY: image-build
+image-build:
+	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+
+# 2. Save Docker image to a tar file
+.PHONY: image-save
+image-save:
+	docker save -o $(TAR_NAME) $(IMAGE_NAME):$(IMAGE_TAG)
+
+# 3. Clean Docker build cache (dangling images and cache)
+.PHONY: image-clean
+image-clean:
+	docker builder prune -f
+	docker image prune -f
+
+# 4. Run Docker image
+.PHONY: image-run
+image-run:
+	docker run --rm -it $(IMAGE_NAME):$(IMAGE_TAG)

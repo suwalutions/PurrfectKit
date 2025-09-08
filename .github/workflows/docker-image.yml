@@ -1,0 +1,17 @@
+name: Docker Image
+
+on:
+  push:
+    branches: 'meow0.2'
+    #tags: [ 'latest', 'v*' ]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+
