@@ -9,7 +9,7 @@ jobs:
   check-branch:
     runs-on: self-hosted
     outputs:
-      valid: ${{ steps.set-branch-valid.outputs.valid_branch }}
+      valid_branch: ${{ steps.set-branch-valid.outputs.valid }}
 
     steps:
       - name: Checkout code
@@ -26,10 +26,10 @@ jobs:
 
           if git merge-base --is-ancestor $TAG_COMMIT origin/meow0.2; then
             echo "Tag is from meow branch."
-            echo "valid_branch=true" >> $GITHUB_OUTPUT
+            echo "valid=true" >> $GITHUB_OUTPUT
           else
             echo "Tag is NOT from meow branch."
-            echo "valid_branch=false" >> $GITHUB_OUTPUT
+            echo "valid=false" >> $GITHUB_OUTPUT
           fi
 
   build-image:
