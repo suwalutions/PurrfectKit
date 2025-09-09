@@ -6,7 +6,7 @@ on:
 
 jobs:
   check-branch:
-    runs-on: [self-hosted, ${{ vars.SERVER_RUNNER_01 }}, ${{ vars.PROJECT_NAME }}]
+    runs-on: ${{ format('self-hosted {0} {1}', vars.SERVER_RUNNER_02, vars.PROJECT_NAME) }}
     outputs:
       valid_branch: ${{ steps.set-branch-valid.outputs.valid }}
 
@@ -31,7 +31,7 @@ jobs:
           fi
 
   build-image:
-    runs-on: [self-hosted, ${{ vars.SERVER_RUNNER_02 }}, ${{ vars.PROJECT_NAME }}]
+    runs-on: ${{ format('self-hosted {0} {1}', vars.SERVER_RUNNER_02, vars.PROJECT_NAME) }}
     needs: check-branch
     if: needs.check-branch.outputs.valid_branch == 'true'
     outputs:
@@ -64,7 +64,7 @@ jobs:
           path: ${{ vars.IMAGE_NAME }}_${GITHUB_REF_NAME}.tar
 
   push-image:
-    runs-on: [self-hosted, ${{ vars.SERVER_RUNNER_01 }}, ${{ vars.PROJECT_NAME }}]
+    runs-on: ${{ format('self-hosted {0} {1}', vars.SERVER_RUNNER_02, vars.PROJECT_NAME) }}
     needs: build-image
     if: needs.check-branch.outputs.valid_branch == 'true'
 
