@@ -7,7 +7,7 @@ on:
 
 jobs:
   check-branch:
-    runs-on: self-hosted
+    runs-on: [self-hosted, SUWALUTIONS, PurrfectKit]
     outputs:
       valid_branch: ${{ steps.set-branch-valid.outputs.valid }}
 
@@ -33,7 +33,7 @@ jobs:
           fi
 
   build-image:
-    runs-on: self-hosted
+    runs-on: [self-hosted, Ninlapat, PurrfectKit, Docker]
     needs: check-branch
     if: needs.check-branch.outputs.valid_branch == 'true'
 
