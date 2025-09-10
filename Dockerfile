@@ -13,7 +13,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     VENV_PATH=/root/meow
 
 RUN mkdir -p /root/.cache/datalab && \
-    mv /PurrfectKit/.cache/datalab /root/.cache/datalab
+    mv /PurrfectKit/.cache/datalab/* /root/.cache/datalab/
 
 RUN pacman -Syu --noconfirm && \
     pacman -S --noconfirm python \
