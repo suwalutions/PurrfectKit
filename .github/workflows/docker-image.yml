@@ -61,7 +61,13 @@ jobs:
 
       - name: Save Docker image as artifact
         run: |
-          docker save ${{ vars.IMAGE_NAME }}:${GITHUB_REF_NAME} -o ${{ vars.IMAGE_NAME }}_${GITHUB_REF_NAME}.tar
+          set -e
+          IMAGE_NAME=${{ vars.IMAGE_NAME }}
+          TAG=${GITHUB_REF_NAME}
+          TAR_FILE="${IMAGE_NAME}_${TAG}.tar"
+          echo "Saving image $IMAGE_NAME:$TAG to $TAR_FILE"
+          docker save $IMAGE_NAME:$TAG -o $TAR_FILE
+          ls -lh $TAR_FILE
 
       - name: Upload Docker image artifact
         uses: actions/upload-artifact@v4
