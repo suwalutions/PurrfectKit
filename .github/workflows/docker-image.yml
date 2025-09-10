@@ -73,7 +73,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: docker-image
-          path: ${{ vars.IMAGE_NAME }}_${GITHUB_REF_NAME}.tar
+          path: ${{ vars.IMAGE_NAME }}_${{ GITHUB_REF_NAME }}.tar
 
   push-image:
     runs-on:
