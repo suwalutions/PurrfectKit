@@ -8,7 +8,8 @@
 3. WichienMaat - embed chunks into vectors
 4. KhaoManee - search vectors with queries
 5. Kornja - generate answers from vectors
-Each step is inspired by a unique Thai cat breed, making the workflow memorable and fun.
+
+> **_NOTE:_** Each step is inspired by a unique Thai cat breed, making the workflow memorable and fun.
 
 ## Quickstart
 
