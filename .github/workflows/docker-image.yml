@@ -25,7 +25,7 @@ jobs:
           echo "Checking if tag ${{ github.ref_name }} is from ${{ vars.MAIN_BRANCH }}..."
           TAG_COMMIT=$(git rev-list -n 1 ${{ github.ref_name }})
 
-          if git merge-base --is-ancestor $TAG_COMMIT origin/${{ vars.MAIN_BRANCH }}0.2; then
+          if git merge-base --is-ancestor $TAG_COMMIT origin/${{ vars.MAIN_BRANCH }}; then
             echo "Tag is from ${{ vars.MAIN_BRANCH }} branch."
             echo "valid=true" >> $GITHUB_OUTPUT
           else
