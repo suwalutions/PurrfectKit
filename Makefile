@@ -10,8 +10,8 @@ check-clean:
 	@git diff --cached --quiet || (echo "Index has staged changes. Commit or reset them first." && exit 1)
 
 bump:
-	VERSION := $(shell bumpversion --dry-run --list $(SemVer) | grep new_version= | sed -r s,"^.*=",,)
-	@echo "Bumping version ($(SemVer)) to $(VERSION)"
+	@VERSION=$$(bumpversion --dry-run --list $(SemVer) | grep new_version= | sed -r s,"^.*=",,); \
+	echo "Bumping version ($(SemVer)) to $$VERSION"; \
 	bumpversion --allow-dirty $(SemVer)
 
 tag-push:
