@@ -1,0 +1,29 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore virtual environments
+.venv/
+
+# Ignore Git and other metadata
+.git/
+.github/
+.gitignore
+
+# Ignore Docker files you don’t want in the image
+.dockerignore
+Dockerfile*
+
+# Ignore local config files
+.bumpversion.cofg
+.python-version
+logs/*
+tmp/*
+Makefile
+docs/
+test/
+*.txt
+uv.lock
+*.tar
+.gitkeep

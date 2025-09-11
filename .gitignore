@@ -1,7 +1,6 @@
-logs/
-tmp_dir/
-.cache/models/
+*.tar
 .vscode
+test
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

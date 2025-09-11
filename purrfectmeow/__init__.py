@@ -1,15 +1,15 @@
-from purrfectmeow.konja import Kornja
-from purrfectmeow.meeze import WichienMaat
-from purrfectmeow.plort import KhaoManee
-from purrfectmeow.sawat import Malet
-from purrfectmeow.taeng import Suphalaks
+from .tc01_spl import Suphalak
+from .tc02_mlt import Malet
+from .tc03_wcm import WichienMaat
+from .tc04_kmn import KhaoManee
+from .tc05_knj import Kornja
 
 __all__ = [
-    "Kornja",
+    "Suphalak",
+    "Malet",
     "WichienMaat",
     "KhaoManee",
-    "Malet",
-    "Suphalaks",
+    "Kornja",
 ]
 
 __version__ = "0.1.15"
