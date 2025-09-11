@@ -26,3 +26,4 @@ test/
 *.txt
 uv.lock
 *.tar
+.gitkeep
