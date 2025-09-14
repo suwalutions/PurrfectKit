@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Union
+from io import BytesIO
 
 class Document:
     def __init__(self, page_content: str, metadata: Dict[str, Any]):
@@ -67,8 +68,30 @@ class DocTemplate:
 
 class MetaFile:
     @staticmethod
-    def get_metadata(file: str) -> Dict[str, Union[str, int]]:
-        return MetaFile._get_metadata_from_path(file)
+    def get_metadata(file: Union[str, BytesIO], **kwargs: Any) -> Dict[str, Union[str, int]]:
+        if isinstance(file, bytes):
+            file = BytesIO(file)
+
+        if isinstance(file, BytesIO):
+            import os
+
+            os.makedirs(".cache/tmp", exist_ok=True)
+            file_name = kwargs.get('file_name')
+
+            if not file_name:
+                raise ValueError("file_name must be provided when using BytesIO.")
+            
+            file_path = os.path.join(".cache/tmp", file_name)
+            with open(file_path, 'wb') as f:
+                f.write(file.getvalue())
+
+            try:
+                return MetaFile._get_metadata_from_path(file_path)
+            finally:
+                os.remove(file_path)
+
+        elif isinstance(file, str):
+            return MetaFile._get_metadata_from_path(file)
 
     @staticmethod
     def _get_metadata_from_path(file_path: str) -> Dict[str, Union[str, int]]:
