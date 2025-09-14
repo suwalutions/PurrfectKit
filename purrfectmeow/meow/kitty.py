@@ -40,7 +40,7 @@ def kitty_logger(name: str, log_file: str = "kitty.log", log_level: str = "INFO"
         logger.addHandler(console_handler)
 
         log_dir = Path(".cache/logs")
-        log_dir.mkdir(exist_ok=True)
+        log_dir.mkdir(parents=True, exist_ok=True)
         log_path = log_dir / log_file
 
         file_handler = RotatingFileHandler(
