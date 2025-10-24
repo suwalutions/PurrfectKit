@@ -26,6 +26,7 @@ classifiers = [
 dependencies = [
     "python-magic<=0.4.27",
     "sentence_transformers<=5.1.0",
+    "transformers<=4.52.1",
     "docling<=2.31.1",
     "markitdown<=0.1.1",
     "pymupdf4llm<=0.0.27",
