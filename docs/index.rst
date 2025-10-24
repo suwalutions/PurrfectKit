@@ -6,6 +6,8 @@
 PurrfectKit's documentation
 ===========================
 
+.. image:: /_static/repo-logo.png
+
 **PurrfectKit** (/purr-fekt-kit/) is a Python library for effortless Retrieval-Augmented Generation (RAG) workflows.
 
 .. note::
