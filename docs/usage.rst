@@ -1,6 +1,16 @@
 Usage
 =====
 
+**PurrfectKit** simplifies Retrieval-Augmented Generation (RAG), a technique combining information retrieval and text generation to answer queries using external documents. 
+
+The workflow involves five steps, each named after a Thai cat breed for a memorable experience:
+
+1. **Suphalak**: Extract text from files (e.g., PDFs).
+2. **Malet**: Split text into manageable chunks.
+3. **WichienMaat**: Convert chunks into numerical embeddings for search.
+4. **KhaoManee**: Search for chunks relevant to a query.
+5. **Kornja**: Generate answers using retrieved chunks (under development).
+
 Suphalak
 --------
 
