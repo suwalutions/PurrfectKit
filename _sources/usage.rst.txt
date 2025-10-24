@@ -1,15 +1,7 @@
 Usage
 =====
 
-**PurrfectKit** simplifies Retrieval-Augmented Generation (RAG), a technique combining information retrieval and text generation to answer queries using external documents. 
-
-The workflow involves five steps, each named after a Thai cat breed for a memorable experience:
-
-1. **Suphalak**: Extract text from files (e.g., PDFs).
-2. **Malet**: Split text into manageable chunks.
-3. **WichienMaat**: Convert chunks into numerical embeddings for search.
-4. **KhaoManee**: Search for chunks relevant to a query.
-5. **Kornja**: Generate answers using retrieved chunks (under development).
+.. _suphalak:
 
 Suphalak
 --------
@@ -29,6 +21,8 @@ Read content from files
     :return: Extracted content from the file.
     :rtype: str
 
+.. _malet:
+
 Malet
 -----
 
@@ -47,6 +41,8 @@ Split content into chunks
     :return: List of text chunks.
     :rtype: list[str]
 
+.. _wichienmaat:
+
 WichienMaat
 -----------
 
@@ -62,6 +58,8 @@ Embed chunks into vectors
     :type model_name: Optional[str]
     :return: Embedding vectors as a NumPy array.
     :rtype: numpy.ndarray
+
+.. _khaomanee:
 
 KhaoManee
 ---------
@@ -82,6 +80,8 @@ Search vectors with queries
     :type top_k: int
     :return: List of search results with relevance scores.
     :rtype: list[dict]
+
+.. _kornja:
 
 Kornja
 ------
