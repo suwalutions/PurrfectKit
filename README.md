@@ -1,4 +1,4 @@
-![PurrfectMeow Logo](docs/source/_static/repo-logo.png)
+![PurrfectMeow Logo](docs/_static/repo-logo.png)
 
 # PurrfectKit
 
