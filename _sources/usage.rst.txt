@@ -1,151 +1,106 @@
-.. _usage:
+Usage
+=====
 
-Usage Guide
-===========
+**PurrfectKit** simplifies Retrieval-Augmented Generation (RAG), a technique combining information retrieval and text generation to answer queries using external documents. 
 
-Welcome to the **PurrfectKit** usage guide! This document walks you through basic and advanced functionality using 
-the Thai-cat-inspired `purrfectmeow` modules. From loading files to performing semantic search, you'll learn 
-how to orchestrate your document intelligence pipeline with elegance and ease.
+The workflow involves five steps, each named after a Thai cat breed for a memorable experience:
 
-🚀 Getting Started
--------------------
+1. **Suphalak**: Extract text from files (e.g., PDFs).
+2. **Malet**: Split text into manageable chunks.
+3. **WichienMaat**: Convert chunks into numerical embeddings for search.
+4. **KhaoManee**: Search for chunks relevant to a query.
+5. **Kornja**: Generate answers using retrieved chunks (under development).
 
-To begin using PurrfectKit, ensure you've followed the installation steps in the :doc:`README <readme>`.
+Suphalak
+--------
 
-🗂️ File Metadata Extraction
-----------------------------
+Read content from files
 
-Use ``Suphalaks.get_file_metadata`` to retrieve detailed metadata from a supported file:
+.. py:function:: Suphalak.reading(file, file_name, loader)
 
-.. code-block:: python
+    Extract and return the content of a file as a string.
 
-    from purrfectmeow import Suphalaks
+    :param file: The file object to read.
+    :type file: BinaryIO
+    :param file_name: The name of the file.
+    :type file_name: str
+    :param loader: The loader type used for parsing.
+    :type loader: str
+    :return: Extracted content from the file.
+    :rtype: str
 
-    file_path = "example/meowdy.pdf"
-    metadata = Suphalaks.get_file_metadata(file_path)
+Malet
+-----
 
-    print(metadata)
+Split content into chunks
 
-📝 Text Extraction
--------------------
+.. py:function:: Malet.chunking(text, chunk_method="token", **kwargs)
 
-Extract text from PDFs, Markdown, or images using the ``Malet.loader`` function:
+    Split text into chunks using the specified method.
 
-.. code-block:: python
+    :param text: The text to split.
+    :type text: str
+    :param chunk_method: The method for chunking ("token" or "separate").
+    :type chunk_method: Optional[Literal["token", "separate"]]
+    :param `**kwargs`: Additional parameters for chunking.
+    :type `**kwargs`: Any
+    :return: List of text chunks.
+    :rtype: list[str]
 
-    from purrfectmeow import Malet
+WichienMaat
+-----------
 
-    with open(file_path, "rb") as f:
-        text = Malet.loader(f, file_path, loader="MARKITDOWN")
+Embed chunks into vectors
 
-    print(text[:300])  # Print first 300 characters
+.. py:function:: WichienMaat.embedding(sentence, model_name=None)
 
-✂️ Chunking Text
------------------
+    Convert sentences into vector embeddings.
 
-Split the raw text into meaningful chunks with ``Kornja.chunking``. This improves performance for downstream tasks like embedding and search.
+    :param sentence: A single sentence or a list of sentences.
+    :type sentence: str | list[str]
+    :param model_name: Optional model name for embedding.
+    :type model_name: Optional[str]
+    :return: Embedding vectors as a NumPy array.
+    :rtype: numpy.ndarray
 
-.. code-block:: python
-    
-    from purrfectmeow import Kornja
+KhaoManee
+---------
 
-    chunks = Kornja.chunking(
-        text,
-        splitter="token",
-        model_name="intfloat/multilingual-e5-large-instruct",
-        chunk_size=50,
-        chunk_overlap=10
-    )
+Search vectors with queries
 
-    print(f"Number of chunks: {len(chunks)}")
+.. py:function:: KhaoManee.searching(query_embed, sentence_embed, document, top_k)
 
-🧾 Document Templating
------------------------
+    Search for the most relevant chunks based on query embeddings.
 
-Wrap the chunks into a document template for embedding and search:
+    :param query_embed: Query embedding vector.
+    :type query_embed: numpy.ndarray
+    :param sentence_embed: Embeddings of sentences to search.
+    :type sentence_embed: numpy.ndarray
+    :param document: The original document object.
+    :type document: Document
+    :param top_k: Number of top results to return.
+    :type top_k: int
+    :return: List of search results with relevance scores.
+    :rtype: list[dict]
 
-.. code-block:: python
+Kornja
+------
 
-   docs = Suphalaks.document_template(chunks, metadata)
+Generate answers from vectors
 
-🧠 Embeddings
---------------
+.. py:function:: Kornja.generating()
 
-Generate embeddings for both your documents and queries with ``KhaoManee``:
+    .. note:: This function is under development and will generate answers from retrieved contexts in future releases.
+        
+.. .. py:function:: Kornja.generating(context, query, **kwargs)
 
-.. code-block:: python
+..     Generate an answer based on retrieved vector context.
 
-    from purrfectmeow import KhaoManee
-
-    # Embed documents
-    doc_embeddings = KhaoManee.get_embeddings(
-        docs,
-        model_name="intfloat/multilingual-e5-large-instruct"
-    )
-
-    # Embed a query
-    query_embeddings = KhaoManee.get_query_embeddings(
-        query="Where is the best cat café?",
-        model_name="intfloat/multilingual-e5-large-instruct"
-    )
-
-🔍 Semantic Search
--------------------
-
-Find the most relevant documents using ``WichienMaat.get_search``:
-
-.. code-block:: python
-
-    from purrfectmeow import WichienMaat
-
-    results = WichienMaat.get_search(
-        query_embeddings=query_embeddings,
-        doc_embeddings=doc_embeddings,
-        docs=docs,
-        top_k=3
-    )
-
-    for result in results:
-        print(f"Score: {result['score']:.4f}")
-        print(f"Content: {result['document'].page_content[:200]}\n")
-
-🖼️ Working with Other File Types
----------------------------------
-
-PurrfectKit supports various file formats out-of-the-box. Examples:
-
-- Markdown: ``loader="MARKITDOWN"``
-- PDF: ``loader="PYMUPDF"``, or ``loader="EASYOCR"``
-- Image: ``loader="PYTESSERACT"``, or ``loader="SURYAOCR"``
-
-Example for image OCR:
-
-.. code-block:: python
-
-   image_path = "example/catnote.jpg"
-   with open(image_path, "rb") as f:
-       text = Malet.loader(f, image_path)
-
-   print(text)
-
-🧬 Advanced Use: Custom Models
--------------------------------
-
-You can use your own embedding model if it supports HuggingFace-compatible API:
-
-.. code-block:: python
-
-   embeddings = KhaoManee.get_embeddings(
-       docs,
-       model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-   )
-
-💡 Notes & Tips
-----------------
-
-- Use ``chunk_overlap > 0`` to preserve context between text chunks.
-- The `loader` argument in ``Malet.loader`` determines which backend parser is used.
-- Thai text support is best with ``pythainlp`` installed and Tesseract's Thai data.
-- Explore `purrfectmeow.suphalaks` for file utilities like hashing, extension checks, and format detection.
-
-For deeper exploration, see the full API Reference and test scripts under the ``examples/`` and ``tests/`` directories of the repository.
+..     :param context: Retrieved context for generating answer.
+..     :type context: list[dict]
+..     :param query: The user query.
+..     :type query: str
+..     :param `**kwargs`: Additional parameters for generation.
+..     :type `**kwargs`: Any
+..     :return: Generated answer string.
+..     :rtype: str
