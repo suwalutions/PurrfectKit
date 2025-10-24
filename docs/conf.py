@@ -79,4 +79,5 @@ autodoc_mock_imports = [
     "surya_ocr",
     "python_doctr",
     "pandas",
+    "numpy"
 ]
