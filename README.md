@@ -4,7 +4,7 @@
 
 [![Docker Image](https://github.com/suwalutions/PurrfectKit/actions/workflows/docker-image.yml/badge.svg)](https://github.com/suwalutions/PurrfectKit/actions/workflows/docker-image.yml)
 
-**PurrfectKit** is a toolkit that simplifies Retrieval-Augmental Generation (RAG) into 5 easy steps:
+**PurrfectKit** is a toolkit that simplifies Retrieval-Augmented Generation (RAG) into 5 easy steps:
 1. Suphalak - read content from files
 2. Malet - split content into chunks
 3. WichienMaat - embed chunks into vectors
@@ -23,11 +23,8 @@
 
 ### Installation
 ```bash
-git clone https://github.com/suwalutions/PurrfectKit.git
+pip install git+https://github.com/suwalutions/PurrfectKit.git
 
-cd PurrfectKit
-
-pip install -e .
 ```
 
 ### Usage
