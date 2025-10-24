@@ -12,7 +12,7 @@ PurrfectKit's documentation
 
 .. note::
 
-   This project is under active devcelopment.
+   This project is under active development.
 
 **PurrfectKit** simplifies Retrieval-Augmented Generation (RAG), a technique combining information retrieval and text generation to answer queries using external documents. 
 
