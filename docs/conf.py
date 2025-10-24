@@ -66,3 +66,17 @@ html_context = {
     "github_version": "meow",
     "conf_py_path": "/docs/",
 }
+
+# Mock heavy libraries to avoid installing them
+autodoc_mock_imports = [
+    "sentence_transformers",
+    "transformers",
+    "docling",
+    "pymupdf4llm",
+    "pdf2image",
+    "pytesseract",
+    "easyocr",
+    "surya_ocr",
+    "python_doctr",
+    "pandas",
+]
