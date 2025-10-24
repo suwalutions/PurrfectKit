@@ -1,25 +1,10 @@
 Usage
 =====
 
-.. _installation:
+Suphalak
+--------
 
-Installation
-------------
-
-To use **PurrfectKit**, first install it via pip:
-
-.. code-block:: console
-
-    (.venv) $ pip install PurrfectKit
-
-.. _quickstart:
-
-Quickstart
-----------
-
-Here are **5 easy steps** to build your RAG system with PurrfectKit.
-
-1. Suphalak - Read content from files
+Read content from files
 
 .. py:function:: Suphalak.reading(file, file_name, loader)
 
@@ -34,7 +19,10 @@ Here are **5 easy steps** to build your RAG system with PurrfectKit.
     :return: Extracted content from the file.
     :rtype: str
 
-2. Malet - Split content into chunks
+Malet
+-----
+
+Split content into chunks
 
 .. py:function:: Malet.chunking(text, chunk_method="token", **kwargs)
 
@@ -44,12 +32,15 @@ Here are **5 easy steps** to build your RAG system with PurrfectKit.
     :type text: str
     :param chunk_method: The method for chunking ("token" or "separate").
     :type chunk_method: Optional[Literal["token", "separate"]]
-    :param **kwargs: Additional parameters for chunking.
-    :type **kwargs: Any
+    :param `**kwargs`: Additional parameters for chunking.
+    :type `**kwargs`: Any
     :return: List of text chunks.
     :rtype: list[str]
 
-3. WichienMaat - Embed chunks into vectors
+WichienMaat
+-----------
+
+Embed chunks into vectors
 
 .. py:function:: WichienMaat.embedding(sentence, model_name=None)
 
@@ -62,7 +53,10 @@ Here are **5 easy steps** to build your RAG system with PurrfectKit.
     :return: Embedding vectors as a NumPy array.
     :rtype: numpy.ndarray
 
-4. KhaoManee - Search vectors with queries
+KhaoManee
+---------
+
+Search vectors with queries
 
 .. py:function:: KhaoManee.searching(query_embed, sentence_embed, document, top_k)
 
@@ -79,9 +73,15 @@ Here are **5 easy steps** to build your RAG system with PurrfectKit.
     :return: List of search results with relevance scores.
     :rtype: list[dict]
 
-5. Kornja - Generate answers from vectors
+Kornja
+------
+
+Generate answers from vectors
 
 .. py:function:: Kornja.generating()
+
+    .. note:: This function is under development and will generate answers from retrieved contexts in future releases.
+        
 .. .. py:function:: Kornja.generating(context, query, **kwargs)
 
 ..     Generate an answer based on retrieved vector context.
@@ -90,7 +90,7 @@ Here are **5 easy steps** to build your RAG system with PurrfectKit.
 ..     :type context: list[dict]
 ..     :param query: The user query.
 ..     :type query: str
-..     :param **kwargs: Additional parameters for generation.
-..     :type **kwargs: Any
+..     :param `**kwargs`: Additional parameters for generation.
+..     :type `**kwargs`: Any
 ..     :return: Generated answer string.
 ..     :rtype: str

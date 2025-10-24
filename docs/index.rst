@@ -12,11 +12,11 @@ PurrfectKit's documentation
 
    This project is under active devcelopment.
 
-   
-Check out the :doc:`usage` section for futher information, including how to :ref:`install <installation>` the project.
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   installation
+   quickstart
    usage
+   contributing
