@@ -7,7 +7,7 @@ class Document:
         self.metadata = metadata or {}
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(content={self.page_content!r}, metadata={self.metadata!r})"
+        return f"{self.__class__.__name__}(page_content={self.page_content!r}, metadata={self.metadata!r})"
 
     def __getitem__(self, key):
         if key == "page_content":
