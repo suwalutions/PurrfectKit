@@ -26,6 +26,15 @@ class Document:
 class DocTemplate:
     @staticmethod
     def create_template(chunks: List[str], metadata: Dict[str, Any]) -> List[Document]:
+        if not isinstance(chunks, list):
+            raise TypeError(f"Expected 'chunks' to be a list, but got {type(chunks).__name__}.")
+
+        if not isinstance(metadata, dict):
+            raise TypeError(f"Expected 'metadata' to be a dict, but got {type(metadata).__name__}.")
+        
+        if not all(isinstance(c, str) for c in chunks):
+            raise ValueError("All elements in 'chunks' must be strings.")
+
         docs = []
         chunk_hashes = []
 
@@ -92,6 +101,9 @@ class MetaFile:
 
         elif isinstance(file, str):
             return MetaFile._get_metadata_from_path(file)
+        
+        else:
+            raise TypeError(f"Unsupported file type: {type(file).__name__}. Expected str, bytes, or BytesIO.")
 
     @staticmethod
     def _get_metadata_from_path(file_path: str) -> Dict[str, Union[str, int]]:
