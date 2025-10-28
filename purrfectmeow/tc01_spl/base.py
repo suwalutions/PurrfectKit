@@ -23,6 +23,48 @@ class Suphalak:
 
     @classmethod
     def reading(cls, file: BinaryIO, file_name: str, loader: str, **kwargs: Any) -> str:
+        file_ext = file_name.split(".")[-1]
+
+        if loader == "ENCODING":
+            if file_ext not in ("csv", "md", "txt"):
+                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
+
+        if loader == "PANDAS":
+            if file_ext not in ("csv", "xls", "xlsx"):
+                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
+
+        if loader == "PYMUPDF":
+            if file_ext not in ("docx", "md", "pdf", "pptx", "xlsx"):
+                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
+
+        if loader == "DOCTR":
+            if file_ext not in ("gif", "jpg", "pdf", "png"):
+                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
+
+        if loader == "SURYAOCR":
+            if file_ext not in ("gif", "jpg", "pdf", "png"):
+                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
+
+        if loader == "EASYOCR":
+            if file_ext not in ("gif", "jpg", "pdf", "png"):
+                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
+
+        if loader == "PYTESSERACT":
+            if file_ext not in ("gif", "jpg", "pdf", "png"):
+                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
+
+        if loader == "PYMUPDF4LLM":
+            if file_ext not in ("docx", "pdf", "pptx", "txt", "xlsx"):
+                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
+
+        if loader == "DOCLING":
+            if file_ext not in ("csv", "docx", "jpg", "md", "pdf", "png", "pptx", "xlsx"):
+                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
+
+        if loader == "MARKITDOWN":
+            if file_ext not in ("csv", "docx", "md", "pdf", "pptx", "txt", "xls", "xlsx"):
+                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
+
         import os
 
         os.makedirs(cls.tmp_dir, exist_ok=True)
