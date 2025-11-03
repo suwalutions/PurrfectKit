@@ -1,81 +1,107 @@
-from typing import Dict, Callable, BinaryIO, Any
+from typing import Dict, BinaryIO, Any
 
 from .markdown import Markdown
 from .ocr import Ocr
 from .simple import Simple
 
 class Suphalak:
-
     tmp_dir = '.cache/tmp'
+    DEFAULT_LOADER = "PYMUPDF4LLM"
 
-    _METHODS: Dict[str, Callable[[str], str]] = {
-        "MARKITDOWN": Markdown.markitdown_convert,
-        "DOCLING": Markdown.docling_convert,
-        "PYMUPDF4LLM": Markdown.pymupdf4llm_convert,
-        "PYTESSERACT": Ocr.pytesseract_convert,
-        "EASYOCR": Ocr.easyocr_convert,
-        "SURYAOCR": Ocr.suryaocr_convert,
-        "DOCTR": Ocr.doctr_convert,
-        "PYMUPDF": Simple.pymupdf_convert,
-        "PANDAS": Simple.pandas_convert,
-        "ENCODING": Simple.encoding_convert,
+    _LOADERS: Dict[str, Dict[str, Any]] = {
+        "MARKITDOWN": {
+            "func": Markdown.markitdown_convert,
+            "ext": ("csv", "docx", "md", "pdf", "pptx", "txt", "xls", "xlsx"),
+        },
+        "DOCLING": {
+            "func": Markdown.docling_convert,
+            "ext": ("csv", "docx", "jpg", "md", "pdf", "png", "pptx", "xlsx"),
+        },
+        "PYMUPDF4LLM": {
+            "func": Markdown.pymupdf4llm_convert,
+            "ext": ("docx", "pdf", "pptx", "txt", "xlsx"),
+        },
+        "PYTESSERACT": {
+            "func": Ocr.pytesseract_convert,
+            "ext": ("gif", "jpg", "pdf", "png"),
+        },
+        "EASYOCR": {
+            "func": Ocr.easyocr_convert,
+            "ext": ("gif", "jpg", "pdf", "png"),
+        },
+        "SURYAOCR": {
+            "func": Ocr.suryaocr_convert,
+            "ext": ("gif", "jpg", "pdf", "png"),
+        },
+        "DOCTR": {
+            "func": Ocr.doctr_convert,
+            "ext": ("gif", "jpg", "pdf", "png"),
+        },
+        "PYMUPDF": {
+            "func": Simple.pymupdf_convert,
+            "ext": ("docx", "md", "pdf", "pptx", "xlsx"),
+        },
+        "PANDAS": {
+            "func": Simple.pandas_convert,
+            "ext": ("csv", "xls", "xlsx"),
+        },
+        "ENCODING": {
+            "func": Simple.encoding_convert,
+            "ext": ("csv", "md", "txt"),
+        },
     }
 
     @classmethod
-    def reading(cls, file: BinaryIO, file_name: str, loader: str, **kwargs: Any) -> str:
-        file_ext = file_name.split(".")[-1]
+    def _detect_loader(cls, file_ext: str) -> str:
+        priority = [
+            ("PANDAS", ("csv", "xls")),
+            ("PYTESSERACT", ("jpg", "png", "gif")),
+            ("PYMUPDF", ("pdf", "md")),
+            ("PYMUPDF4LLM", ("txt", "xlsx", "pptx", "docx")),
+        ]
 
-        if loader == "ENCODING":
-            if file_ext not in ("csv", "md", "txt"):
-                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
+        for loader, extensions in priority:
+            if file_ext in extensions:
+                return loader
 
-        if loader == "PANDAS":
-            if file_ext not in ("csv", "xls", "xlsx"):
-                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
+        return cls.DEFAULT_LOADER
 
-        if loader == "PYMUPDF":
-            if file_ext not in ("docx", "md", "pdf", "pptx", "xlsx"):
-                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
-
-        if loader == "DOCTR":
-            if file_ext not in ("gif", "jpg", "pdf", "png"):
-                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
-
-        if loader == "SURYAOCR":
-            if file_ext not in ("gif", "jpg", "pdf", "png"):
-                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
-
-        if loader == "EASYOCR":
-            if file_ext not in ("gif", "jpg", "pdf", "png"):
-                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
-
-        if loader == "PYTESSERACT":
-            if file_ext not in ("gif", "jpg", "pdf", "png"):
-                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
-
-        if loader == "PYMUPDF4LLM":
-            if file_ext not in ("docx", "pdf", "pptx", "txt", "xlsx"):
-                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
-
-        if loader == "DOCLING":
-            if file_ext not in ("csv", "docx", "jpg", "md", "pdf", "png", "pptx", "xlsx"):
-                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
-
-        if loader == "MARKITDOWN":
-            if file_ext not in ("csv", "docx", "md", "pdf", "pptx", "txt", "xls", "xlsx"):
-                raise TypeError(f"'{file_ext}' does not supported for '{loader}' loader.")
-
+    @classmethod
+    def reading(cls, file: BinaryIO, file_name: str, loader: str = None, **kwargs: Any) -> str:
         import os
+        file_ext = file_name.split(".")[-1].lower()
+
+        if not loader:
+            loader = cls._detect_loader(file_ext)
+
+        if loader not in cls._LOADERS:
+            raise ValueError(f"Unsupported loader: '{loader}'")
+
+        loader_conf = cls._LOADERS[loader]
+        supported_ext = loader_conf["ext"]
+
+        if file_ext not in supported_ext:
+            raise TypeError(f"'{file_ext}' is not supported for '{loader}' loader.")
 
         os.makedirs(cls.tmp_dir, exist_ok=True)
         file_path = os.path.join(cls.tmp_dir, file_name)
-        
+
         try:
             with open(file_path, "wb") as f:
                 f.write(file.read())
-            if loader not in cls._METHODS:
-                raise ValueError(f"Unsupported Loader: {loader}")
 
-            return cls._METHODS[loader](file_path, **kwargs)
+            text = loader_conf["func"](file_path, **kwargs)
+
+            if (
+                file_ext == "pdf"
+                and (not text or not str(text).strip())
+                and loader not in ("PYTESSERACT", "EASYOCR", "SURYAOCR", "DOCTR")
+            ):
+                ocr_loader = cls._LOADERS["PYTESSERACT"]
+                text = ocr_loader["func"](file_path, **kwargs)
+
+            return text
+
         finally:
-            os.remove(file_path)
+            if os.path.exists(file_path):
+                os.remove(file_path)
