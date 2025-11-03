@@ -1,15 +1,20 @@
+[build-system]
+requires = ["uv_build"]
+build-backend = "uv_build"
+
 [project]
 name = "purrfectkit"
 version = "0.2.0"
-description = "**PurrfectKit** is a whimsical Python library that blends feline charm with powerful NLP functionality."
-readme = "README.md"
 authors = [{ name = "SUWALUTIONS", email = "suwa@suwalutions.com" }]
 maintainers = [{ name = "KHARAPSY", email = "kharapsy@suwalutions.com" }]
-license = "MIT"
-requires-python = ">=3.10"
+description = "**PurrfectKit** is a Python library for effortless Retrieval-Augmented Generation (RAG) workflows."
 keywords = ["rag", "nlp", "llms", "python", "ai", "ocr", "document-processing", "multilingual", "text-extraction"]
+readme = "README.md"
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+requires-python = ">=3.10"
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 2 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
@@ -17,10 +22,15 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Processing",
     "Topic :: Text Processing :: Linguistic",
     "Topic :: Text Processing :: General",
+    "Natural Language :: English",
+    "Natural Language :: Multilingual",
 ]
 
 dependencies = [
@@ -36,6 +46,8 @@ dependencies = [
     "surya-ocr<=0.14.0",
     "python-doctr<=1.0.0",
     "pandas<=2.3.2",
+    "langchain-text-splitters<=1.0.0",
+    "tiktoken<=0.12.0",
 ]
 
 [project.optional-dependencies]
@@ -45,22 +57,36 @@ Docs = [
     "sphinx<=8.2.3",
     "sphinx-rtd-theme<=3.0.2",
 ]
+Test = [
+    "pytest<=8.4.2",
+    "pytest-mock<=3.15.1",
+]
 
 [project.urls]
-Homepage = "https://github.com/SUWALUTIONS/PurrfectKit"
-Documentation = "https://purrfectkit.SUWALUTIONS.com/"
+Documentation = "https://suwalutions.github.io/PurrfectKit"
 Repository = "https://github.com/SUWALUTIONS/PurrfectKit"
 Issues = "https://github.com/SUWALUTIONS/PurrfectKit/issues"
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build]
+[tool.uv.build-backend]
+module-root = ""
+module-name = "purrfectmeow"
+include = ["LICENSE", "README.md", "pyproject.toml"]
 exclude = [
-    ".cache"
+    ".bumpversion.cfg",
+    ".cache/",
+    ".git/",
+    ".github/",
+    ".gitignore",
+    ".pytest_cache/",
+    ".python-version",
+    ".venv/",
+    "Dockerfile",
+    "Makefile",
+    "build/",
+    "docs/",
+    "*.txt",
+    "test",
+    "tests/",
+    "uv.lock",
 ]
-packages = ["purrfectmeow"]
 
-[tool.hatch.metadata]
-allow-direct-references = true
