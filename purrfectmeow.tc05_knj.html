@@ -6,13 +6,13 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PurrfectKit’s documentation &mdash; PurrfectKit 0.2.0 documentation</title>
+  <title>purrfectmeow.tc05_knj package &mdash; PurrfectKit 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
-    <link rel="canonical" href="https://suwalutions.comindex.html"/>
+    <link rel="canonical" href="https://suwalutions.compurrfectmeow.tc05_knj.html"/>
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=938c9ccc"></script>
@@ -21,7 +21,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="installation.html" /> 
+    <link rel="next" title="Contributing" href="contributing.html" />
+    <link rel="prev" title="purrfectmeow.tc04_kmn package" href="purrfectmeow.tc04_kmn.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -32,7 +33,7 @@
 
           
           
-          <a href="#">
+          <a href="index.html">
             
               <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
@@ -45,7 +46,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#prerequisites">Prerequisites</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#linux-ubuntu-debian">Linux (Ubuntu/Debian)</a></li>
@@ -78,9 +79,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">PurrfectKit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.html">purrfectmeow package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">PurrfectKit</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="purrfectmeow.html">purrfectmeow package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="purrfectmeow.html#subpackages">Subpackages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="purrfectmeow.html#module-purrfectmeow">Module contents</a></li>
 </ul>
 </li>
@@ -95,17 +96,19 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #42220E" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">PurrfectKit</a>
+          <a href="index.html">PurrfectKit</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">PurrfectKit’s documentation</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">PurrfectKit</a></li>
+          <li class="breadcrumb-item"><a href="purrfectmeow.html">purrfectmeow package</a></li>
+      <li class="breadcrumb-item active">purrfectmeow.tc05_knj package</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/suwalutions/PurrfectKit/blob/meow/docs/index.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/suwalutions/PurrfectKit/blob/meow/docs/purrfectmeow.tc05_knj.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -113,53 +116,47 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="purrfectkit-s-documentation">
-<h1>PurrfectKit’s documentation<a class="headerlink" href="#purrfectkit-s-documentation" title="Link to this heading"></a></h1>
-<img alt="_images/repo-logo.png" src="_images/repo-logo.png" />
-<p><strong>PurrfectKit</strong> (/purr-fekt-kit/) is a Python library for effortless Retrieval-Augmented Generation (RAG) workflows.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This project is under active development.</p>
-</div>
-<p><strong>PurrfectKit</strong> simplifies Retrieval-Augmented Generation (RAG), a technique combining information retrieval and text generation to answer queries using external documents.</p>
-<p>The workflow involves five steps, each named after a Thai cat breed for a memorable experience:</p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="usage.html#suphalak"><span class="std std-ref">Suphalak</span></a>: Extract text from files (e.g., PDFs).</p></li>
-<li><p><a class="reference internal" href="usage.html#malet"><span class="std std-ref">Malet</span></a>: Split text into manageable chunks.</p></li>
-<li><p><a class="reference internal" href="usage.html#wichienmaat"><span class="std std-ref">WichienMaat</span></a>: Convert chunks into numerical embeddings for search.</p></li>
-<li><p><a class="reference internal" href="usage.html#khaomanee"><span class="std std-ref">KhaoManee</span></a>: Search for chunks relevant to a query.</p></li>
-<li><p><a class="reference internal" href="usage.html#kornja"><span class="std std-ref">Kornja</span></a>: Generate answers using retrieved chunks (under development).</p></li>
-</ol>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#prerequisites">Prerequisites</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#suphalak">Suphalak</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#malet">Malet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#wichienmaat">WichienMaat</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#khaomanee">KhaoManee</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#kornja">Kornja</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">PurrfectKit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.html">purrfectmeow package</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-</ul>
-</div>
+  <section id="purrfectmeow-tc05-knj-package">
+<h1>purrfectmeow.tc05_knj package<a class="headerlink" href="#purrfectmeow-tc05-knj-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-purrfectmeow.tc05_knj.base">
+<span id="purrfectmeow-tc05-knj-base-module"></span><h2>purrfectmeow.tc05_knj.base module<a class="headerlink" href="#module-purrfectmeow.tc05_knj.base" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="purrfectmeow.tc05_knj.base.Kornja">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.tc05_knj.base.</span></span><span class="sig-name descname"><span class="pre">Kornja</span></span><a class="reference internal" href="_modules/purrfectmeow/tc05_knj/base.html#Kornja"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.tc05_knj.base.Kornja" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="purrfectmeow.tc05_knj.base.Kornja.generating">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generating</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/purrfectmeow/tc05_knj/base.html#Kornja.generating"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.tc05_knj.base.Kornja.generating" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-purrfectmeow.tc05_knj">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-purrfectmeow.tc05_knj" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="purrfectmeow.tc05_knj.Kornja">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.tc05_knj.</span></span><span class="sig-name descname"><span class="pre">Kornja</span></span><a class="reference internal" href="_modules/purrfectmeow/tc05_knj/base.html#Kornja"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.tc05_knj.Kornja" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="purrfectmeow.tc05_knj.Kornja.generating">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generating</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/purrfectmeow/tc05_knj/base.html#Kornja.generating"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.tc05_knj.Kornja.generating" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="purrfectmeow.tc04_kmn.html" class="btn btn-neutral float-left" title="purrfectmeow.tc04_kmn package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="contributing.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

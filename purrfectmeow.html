@@ -1,0 +1,450 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>purrfectmeow package &mdash; PurrfectKit 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+    <link rel="canonical" href="https://suwalutions.compurrfectmeow.html"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="purrfectmeow.tc01_spl package" href="purrfectmeow.tc01_spl.html" />
+    <link rel="prev" title="PurrfectKit" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #42220E" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#prerequisites">Prerequisites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#linux-ubuntu-debian">Linux (Ubuntu/Debian)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#macos">macOS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#suphalak">Suphalak</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#Suphalak.reading"><code class="docutils literal notranslate"><span class="pre">Suphalak.reading()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#malet">Malet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#Malet.chunking"><code class="docutils literal notranslate"><span class="pre">Malet.chunking()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#wichienmaat">WichienMaat</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#WichienMaat.embedding"><code class="docutils literal notranslate"><span class="pre">WichienMaat.embedding()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#khaomanee">KhaoManee</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#KhaoManee.searching"><code class="docutils literal notranslate"><span class="pre">KhaoManee.searching()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#kornja">Kornja</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#Kornja.generating"><code class="docutils literal notranslate"><span class="pre">Kornja.generating()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">PurrfectKit</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">purrfectmeow package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-purrfectmeow">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #42220E" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PurrfectKit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">PurrfectKit</a></li>
+      <li class="breadcrumb-item active">purrfectmeow package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/suwalutions/PurrfectKit/blob/meow/docs/purrfectmeow.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="purrfectmeow-package">
+<h1>purrfectmeow package<a class="headerlink" href="#purrfectmeow-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="purrfectmeow.tc01_spl.html">purrfectmeow.tc01_spl package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc01_spl.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc01_spl.html#module-purrfectmeow.tc01_spl.base">purrfectmeow.tc01_spl.base module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.base.Suphalak"><code class="docutils literal notranslate"><span class="pre">Suphalak</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.base.Suphalak.tmp_dir"><code class="docutils literal notranslate"><span class="pre">Suphalak.tmp_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.base.Suphalak.DEFAULT_LOADER"><code class="docutils literal notranslate"><span class="pre">Suphalak.DEFAULT_LOADER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.base.Suphalak.reading"><code class="docutils literal notranslate"><span class="pre">Suphalak.reading()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc01_spl.html#module-purrfectmeow.tc01_spl.markdown">purrfectmeow.tc01_spl.markdown module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.markdown.Markdown"><code class="docutils literal notranslate"><span class="pre">Markdown</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.markdown.Markdown.markitdown_convert"><code class="docutils literal notranslate"><span class="pre">Markdown.markitdown_convert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.markdown.Markdown.docling_convert"><code class="docutils literal notranslate"><span class="pre">Markdown.docling_convert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.markdown.Markdown.pymupdf4llm_convert"><code class="docutils literal notranslate"><span class="pre">Markdown.pymupdf4llm_convert()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc01_spl.html#module-purrfectmeow.tc01_spl.ocr">purrfectmeow.tc01_spl.ocr module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.ocr.Ocr"><code class="docutils literal notranslate"><span class="pre">Ocr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.ocr.Ocr.pytesseract_convert"><code class="docutils literal notranslate"><span class="pre">Ocr.pytesseract_convert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.ocr.Ocr.easyocr_convert"><code class="docutils literal notranslate"><span class="pre">Ocr.easyocr_convert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.ocr.Ocr.suryaocr_convert"><code class="docutils literal notranslate"><span class="pre">Ocr.suryaocr_convert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.ocr.Ocr.doctr_convert"><code class="docutils literal notranslate"><span class="pre">Ocr.doctr_convert()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc01_spl.html#module-purrfectmeow.tc01_spl.simple">purrfectmeow.tc01_spl.simple module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.simple.Simple"><code class="docutils literal notranslate"><span class="pre">Simple</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.simple.Simple.encoding_convert"><code class="docutils literal notranslate"><span class="pre">Simple.encoding_convert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.simple.Simple.pymupdf_convert"><code class="docutils literal notranslate"><span class="pre">Simple.pymupdf_convert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.simple.Simple.pandas_convert"><code class="docutils literal notranslate"><span class="pre">Simple.pandas_convert()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc01_spl.html#module-purrfectmeow.tc01_spl">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.Suphalak"><code class="docutils literal notranslate"><span class="pre">Suphalak</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.Suphalak.DEFAULT_LOADER"><code class="docutils literal notranslate"><span class="pre">Suphalak.DEFAULT_LOADER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.Suphalak.reading"><code class="docutils literal notranslate"><span class="pre">Suphalak.reading()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.Suphalak.tmp_dir"><code class="docutils literal notranslate"><span class="pre">Suphalak.tmp_dir</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="purrfectmeow.tc02_mlt.html">purrfectmeow.tc02_mlt package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#module-purrfectmeow.tc02_mlt.base">purrfectmeow.tc02_mlt.base module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.base.Malet"><code class="docutils literal notranslate"><span class="pre">Malet</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.base.Malet.DEFAULT_MODEL_NAME"><code class="docutils literal notranslate"><span class="pre">Malet.DEFAULT_MODEL_NAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.base.Malet.DEFAULT_CHUNK_SIZE"><code class="docutils literal notranslate"><span class="pre">Malet.DEFAULT_CHUNK_SIZE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.base.Malet.DEFAULT_CHUNK_OVERLAP"><code class="docutils literal notranslate"><span class="pre">Malet.DEFAULT_CHUNK_OVERLAP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.base.Malet.DEFAULT_CHUNK_SEPARATOR"><code class="docutils literal notranslate"><span class="pre">Malet.DEFAULT_CHUNK_SEPARATOR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.base.Malet.chunking"><code class="docutils literal notranslate"><span class="pre">Malet.chunking()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#module-purrfectmeow.tc02_mlt.separate">purrfectmeow.tc02_mlt.separate module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.separate.SeparateSplit"><code class="docutils literal notranslate"><span class="pre">SeparateSplit</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.separate.SeparateSplit.splitter"><code class="docutils literal notranslate"><span class="pre">SeparateSplit.splitter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.separate.SeparateSplit.CharacterSeparator"><code class="docutils literal notranslate"><span class="pre">SeparateSplit.CharacterSeparator</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#module-purrfectmeow.tc02_mlt.token">purrfectmeow.tc02_mlt.token module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.token.TokenSplit"><code class="docutils literal notranslate"><span class="pre">TokenSplit</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.token.TokenSplit.splitter"><code class="docutils literal notranslate"><span class="pre">TokenSplit.splitter()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#module-purrfectmeow.tc02_mlt">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.Malet"><code class="docutils literal notranslate"><span class="pre">Malet</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.Malet.DEFAULT_CHUNK_OVERLAP"><code class="docutils literal notranslate"><span class="pre">Malet.DEFAULT_CHUNK_OVERLAP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.Malet.DEFAULT_CHUNK_SEPARATOR"><code class="docutils literal notranslate"><span class="pre">Malet.DEFAULT_CHUNK_SEPARATOR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.Malet.DEFAULT_CHUNK_SIZE"><code class="docutils literal notranslate"><span class="pre">Malet.DEFAULT_CHUNK_SIZE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.Malet.DEFAULT_MODEL_NAME"><code class="docutils literal notranslate"><span class="pre">Malet.DEFAULT_MODEL_NAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc02_mlt.html#purrfectmeow.tc02_mlt.Malet.chunking"><code class="docutils literal notranslate"><span class="pre">Malet.chunking()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="purrfectmeow.tc03_wcm.html">purrfectmeow.tc03_wcm package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc03_wcm.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc03_wcm.html#module-purrfectmeow.tc03_wcm.base">purrfectmeow.tc03_wcm.base module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc03_wcm.html#purrfectmeow.tc03_wcm.base.WichienMaat"><code class="docutils literal notranslate"><span class="pre">WichienMaat</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc03_wcm.html#purrfectmeow.tc03_wcm.base.WichienMaat.DEFAULT_MODEL_NAME"><code class="docutils literal notranslate"><span class="pre">WichienMaat.DEFAULT_MODEL_NAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc03_wcm.html#purrfectmeow.tc03_wcm.base.WichienMaat.embedding"><code class="docutils literal notranslate"><span class="pre">WichienMaat.embedding()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc03_wcm.html#module-purrfectmeow.tc03_wcm.local">purrfectmeow.tc03_wcm.local module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc03_wcm.html#purrfectmeow.tc03_wcm.local.Local"><code class="docutils literal notranslate"><span class="pre">Local</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc03_wcm.html#purrfectmeow.tc03_wcm.local.Local.model_encode"><code class="docutils literal notranslate"><span class="pre">Local.model_encode()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc03_wcm.html#module-purrfectmeow.tc03_wcm">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc03_wcm.html#purrfectmeow.tc03_wcm.WichienMaat"><code class="docutils literal notranslate"><span class="pre">WichienMaat</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc03_wcm.html#purrfectmeow.tc03_wcm.WichienMaat.DEFAULT_MODEL_NAME"><code class="docutils literal notranslate"><span class="pre">WichienMaat.DEFAULT_MODEL_NAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc03_wcm.html#purrfectmeow.tc03_wcm.WichienMaat.embedding"><code class="docutils literal notranslate"><span class="pre">WichienMaat.embedding()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="purrfectmeow.tc04_kmn.html">purrfectmeow.tc04_kmn package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc04_kmn.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc04_kmn.html#module-purrfectmeow.tc04_kmn.base">purrfectmeow.tc04_kmn.base module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc04_kmn.html#purrfectmeow.tc04_kmn.base.KhaoManee"><code class="docutils literal notranslate"><span class="pre">KhaoManee</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc04_kmn.html#purrfectmeow.tc04_kmn.base.KhaoManee.searching"><code class="docutils literal notranslate"><span class="pre">KhaoManee.searching()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc04_kmn.html#module-purrfectmeow.tc04_kmn.cosine">purrfectmeow.tc04_kmn.cosine module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc04_kmn.html#purrfectmeow.tc04_kmn.cosine.ConsineSim"><code class="docutils literal notranslate"><span class="pre">ConsineSim</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc04_kmn.html#purrfectmeow.tc04_kmn.cosine.ConsineSim.vector_search"><code class="docutils literal notranslate"><span class="pre">ConsineSim.vector_search()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc04_kmn.html#module-purrfectmeow.tc04_kmn">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc04_kmn.html#purrfectmeow.tc04_kmn.KhaoManee"><code class="docutils literal notranslate"><span class="pre">KhaoManee</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc04_kmn.html#purrfectmeow.tc04_kmn.KhaoManee.searching"><code class="docutils literal notranslate"><span class="pre">KhaoManee.searching()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="purrfectmeow.tc05_knj.html">purrfectmeow.tc05_knj package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc05_knj.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc05_knj.html#module-purrfectmeow.tc05_knj.base">purrfectmeow.tc05_knj.base module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc05_knj.html#purrfectmeow.tc05_knj.base.Kornja"><code class="docutils literal notranslate"><span class="pre">Kornja</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc05_knj.html#purrfectmeow.tc05_knj.base.Kornja.generating"><code class="docutils literal notranslate"><span class="pre">Kornja.generating()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="purrfectmeow.tc05_knj.html#module-purrfectmeow.tc05_knj">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="purrfectmeow.tc05_knj.html#purrfectmeow.tc05_knj.Kornja"><code class="docutils literal notranslate"><span class="pre">Kornja</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="purrfectmeow.tc05_knj.html#purrfectmeow.tc05_knj.Kornja.generating"><code class="docutils literal notranslate"><span class="pre">Kornja.generating()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-purrfectmeow">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-purrfectmeow" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="purrfectmeow.Suphalak">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.</span></span><span class="sig-name descname"><span class="pre">Suphalak</span></span><a class="reference internal" href="_modules/purrfectmeow/tc01_spl/base.html#Suphalak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Suphalak" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="purrfectmeow.Suphalak.DEFAULT_LOADER">
+<span class="sig-name descname"><span class="pre">DEFAULT_LOADER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PYMUPDF4LLM'</span></em><a class="headerlink" href="#purrfectmeow.Suphalak.DEFAULT_LOADER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="purrfectmeow.Suphalak.reading">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reading</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/purrfectmeow/tc01_spl/base.html#Suphalak.reading"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Suphalak.reading" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file</strong> (<em>BinaryIO</em>)</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>)</p></li>
+<li><p><strong>loader</strong> (<em>str</em>)</p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="purrfectmeow.Suphalak.tmp_dir">
+<span class="sig-name descname"><span class="pre">tmp_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.cache/tmp'</span></em><a class="headerlink" href="#purrfectmeow.Suphalak.tmp_dir" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="purrfectmeow.Malet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.</span></span><span class="sig-name descname"><span class="pre">Malet</span></span><a class="reference internal" href="_modules/purrfectmeow/tc02_mlt/base.html#Malet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Malet" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="purrfectmeow.Malet.DEFAULT_CHUNK_OVERLAP">
+<span class="sig-name descname"><span class="pre">DEFAULT_CHUNK_OVERLAP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#purrfectmeow.Malet.DEFAULT_CHUNK_OVERLAP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="purrfectmeow.Malet.DEFAULT_CHUNK_SEPARATOR">
+<span class="sig-name descname"><span class="pre">DEFAULT_CHUNK_SEPARATOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\n\n'</span></em><a class="headerlink" href="#purrfectmeow.Malet.DEFAULT_CHUNK_SEPARATOR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="purrfectmeow.Malet.DEFAULT_CHUNK_SIZE">
+<span class="sig-name descname"><span class="pre">DEFAULT_CHUNK_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">500</span></em><a class="headerlink" href="#purrfectmeow.Malet.DEFAULT_CHUNK_SIZE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="purrfectmeow.Malet.DEFAULT_MODEL_NAME">
+<span class="sig-name descname"><span class="pre">DEFAULT_MODEL_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'</span></em><a class="headerlink" href="#purrfectmeow.Malet.DEFAULT_MODEL_NAME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="purrfectmeow.Malet.chunking">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chunking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'token'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/purrfectmeow/tc02_mlt/base.html#Malet.chunking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Malet.chunking" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>)</p></li>
+<li><p><strong>chunk_method</strong> (<em>Literal</em><em>[</em><em>'token'</em><em>, </em><em>'separate'</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>List</em>[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="purrfectmeow.WichienMaat">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.</span></span><span class="sig-name descname"><span class="pre">WichienMaat</span></span><a class="reference internal" href="_modules/purrfectmeow/tc03_wcm/base.html#WichienMaat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.WichienMaat" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="purrfectmeow.WichienMaat.DEFAULT_MODEL_NAME">
+<span class="sig-name descname"><span class="pre">DEFAULT_MODEL_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'</span></em><a class="headerlink" href="#purrfectmeow.WichienMaat.DEFAULT_MODEL_NAME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="purrfectmeow.WichienMaat.embedding">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">embedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/purrfectmeow/tc03_wcm/base.html#WichienMaat.embedding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.WichienMaat.embedding" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sentence</strong> (<em>str</em><em> | </em><em>List</em><em>[</em><em>str</em><em>]</em>)</p></li>
+<li><p><strong>model_name</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="purrfectmeow.KhaoManee">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.</span></span><span class="sig-name descname"><span class="pre">KhaoManee</span></span><a class="reference internal" href="_modules/purrfectmeow/tc04_kmn/base.html#KhaoManee"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.KhaoManee" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="purrfectmeow.KhaoManee.searching">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">searching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_embed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sentence_embed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/purrfectmeow/tc04_kmn/base.html#KhaoManee.searching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.KhaoManee.searching" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="purrfectmeow.Kornja">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.</span></span><span class="sig-name descname"><span class="pre">Kornja</span></span><a class="reference internal" href="_modules/purrfectmeow/tc05_knj/base.html#Kornja"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Kornja" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="purrfectmeow.Kornja.generating">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generating</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/purrfectmeow/tc05_knj/base.html#Kornja.generating"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.Kornja.generating" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="PurrfectKit" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="purrfectmeow.tc01_spl.html" class="btn btn-neutral float-right" title="purrfectmeow.tc01_spl package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, SUWALUTIONS CO., LTD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

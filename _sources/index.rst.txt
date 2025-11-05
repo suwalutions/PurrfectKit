@@ -31,4 +31,5 @@ The workflow involves five steps, each named after a Thai cat breed for a memora
    installation
    quickstart
    usage
+   modules
    contributing

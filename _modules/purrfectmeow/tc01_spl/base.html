@@ -1,0 +1,257 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>purrfectmeow.tc01_spl.base &mdash; PurrfectKit 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.png"/>
+    <link rel="canonical" href="https://suwalutions.com_modules/purrfectmeow/tc01_spl/base.html"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #42220E" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#prerequisites">Prerequisites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#linux-ubuntu-debian">Linux (Ubuntu/Debian)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#macos">macOS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#suphalak">Suphalak</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage.html#Suphalak.reading"><code class="docutils literal notranslate"><span class="pre">Suphalak.reading()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#malet">Malet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage.html#Malet.chunking"><code class="docutils literal notranslate"><span class="pre">Malet.chunking()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#wichienmaat">WichienMaat</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage.html#WichienMaat.embedding"><code class="docutils literal notranslate"><span class="pre">WichienMaat.embedding()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#khaomanee">KhaoManee</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage.html#KhaoManee.searching"><code class="docutils literal notranslate"><span class="pre">KhaoManee.searching()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#kornja">Kornja</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage.html#Kornja.generating"><code class="docutils literal notranslate"><span class="pre">Kornja.generating()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">PurrfectKit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../purrfectmeow.html">purrfectmeow package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../purrfectmeow.html#subpackages">Subpackages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../purrfectmeow.html#module-purrfectmeow">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #42220E" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PurrfectKit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">purrfectmeow.tc01_spl.base</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for purrfectmeow.tc01_spl.base</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.markdown</span><span class="w"> </span><span class="kn">import</span> <span class="n">Markdown</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.ocr</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ocr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.simple</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simple</span>
+
+<div class="viewcode-block" id="Suphalak">
+<a class="viewcode-back" href="../../../purrfectmeow.tc01_spl.html#purrfectmeow.Suphalak">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Suphalak</span><span class="p">:</span>
+    <span class="n">tmp_dir</span> <span class="o">=</span> <span class="s1">&#39;.cache/tmp&#39;</span>
+    <span class="n">DEFAULT_LOADER</span> <span class="o">=</span> <span class="s2">&quot;PYMUPDF4LLM&quot;</span>
+
+    <span class="n">_LOADERS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;MARKITDOWN&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="n">Markdown</span><span class="o">.</span><span class="n">markitdown_convert</span><span class="p">,</span>
+            <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;docx&quot;</span><span class="p">,</span> <span class="s2">&quot;md&quot;</span><span class="p">,</span> <span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;pptx&quot;</span><span class="p">,</span> <span class="s2">&quot;txt&quot;</span><span class="p">,</span> <span class="s2">&quot;xls&quot;</span><span class="p">,</span> <span class="s2">&quot;xlsx&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;DOCLING&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="n">Markdown</span><span class="o">.</span><span class="n">docling_convert</span><span class="p">,</span>
+            <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;docx&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;md&quot;</span><span class="p">,</span> <span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;pptx&quot;</span><span class="p">,</span> <span class="s2">&quot;xlsx&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;PYMUPDF4LLM&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="n">Markdown</span><span class="o">.</span><span class="n">pymupdf4llm_convert</span><span class="p">,</span>
+            <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;docx&quot;</span><span class="p">,</span> <span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;pptx&quot;</span><span class="p">,</span> <span class="s2">&quot;txt&quot;</span><span class="p">,</span> <span class="s2">&quot;xlsx&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;PYTESSERACT&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="n">Ocr</span><span class="o">.</span><span class="n">pytesseract_convert</span><span class="p">,</span>
+            <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gif&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;EASYOCR&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="n">Ocr</span><span class="o">.</span><span class="n">easyocr_convert</span><span class="p">,</span>
+            <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gif&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;SURYAOCR&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="n">Ocr</span><span class="o">.</span><span class="n">suryaocr_convert</span><span class="p">,</span>
+            <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gif&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;DOCTR&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="n">Ocr</span><span class="o">.</span><span class="n">doctr_convert</span><span class="p">,</span>
+            <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gif&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;PYMUPDF&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">pymupdf_convert</span><span class="p">,</span>
+            <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;docx&quot;</span><span class="p">,</span> <span class="s2">&quot;md&quot;</span><span class="p">,</span> <span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;pptx&quot;</span><span class="p">,</span> <span class="s2">&quot;xlsx&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;PANDAS&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">pandas_convert</span><span class="p">,</span>
+            <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;xls&quot;</span><span class="p">,</span> <span class="s2">&quot;xlsx&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;ENCODING&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="n">Simple</span><span class="o">.</span><span class="n">encoding_convert</span><span class="p">,</span>
+            <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;md&quot;</span><span class="p">,</span> <span class="s2">&quot;txt&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_detect_loader</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_ext</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">priority</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;PANDAS&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;xls&quot;</span><span class="p">)),</span>
+            <span class="p">(</span><span class="s2">&quot;PYTESSERACT&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;gif&quot;</span><span class="p">)),</span>
+            <span class="p">(</span><span class="s2">&quot;PYMUPDF&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;md&quot;</span><span class="p">)),</span>
+            <span class="p">(</span><span class="s2">&quot;PYMUPDF4LLM&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;txt&quot;</span><span class="p">,</span> <span class="s2">&quot;xlsx&quot;</span><span class="p">,</span> <span class="s2">&quot;pptx&quot;</span><span class="p">,</span> <span class="s2">&quot;docx&quot;</span><span class="p">)),</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">loader</span><span class="p">,</span> <span class="n">extensions</span> <span class="ow">in</span> <span class="n">priority</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">file_ext</span> <span class="ow">in</span> <span class="n">extensions</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">loader</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEFAULT_LOADER</span>
+
+<div class="viewcode-block" id="Suphalak.reading">
+<a class="viewcode-back" href="../../../purrfectmeow.tc01_spl.html#purrfectmeow.Suphalak.reading">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reading</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">loader</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+        <span class="n">file_ext</span> <span class="o">=</span> <span class="n">file_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">loader</span><span class="p">:</span>
+            <span class="n">loader</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_detect_loader</span><span class="p">(</span><span class="n">file_ext</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">loader</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_LOADERS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported loader: &#39;</span><span class="si">{</span><span class="n">loader</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="n">loader_conf</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_LOADERS</span><span class="p">[</span><span class="n">loader</span><span class="p">]</span>
+        <span class="n">supported_ext</span> <span class="o">=</span> <span class="n">loader_conf</span><span class="p">[</span><span class="s2">&quot;ext&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">file_ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">supported_ext</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">file_ext</span><span class="si">}</span><span class="s2">&#39; is not supported for &#39;</span><span class="si">{</span><span class="n">loader</span><span class="si">}</span><span class="s2">&#39; loader.&quot;</span><span class="p">)</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+            <span class="n">text</span> <span class="o">=</span> <span class="n">loader_conf</span><span class="p">[</span><span class="s2">&quot;func&quot;</span><span class="p">](</span><span class="n">file_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">file_ext</span> <span class="o">==</span> <span class="s2">&quot;pdf&quot;</span>
+                <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">text</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                <span class="ow">and</span> <span class="n">loader</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;PYTESSERACT&quot;</span><span class="p">,</span> <span class="s2">&quot;EASYOCR&quot;</span><span class="p">,</span> <span class="s2">&quot;SURYAOCR&quot;</span><span class="p">,</span> <span class="s2">&quot;DOCTR&quot;</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">ocr_loader</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_LOADERS</span><span class="p">[</span><span class="s2">&quot;PYTESSERACT&quot;</span><span class="p">]</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">ocr_loader</span><span class="p">[</span><span class="s2">&quot;func&quot;</span><span class="p">](</span><span class="n">file_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">text</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, SUWALUTIONS CO., LTD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
