@@ -33,81 +33,81 @@ jobs:
             echo "valid=false" >> $GITHUB_OUTPUT
           fi
 
-  build-image:
-    runs-on:
-      - self-hosted
-      - ${{ vars.SERVER_RUNNER_02 }}
-      - ${{ vars.PROJECT_NAME }}
-    needs: check-branch
-    if: needs.check-branch.outputs.valid_branch == 'true'
-    outputs:
-      image_tag: ${{ steps.set-image-tag.outputs.tag }}
+  # build-image:
+  #   runs-on:
+  #     - self-hosted
+  #     - ${{ vars.SERVER_RUNNER_02 }}
+  #     - ${{ vars.PROJECT_NAME }}
+  #   needs: check-branch
+  #   if: needs.check-branch.outputs.valid_branch == 'true'
+  #   outputs:
+  #     image_tag: ${{ steps.set-image-tag.outputs.tag }}
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v5
 
-      - name: Set image tag
-        id: set-image-tag
-        run: |
-          echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+  #     - name: Set image tag
+  #       id: set-image-tag
+  #       run: |
+  #         echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
 
-      - name: Build Docker image
-        run: |
-          IMAGE_NAME=${{ vars.IMAGE_NAME }}
-          TAG=${{ github.ref_name }}
-          echo "Building Docker image: $IMAGE_NAME:$TAG"
-          docker build -t $IMAGE_NAME:$TAG .
+  #     - name: Build Docker image
+  #       run: |
+  #         IMAGE_NAME=${{ vars.IMAGE_NAME }}
+  #         TAG=${{ github.ref_name }}
+  #         echo "Building Docker image: $IMAGE_NAME:$TAG"
+  #         docker build -t $IMAGE_NAME:$TAG .
 
-      - name: Save Docker image as artifact
-        run: |
-          docker save ${{ vars.IMAGE_NAME }}:${{ github.ref_name }} -o ${{ vars.IMAGE_NAME }}_${{ github.ref_name }}.tar
+  #     - name: Save Docker image as artifact
+  #       run: |
+  #         docker save ${{ vars.IMAGE_NAME }}:${{ github.ref_name }} -o ${{ vars.IMAGE_NAME }}_${{ github.ref_name }}.tar
 
-      - name: Upload Docker image artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-image
-          path: ${{ vars.IMAGE_NAME }}_${{ github.ref_name }}.tar
+  #     - name: Upload Docker image artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: docker-image
+  #         path: ${{ vars.IMAGE_NAME }}_${{ github.ref_name }}.tar
 
-  push-image:
-    runs-on:
-      - self-hosted
-      - ${{ vars.SERVER_RUNNER_02 }}
-      - ${{ vars.PROJECT_NAME }}
-    needs: build-image
-    if: needs.check-branch.outputs.valid_branch == 'true'
+  # push-image:
+  #   runs-on:
+  #     - self-hosted
+  #     - ${{ vars.SERVER_RUNNER_02 }}
+  #     - ${{ vars.PROJECT_NAME }}
+  #   needs: build-image
+  #   if: needs.check-branch.outputs.valid_branch == 'true'
 
-    steps:
-      - name: Download Docker image artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-image
-          path: .
+  #   steps:
+  #     - name: Download Docker image artifact
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: docker-image
+  #         path: .
 
-      - name: Load Docker image
-        run: |
-          docker load -i ${{ vars.IMAGE_NAME }}_${{ needs.build-image.outputs.image_tag }}.tar
+  #     - name: Load Docker image
+  #       run: |
+  #         docker load -i ${{ vars.IMAGE_NAME }}_${{ needs.build-image.outputs.image_tag }}.tar
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Log in to GitHub Container Registry
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #     - name: Log in to Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ vars.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Tag and push
-        run: |
-          IMAGE_NAME=${{ vars.IMAGE_NAME }}
-          TAG=${{ needs.build-image.outputs.image_tag }}
+  #     - name: Tag and push
+  #       run: |
+  #         IMAGE_NAME=${{ vars.IMAGE_NAME }}
+  #         TAG=${{ needs.build-image.outputs.image_tag }}
 
-          docker tag $IMAGE_NAME:$TAG ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$TAG
-          docker push ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$TAG
+  #         docker tag $IMAGE_NAME:$TAG ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$TAG
+  #         docker push ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$TAG
 
-          docker tag $IMAGE_NAME:$TAG ${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$TAG
-          docker push ${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$TAG
+  #         docker tag $IMAGE_NAME:$TAG ${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$TAG
+  #         docker push ${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$TAG
