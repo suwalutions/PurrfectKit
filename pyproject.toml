@@ -30,7 +30,7 @@ classifiers = [
     "Topic :: Text Processing :: Linguistic",
     "Topic :: Text Processing :: General",
     "Natural Language :: English",
-    "Natural Language :: Multilingual",
+    "Natural Language :: Thai",
 ]
 
 dependencies = [
