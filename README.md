@@ -1,8 +1,10 @@
-![PurrfectMeow Logo](docs/_static/repo-logo.png)
+![PurrfectMeow Logo](https://github.com/suwalutions/PurrfectKit/blob/meow/docs/_static/repo-logo.png)
 
 # PurrfectKit
 
+[![PyPI Latest Release](https://img.shields.io/pypi/v/purrfectkit.svg)](https://pypi.org/project/purrfectkit/) [![PyPI Downloads](https://img.shields.io/pypi/dm/purrfectkit.svg?label=PyPI%20downloads)](https://pypi.org/project/purrfectkit/)
 [![Docker Image](https://github.com/suwalutions/PurrfectKit/actions/workflows/docker-image.yml/badge.svg)](https://github.com/suwalutions/PurrfectKit/actions/workflows/docker-image.yml)
+[![License - MIT](https://img.shields.io/pypi/l/purrfectkit.svg)](https://github.com/suwalutions/purrfectkit/blob/meow/LICENSE)
 
 **PurrfectKit** is a toolkit that simplifies Retrieval-Augmented Generation (RAG) into 5 easy steps:
 1. Suphalak - read content from files
@@ -18,12 +20,11 @@
 ### Prerequisites
 - python
 - tesseract
-- git
 
 
 ### Installation
 ```bash
-pip install git+https://github.com/suwalutions/PurrfectKit.git
+pip install purrfectkit
 
 ```
 
@@ -34,7 +35,8 @@ from purrfectmeow import Suphalak, Malet, WichienMaat, KhaoManee
 
 file_path = 'test/test.pdf'
 metadata = MetaFile.get_metadata(file_path)
-content = Suphalak.reading(open(file_path, 'rb').read(), 'test.pdf', loader='PYMUPDF')
+with open(file_path, 'rb') as f:
+    content = Suphalak.reading(f, 'test.pdf')
 chunks = Malet.chunking(content, chunk_method='token', chunk_size='500', chunk_overlap='25')
 docs = DocTemplate.create_template(chunks, metadata)
 embedding = WichienMaat.embedding(chunks)
