@@ -2,9 +2,14 @@
 
 # PurrfectKit
 
-[![PyPI Latest Release](https://img.shields.io/pypi/v/purrfectkit.svg)](https://pypi.org/project/purrfectkit/) [![PyPI Downloads](https://img.shields.io/pypi/dm/purrfectkit.svg?label=PyPI%20downloads)](https://pypi.org/project/purrfectkit/)
-[![Docker Image](https://github.com/suwalutions/PurrfectKit/actions/workflows/docker-image.yml/badge.svg)](https://github.com/suwalutions/PurrfectKit/actions/workflows/docker-image.yml)
-[![License - MIT](https://img.shields.io/pypi/l/purrfectkit.svg)](https://github.com/suwalutions/purrfectkit/blob/meow/LICENSE)
+[![Python 3.10–3.13](https://img.shields.io/badge/python-3.10–3.13-blue)](https://www.python.org)
+[![PyPI](https://img.shields.io/pypi/v/purrfectkit?color=gold&label=PyPI)](https://pypi.org/project/purrfectkit/)
+[![Downloads](https://img.shields.io/pypi/dm/purrfectkit?color=purple)](https://pypistats.org/packages/purrfectkit)
+<!-- [![CI](https://github.com/suwalutions/PurrfectKit/actions/workflows/ci.yml/badge.svg)](https://github.com/suwalutions/PurrfectKit/actions/workflows/ci.yml) -->
+<!-- [![Coverage](https://codecov.io/gh/suwalutions/PurrfectKit/graph/badge.svg)](https://codecov.io/gh/suwalutions/PurrfectKit)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) -->
+[![Docker](https://img.shields.io/docker/v/suwalutions/purrfectkit?label=docker)](https://ghcr.io/suwalutions/purrfectkit)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **PurrfectKit** is a toolkit that simplifies Retrieval-Augmented Generation (RAG) into 5 easy steps:
 1. Suphalak - read content from files
@@ -45,6 +50,6 @@ KhaoManee.searching(query, embedding, docs, 2)
 
 ```
 
-## 📄 License
+## License
 
 PurrfectKit is released under the [MIT License](LICENSE).
