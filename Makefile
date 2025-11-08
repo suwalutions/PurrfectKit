@@ -49,7 +49,7 @@ release: check-clean bump tag-push latest-tag
 # make tag TAG=(test/docs/latest)
 
 ALLOWED_TAGS := docs test latest
-TAG ?= 
+TAG ?=
 
 .PHONY: check-tag tag
 
@@ -71,7 +71,7 @@ tag: check-tag
 # make image-release
 # make image-release IMG_TAG=(latest/vX.Y.Z)
 
-.PHONY: image-build image-save image-clean image-run image-push image-release 
+.PHONY: image-build image-save image-clean image-run image-push image-release
 
 IMAGE_NAME := purrfectkit
 IMG_TAG ?= latest
@@ -99,7 +99,7 @@ image-push:
 	@echo $$DOCKERHUB_TOKEN | docker login -u $(DOCKERHUB_USERNAME) --password-stdin
 	@echo "Logging in to GitHub Container Registry..."
 	@echo $$GITHUB_TOKEN | docker login ghcr.io -u $(GITHUB_ACTOR) --password-stdin
-	
+
 	@echo "Tagging images..."
 	docker tag $(IMAGE_NAME):$(IMG_TAG) ghcr.io/$(GITHUB_OWNER)/$(IMAGE_NAME):$(IMG_TAG)
 	docker tag $(IMAGE_NAME):$(IMG_TAG) $(DOCKERHUB_USERNAME)/$(IMAGE_NAME):$(IMG_TAG)
@@ -155,16 +155,15 @@ docker-release:
 
 celebrate:
 	@echo ""
-	@echo "╭────────────────────────────────────────────────────────────────────────────╮"
-	@echo "│			PURRFECTKIT $(VERSION) IS NOW IMMORTAL EVERYWHERE				│"
-	@echo "│                                                          					│"
+	@echo "╭───────────────────────────────────────────────────────────────────────────────╮"
+	@echo "│		PURRFECTKIT $(VERSION) IS NOW IMMORTAL EVERYWHERE				│"
+	@echo "│                                                          			│"
 	@echo "│  PyPI			→	https://pypi.org/project/$(IMAGE_NAME)/$(VERSION)/		│"
-	@echo "│  Docs			→	https://$(GITHUB_OWNER).github.io/PurrfectKit/			│"
-	@echo "│  ghrc.io		→ 	docker pull ghcr.io/suwalutions/$(IMAGE_NAME):$(TAG_V)	│"
-	@echo "│  Docker Hub 	→	docker pull $(DOCKERHUB_USERNAME)/$(IMAGE_NAME):$(TAG_V)│"
-	@echo "│                                                          					│"
-	@echo "│  All 5 Thai cats are purring in perfect harmony.        					│"
-	@echo "╰────────────────────────────────────────────────────────────────────────────╯"
+	@echo "│  Docs			→	https://$(GITHUB_OWNER).github.io/PurrfectKit/	│"
+	@echo "│  Docker		→ 	ghcr.io/suwalutions/$(IMAGE_NAME):$(TAG_V)		│"
+	@echo "│                                                          			│"
+	@echo "│  All 5 Thai cats are purring in perfect harmony.        			│"
+	@echo "╰───────────────────────────────────────────────────────────────────────────────╯"
 	@echo ""
 
 # ─────────────────────────────────────────────────────────────
