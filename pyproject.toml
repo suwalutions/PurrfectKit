@@ -103,4 +103,4 @@ strict = true
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-addopts = "-ra -q --cov=purrfectmeow"
+addopts = "-ra -q"
