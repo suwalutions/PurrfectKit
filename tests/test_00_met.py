@@ -74,7 +74,7 @@ def test_get_metadata_from_path_valid(mock_dependencies):
     verify_metadata(metadata, "something.txt", ".txt")
 
 def test_get_metadata_from_path_no_extension(mock_dependencies):
-    with pytest.raises(RuntimeError, match="Failed to extract metadata: .*Is a directory"):
+    with pytest.raises(FileNotFoundError, match="No such file or directory"):
         MetaFile._get_metadata_from_path("test")
 
 def test_get_metadata_from_path_wrong_extension(mock_dependencies):
@@ -84,7 +84,7 @@ def test_get_metadata_from_path_wrong_extension(mock_dependencies):
 def test_get_metadata_from_path_magic_failure(mock_dependencies):
     mock_dependencies[1].return_value.from_file.side_effect = Exception("Magic error")
     
-    metadata = MetaFile._get_metadata_from_path("tests/somthing.txt")
+    metadata = MetaFile._get_metadata_from_path("tests/something.txt")
     
     assert metadata["file_type"] == "unknown"
     assert metadata["description"] == "Could not determine file type: Magic error"
@@ -93,7 +93,7 @@ def test_get_metadata_from_path_pdf_subprocess_failure(mock_dependencies):
     mock_dependencies[1].return_value.from_file.return_value = "application/pdf"
     mock_dependencies[2].side_effect = subprocess.CalledProcessError(1, "pdfinfo")
     
-    metadata = MetaFile._get_metadata_from_path("tests/somthing.pdf")
+    metadata = MetaFile._get_metadata_from_path("tests/something.pdf")
     assert metadata['total_pages'] == "Unknown (pdfinfo not installed or failed)"
 
 # @pytest.mark.parametrize(
