@@ -1,0 +1,41 @@
+name: Publish to PyPI
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+
+jobs:
+  publish:
+    name: Build & Publish ${{ github.ref_name }}
+    runs-on:
+      - self-hosted
+      - ${{ vars.SERVER_RUNNER_01 }}
+      - ${{ vars.RUNNER_LABEL_01 }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Build
+        run: uv build --wheel --sdist
+
+      - name: Publish to TestPyPI (prerelease)
+        if: contains(github.ref_name, '-')
+        env:
+          UV_PYPIRC: |
+            [testpypi]
+            username = __token__
+            password = ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: uv publish --repository testpypi --skip-existing
+
+      - name: Publish to PyPI (final)
+        if: "!contains(github.ref_name, '-')"
+        env:
+          UV_PYPIRC: |
+            [pypi]
+            username = __token__
+            password = ${{ secrets.PYPI_API_TOKEN }}
+        run: uv publish --skip-existing
