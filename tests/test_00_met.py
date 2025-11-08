@@ -74,11 +74,8 @@ def test_get_metadata_from_path_valid(mock_dependencies):
     verify_metadata(metadata, "something.txt", ".txt")
 
 def test_get_metadata_from_path_no_extension(mock_dependencies):
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(RuntimeError, match=r"No such file or directory"):
         MetaFile._get_metadata_from_path("test")
-
-    assert isinstance(excinfo.value, FileNotFoundError)
-    assert "test" in str(excinfo.value)
 
 def test_get_metadata_from_path_wrong_extension(mock_dependencies):
     with pytest.raises(RuntimeError, match="Failed to extract metadata: .*No such file or directory"):
