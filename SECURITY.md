@@ -15,10 +15,7 @@ We take security **extremely seriously**.
 
 **DO NOT open public issues for security bugs.**
 
-Instead, email us directly:  
-**suwa@suwalutions.com**
-
-Or message on GitHub:  
+A message on GitHub:  
 [@KHARAPSY](https://github.com/KHARAPSY) (private message)
 
 ### What we promise:
