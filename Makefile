@@ -1,18 +1,31 @@
+# =============================================================================
+# PurrfectKit — The Ultimate Thai Cat Release Fortress
+# One command to deploy everything. Full manual control preserved.
+# =============================================================================
+
+# Add this line at the very top (after the comment header):
+.PHONY: check-clean bump tag-push latest-tag release tag image-build image-save image-clean image-run image-push image-release deploy wait-pypi trigger-docs wait-docs docker-release celebrate deploy-dry deploy-no-docker
+
+# ─────────────────────────────────────────────────────────────
+# 1. VERSION RELEASE
+# ─────────────────────────────────────────────────────────────
 # Usage:
-# make release SemVer=patch
-# make release SemVer=minor
-# make release SemVer=major
+# make release (default to patch)
+# make release SemVer=(patch/minor/major)
 
 SemVer ?= patch
+VERSION ?= $(shell bumpversion --dry-run --list $(SemVer) 2>/dev/null | grep '^new_version=' | cut -d= -f2 || echo "0.0.0")
+TAG_V := v$(VERSION)
+
+.PHONY: check-clean bump tag-push latest-push latest-tag release
 
 check-clean:
 	@git diff --quiet || (echo "Working tree is not clean. Commit or stash changes first." && exit 1)
 	@git diff --cached --quiet || (echo "Index has staged changes. Commit or reset them first." && exit 1)
 
 bump:
-	@VERSION=$$(bumpversion --dry-run --list $(SemVer) | grep new_version= | sed -r s,"^.*=",,); \
-	echo "Bumping version ($(SemVer)) to $$VERSION"; \
-	bumpversion --allow-dirty $(SemVer)
+	@echo "Bumping version ($(SemVer)) → $(VERSION)"
+	@bumpversion --allow-dirty $(SemVer)
 
 tag-push:
 	@git push origin HEAD
@@ -20,87 +33,203 @@ tag-push:
 
 latest-tag:
 	@if ! echo "patch minor major" | grep -qw "$(SemVer)"; then \
-		echo "Skipping 'latest' tag update for SemVer=$(SemVer)"; \
+		echo "Skipping 'latest' tag (not a semver bump)"; \
 		exit 0; \
 	fi
-	@if git rev-parse "refs/tags/latest" >/dev/null 2>&1; then \
-		echo "Removing existing 'latest' tag..."; \
-		git tag -d latest; \
-		git push origin :refs/tags/latest; \
-	fi
-	@echo "Creating new 'latest' tag at current commit..."
-	@git tag latest
-	@git push origin latest
+	@git tag -f latest
+	@git push -f origin latest
 
 release: check-clean bump tag-push latest-tag
-	@echo "Release $(VERSION) completed and 'latest' tag updated."
+	@echo "Release $(VERSION) completed + 'latest' tag updated."
 
+# ─────────────────────────────────────────────────────────────
+# 2. TAG MANAGEMENT
+# ─────────────────────────────────────────────────────────────
 # Usage:
-# make tag TAG=test
-# make tag TAG=docs
-# make tag TAG=latest
+# make tag TAG=(test/docs/latest)
 
 ALLOWED_TAGS := docs test latest
-TAG ?=
+TAG ?= 
 
-.PHONY: tag check-tag
+.PHONY: check-tag tag
 
 check-tag:
-	@if [ -z "$(TAG)" ]; then \
-		echo "Error: TAG is required. Usage: make tag TAG=docs|test|latest"; \
-		exit 1; \
-	fi
-	@if ! echo "$(ALLOWED_TAGS)" | grep -qw "$(TAG)"; then \
-		echo "Error: Invalid TAG '$(TAG)'. Allowed tags are: $(ALLOWED_TAGS)"; \
-		exit 1; \
-	fi
+	@test -n "$(TAG)" || (echo "Error: TAG is required. Usage: make tag TAG=docs|test|latest" && exit 1)
+	@echo "$(ALLOWED_TAGS)" | grep -qw "$(TAG)" || (echo "Invalid TAG '$(TAG)'. Allowed: $(ALLOWED_TAGS)" && exit 1)
 
 tag: check-tag
-	@if git rev-parse "refs/tags/$(TAG)" >/dev/null 2>&1; then \
-		echo "Removing local tag '$(TAG)'..."; \
-		git tag -d $(TAG); \
-	else \
-		echo "Local tag '$(TAG)' does not exist."; \
-	fi
-	@if git ls-remote --tags origin | grep -q "refs/tags/$(TAG)$$"; then \
-		echo "Removing remote tag '$(TAG)'..."; \
-		git push origin :refs/tags/$(TAG); \
-	else \
-		echo "Remote tag '$(TAG)' does not exist."; \
-	fi
-	@echo "Creating tag '$(TAG)' at current commit..."
-	git tag $(TAG)
-	@echo "Pushing tag '$(TAG)' to remote..."
-	git push origin $(TAG)
+	@git tag -d $(TAG) 2>/dev/null || true
+	@git push origin :refs/tags/$(TAG) 2>/dev/null || true
+	@git tag $(TAG)
+	@git push origin $(TAG)
+	@echo "Tag '$(TAG)' created and pushed"
 
+# ─────────────────────────────────────────────────────────────
+# 3. DOCKER IMAGE RELEASE (latest / vX.Y.Z)
+# ─────────────────────────────────────────────────────────────
+# Usage:
+# make image-release
+# make image-release IMG_TAG=(latest/vX.Y.Z)
 
-# Usage
-# make image-build   # Build the image
-# make image-save    # Save the image as a tarball
-# make image-clean   # Remove build cache
-# make image-run     # Run the container
+.PHONY: image-build image-save image-clean image-run image-push image-release 
 
 IMAGE_NAME := purrfectkit
-IMAGE_TAG := latest
-TAR_NAME := $(IMAGE_NAME)_$(IMAGE_TAG).tar
+IMG_TAG ?= latest
+TAR_NAME := $(IMAGE_NAME)_$(IMG_TAG).tar
 
-# 1. Build Docker image
-.PHONY: image-build
+DOCKERHUB_USERNAME ?= $(shell echo $$DOCKERHUB_USERNAME)
+GITHUB_OWNER := suwalutions
+GITHUB_ACTOR ?= $(shell echo $$GITHUB_ACTOR)
+
 image-build:
-	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+	docker build -t $(IMAGE_NAME):$(IMG_TAG) .
 
-# 2. Save Docker image to a tar file
-.PHONY: image-save
 image-save:
-	docker save -o $(TAR_NAME) $(IMAGE_NAME):$(IMAGE_TAG)
+	docker save -o $(TAR_NAME) $(IMAGE_NAME):$(IMG_TAG)
 
-# 3. Clean Docker build cache (dangling images and cache)
-.PHONY: image-clean
 image-clean:
 	docker builder prune -f
 	docker image prune -f
 
-# 4. Run Docker image
-.PHONY: image-run
 image-run:
-	docker run --rm -it $(IMAGE_NAME):$(IMAGE_TAG)
+	docker run --rm -it $(IMAGE_NAME):$(IMG_TAG)
+
+image-push:
+	@echo "Logging in to Docker Hub..."
+	@echo $$DOCKERHUB_TOKEN | docker login -u $(DOCKERHUB_USERNAME) --password-stdin
+	@echo "Logging in to GitHub Container Registry..."
+	@echo $$GITHUB_TOKEN | docker login ghcr.io -u $(GITHUB_ACTOR) --password-stdin
+	
+	@echo "Tagging images..."
+	docker tag $(IMAGE_NAME):$(IMG_TAG) ghcr.io/$(GITHUB_OWNER)/$(IMAGE_NAME):$(IMG_TAG)
+	docker tag $(IMAGE_NAME):$(IMG_TAG) $(DOCKERHUB_USERNAME)/$(IMAGE_NAME):$(IMG_TAG)
+
+	@echo "Pushing image to Github Container Register..."
+	docker push ghcr.io/$(GITHUB_OWNER)/$(IMAGE_NAME):$(IMG_TAG)
+
+	@echo "Pushing image to Docker Hub..."
+	docker push $(DOCKERHUB_USERNAME)/$(IMAGE_NAME):$(IMG_TAG)
+
+image-release: image-build image-save image-push
+	@echo "Image $(IMAGE_NAME):$(IMG_TAG) built, saved, and pushed!"
+
+# ─────────────────────────────────────────────────────────────
+# 4. ULTIMATE DEPLOYMENT
+# ─────────────────────────────────────────────────────────────
+# Usage:
+# make deploy
+
+.PHONY: deploy wait-pypi trigger-docs wait-docs docker-release celebrate deploy-dry deploy-no-docker
+
+deploy: release wait-pypi trigger-docs wait-docs docker-release celebrate
+
+wait-pypi:
+	@echo "Waiting for PyPI publish (tag $(TAG_V))..."
+	@sleep 12
+	@while true; do \
+		RUN=$$(curl -s https://api.github.com/repos/$(GITHUB_OWNER)/PurrfectKit/actions/runs | \
+			jq -r '.workflow_runs[] | select(.head_branch=="main" and .name=="Publish to PyPI") | .status + " " + .conclusion' | head -n1); \
+		echo "PyPI status: $$RUN"; \
+		if echo "$$RUN" | grep -q "completed success"; then \
+			echo "PYPI LIVE → https://pypi.org/project/purrfectkit/$(VERSION)/"; \
+			break; \
+		fi; \
+		if echo "$$RUN" | grep -q "failure"; then \
+			echo "PYPI FAILED"; exit 1; \
+		fi; \
+		sleep 10; \
+	done
+
+trigger-docs:
+	@make tag TAG=docs
+
+wait-docs:
+	@echo "Waiting for documentation to deploy..."
+	@while ! curl -f -s https://$(GITHUB_OWNER).github.io/PurrfectKit/ > /dev/null; do \
+		echo "Docs not ready..."; sleep 12; \
+	done
+	@echo "DOCS LIVE → https://$(GITHUB_OWNER).github.io/PurrfectKit/"
+
+docker-release:
+	@make image-release IMG_TAG=$(TAG_V)
+
+celebrate:
+	@echo ""
+	@echo "╭────────────────────────────────────────────────────────────────────────────╮"
+	@echo "│			PURRFECTKIT $(VERSION) IS NOW IMMORTAL EVERYWHERE				│"
+	@echo "│                                                          					│"
+	@echo "│  PyPI			→	https://pypi.org/project/$(IMAGE_NAME)/$(VERSION)/		│"
+	@echo "│  Docs			→	https://$(GITHUB_OWNER).github.io/PurrfectKit/			│"
+	@echo "│  ghrc.io		→ 	docker pull ghcr.io/suwalutions/$(IMAGE_NAME):$(TAG_V)	│"
+	@echo "│  Docker Hub 	→	docker pull $(DOCKERHUB_USERNAME)/$(IMAGE_NAME):$(TAG_V)│"
+	@echo "│                                                          					│"
+	@echo "│  All 5 Thai cats are purring in perfect harmony.        					│"
+	@echo "╰────────────────────────────────────────────────────────────────────────────╯"
+	@echo ""
+
+# ─────────────────────────────────────────────────────────────
+# BONUS: Dry-run & skip modes
+# ─────────────────────────────────────────────────────────────
+deploy-dry:
+	@echo "DRY RUN: make deploy SemVer=$(SemVer)"
+	@echo "   → bump to $(VERSION)"
+	@echo "   → tag v$(VERSION) + latest"
+	@echo "   → trigger PyPI publish"
+	@echo "   → rebuild docs"
+	@echo "   → build & push docker:$(TAG_V)"
+
+deploy-no-docker:
+	@make release SemVer=$(SemVer)
+	@make wait-pypi
+	@make trigger-docs
+	@make wait-docs
+	@echo "Deploy complete (Docker skipped)"
+
+# ─────────────────────────────────────────────────────────────
+# HELP — The most beautiful help in open source history
+# ─────────────────────────────────────────────────────────────
+help:
+	@echo "			PurrfectKit — Thai Cat Release Fortress"
+	@echo "============================================================================================"
+	@echo "|"
+	@echo "| GOD COMMAND (one enter → everything updates)"
+	@echo "|   make deploy					# Full atomic release (PyPI + Docs + Docker)"
+	@echo "|   make deploy SemVer=minor			# Override bump level (patch/minor/major)"
+	@echo "|   make deploy SemVer=1.5.0			# Direct version (skip bumpversion)"
+	@echo "| "
+	@echo "| DRY RUN & SAFETY"
+	@echo "|   make deploy-dry				# Show exactly what will happen"
+	@echo "|   make deploy-no-docker			# Everything except Docker push"
+	@echo "| "
+	@echo "| MANUAL CONTROL (you still own every step)"
+	@echo "|   make release				# Default: bump patch → vX.Y.Z+1"
+	@echo "|   make release SemVer=minor			# Bump minor → vX.Y+1.0"
+	@echo "|   make release SemVer=major			# Bump major → vX+1.0.0"
+	@echo "|   make tag TAG=docs				# Rebuild & deploy documentation only"
+	@echo "|   make tag TAG=latest				# Force-update 'latest' pointer"
+	@echo "| "
+	@echo "| DOCKER COMMANDS"
+	@echo "|   make image-release				# Build & push with IMG_TAG=latest"
+	@echo "|   make image-release IMG_TAG=v2.1.0		# Specific version"
+	@echo "|   make image-release IMG_TAG=experimental	# Custom tag"
+	@echo "|   make image-run				# Run container locally"
+	@echo "| "
+	@echo "| BONUS UTILITIES"
+	@echo "|   make help					# This beautiful menu"
+	@echo "|   make celebrate				# Print victory cat (for emergencies)"
+	@echo "| "
+	@echo "| EXAMPLE FULL RELEASE (copy-paste this):"
+	@echo "|   make deploy SemVer=patch"
+	@echo "| "
+	@echo "| RESULT AFTER DEPLOY:"
+	@echo "|    PyPI			→ https://pypi.org/project/purrfectkit/X.Y.Z/"
+	@echo "|    Docs			→ https://suwalutions.github.io/PurrfectKit/"
+	@echo "|    ghcr.io			→ ghcr.io/suwalutions/purrfectkit:vX.Y.Z"
+	@echo "|    Docker			→ https://hub.docker.com/r/suwa24017/purrfectkit:vX.Y.Z"
+	@echo "| "
+	@echo "|    All 5 Thai cats purring in perfect harmony"
+	@echo "| "
+	@echo "============================================================================================"
+	@echo "			You are not just releasing code."
+	@echo "			You are conducting a symphony of Thai cats."
+	@echo "============================================================================================"
