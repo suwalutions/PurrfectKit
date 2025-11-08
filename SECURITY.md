@@ -11,7 +11,7 @@ We take security **extremely seriously**.
 
 > We patch **all maintained versions** within **24 hours** of a confirmed vulnerability.
 
-## Reporting a Vulnerability (PRIVATE & REWARDED)
+## Reporting a Vulnerability
 
 **DO NOT open public issues for security bugs.**
 
