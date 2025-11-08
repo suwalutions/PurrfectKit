@@ -1,6 +1,6 @@
 # Security Policy — PurrfectKit
 
-We take security **extremely seriously**.  
+We take security **extremely seriously**.
 
 ## Supported Versions
 
@@ -15,7 +15,7 @@ We take security **extremely seriously**.
 
 **DO NOT open public issues for security bugs.**
 
-A message on GitHub:  
+A message on GitHub:
 [@KHARAPSY](https://github.com/KHARAPSY) (private message)
 
 ### What we promise:
@@ -24,9 +24,21 @@ A message on GitHub:
 - **Public credit** in release notes (unless you prefer anonymity)
 
 ### What to include:
-```text
 - Package version
 - Steps to reproduce
 - Exploit code (if any)
 - Impact (RCE? Data leak? DoS?)
 - Your name/handle (for credit)
+
+### Security Features:
+- All OCR engines run in isolated Docker containers by default
+- No network calls unless explicitly enabled
+- Secrets scanned with `detect-secrets` on every commit
+- Dependencies locked with `uv lock`
+- CI runs `bandit` + `safety` on every push
+
+### Disclosure Policy
+1. You report → we respond in ≤6h
+2. We fix → you test → we merge
+3. We release patch → same day
+4. We credit you → forever
