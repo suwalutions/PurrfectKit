@@ -1,0 +1,41 @@
+# Never let ugly code pass
+
+repos:
+  # 1. Ruff = fastest linter + formatter in the universe
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.4
+    hooks:
+      - id: ruff-check
+        args: [ --fix ]
+      - id: ruff-format
+
+  # 2. mypy = catch bugs before they happen
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.18.2
+    hooks:
+      - id: mypy
+        args: ["--strict"]
+        files: ^(purrfectmeow|tests)/.*\.py$
+
+  # 3. Detect secrets (API keys, tokens)
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+    -   id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: package.lock.json
+
+  # 4. End-of-file fixer + trailing whitespace
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: check-docstring-first
+      - id: check-symlinks
+      - id: check-toml
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: forbid-submodules
+      - id: name-tests-test
+      - id: requirements-txt-fixer
