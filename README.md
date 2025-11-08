@@ -5,9 +5,8 @@
 [![Python 3.10–3.13](https://img.shields.io/badge/python-3.10–3.13-blue)](https://www.python.org)
 [![PyPI](https://img.shields.io/pypi/v/purrfectkit?color=gold&label=PyPI)](https://pypi.org/project/purrfectkit/)
 [![Downloads](https://img.shields.io/pypi/dm/purrfectkit?color=purple)](https://pypistats.org/packages/purrfectkit)
-<!-- [![CI](https://github.com/suwalutions/PurrfectKit/actions/workflows/ci.yml/badge.svg)](https://github.com/suwalutions/PurrfectKit/actions/workflows/ci.yml) -->
-<!-- [![Coverage](https://codecov.io/gh/suwalutions/PurrfectKit/graph/badge.svg)](https://codecov.io/gh/suwalutions/PurrfectKit)
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) -->
+[![codecov](https://codecov.io/github/suwalutions/PurrfectKit/branch/meow/graph/badge.svg?token=Z6YETHJXCL)](https://codecov.io/github/suwalutions/PurrfectKit)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Docker](https://img.shields.io/docker/v/suwalutions/purrfectkit?label=docker)](https://ghcr.io/suwalutions/purrfectkit)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
