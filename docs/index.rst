@@ -10,6 +10,24 @@ PurrfectKit's documentation
 
 **PurrfectKit** (/purr-fekt-kit/) is a Python library for effortless Retrieval-Augmented Generation (RAG) workflows.
 
+.. image:: https://img.shields.io/badge/python-3.10–3.13-blue
+   :target: https://www.python.org
+
+.. image:: https://img.shields.io/pypi/v/purrfectkit?color=gold&label=PyPI 
+   :target: https://pypi.org/project/purrfectkit/
+
+.. image:: https://img.shields.io/pypi/dm/purrfectkit?color=purple
+   :target: https://pypistats.org/packages/purrfectkit
+
+.. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json
+   :target: https://github.com/astral-sh/ruff
+
+.. image:: https://img.shields.io/docker/v/suwalutions/purrfectkit?label=docker
+   :target: https://ghcr.io/suwalutions/purrfectkit
+
+.. image:: https://codecov.io/github/suwalutions/PurrfectKit/branch/meow/graph/badge.svg?token=Z6YETHJXCL 
+   :target: https://codecov.io/github/suwalutions/PurrfectKit
+ 
 .. note::
 
    This project is under active development.

@@ -1,11 +1,27 @@
 Installation
 ============
 
-**PurrfectKit** can be installed directly from the GitHub repository:
+Install via pip:
 
 .. code-block:: console
 
-    pip install git+https://github.com/suwalutions/PurrfectKit.git
+    pip install purrfectkit
+
+
+Install via git:
+
+.. code-block:: console
+  
+    pip install -U git+https://github.com/suwalutions/PurrfectKit.git
+
+
+Install from source:
+
+.. code-block:: console
+
+    git clone https://github.com/suwalutions/PurrfectKit.git
+    pip installl -U PurrfectKit/.
+
 
 
 Prerequisites
@@ -21,7 +37,7 @@ Linux (Ubuntu/Debian)
 
 **System Requirements**
 
-- **Python**: Version **3.12** or higher
+- **Python**: Version **3.10** or higher
 - **Tesseract OCR**: Required for OCR processing or image-based PDFs
 
   .. code-block:: console
@@ -60,7 +76,7 @@ macOS
 
 **System Requirements**
 
-- **Python**: Version **3.12** or higher
+- **Python**: Version **3.10** or higher
 - **Tesseract OCR**: Required for OCR processing or image-based PDFs
 
   .. code-block:: console
