@@ -51,6 +51,9 @@ dependencies = [
 
 [project.optional-dependencies]
 Dev = [
+    "ruff<=0.6.0",
+    "mypy<=1.11.0",
+    "pre-commit<=3.8.0",
 ]
 Docs = [
     "sphinx<=8.2.3",
@@ -89,3 +92,15 @@ exclude = [
     "uv.lock",
 ]
 
+[tool.ruff]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = []
+fixable = ["ALL"]
+line-length = 100
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+addopts = "-ra -q --cov=purrfectmeow"
