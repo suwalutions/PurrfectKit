@@ -20,6 +20,6 @@ jobs:
           uv pip install -e .[Test,Dev]
       - name: Test with pytest
         run: |
-          uv run pytest --cov=purrfectmeow --cov-report=xml
+          uv run pytest
       - name: Upload coverage
         uses: codecov/codecov-action@v4
