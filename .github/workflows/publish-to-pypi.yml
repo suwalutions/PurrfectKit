@@ -1,18 +1,12 @@
 name: Publish to PyPI
 on:
   push:
-    tags:
-      - "v*"
-    branches:
-      - "meow"
+    tags: [ "v*" ]
 
 jobs:
   publish:
     name: Build & Publish ${{ github.ref_name }}
-    runs-on:
-      - self-hosted
-      - ${{ vars.SERVER_RUNNER_01 }}
-      - ${{ vars.RUNNER_LABEL_01 }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
         with:
@@ -25,7 +19,7 @@ jobs:
         run: uv build --wheel --sdist
 
       - name: Publish to TestPyPI (prerelease)
-        if: startsWith(github.ref_name, 'v') && contains(github.ref_name, '-')
+        if: contains(github.ref_name, '-')
         env:
           UV_PYPIRC: |
             [testpypi]
@@ -34,9 +28,7 @@ jobs:
         run: uv publish --repository testpypi --skip-existing
 
       - name: Publish to PyPI (final)
-        if: >
-          startsWith(github.ref_name, 'v') && !contains(github.ref_name, '-') ||
-          github.ref == 'refs/heads/meow'
+        if: "!contains(github.ref_name, '-')"
         env:
           UV_PYPIRC: |
             [pypi]
