@@ -1,8 +1,10 @@
 name: Publish to PyPI
 on:
   push:
-    tags: [ "v*" ]
-    branches: [ meow ]
+    tags:
+      - "v*"
+    branches:
+      - "meow"
 
 jobs:
   publish:
@@ -23,7 +25,7 @@ jobs:
         run: uv build --wheel --sdist
 
       - name: Publish to TestPyPI (prerelease)
-        if: contains(github.ref_name, '-')
+        if: startsWith(github.ref_name, 'v') && contains(github.ref_name, '-')
         env:
           UV_PYPIRC: |
             [testpypi]
@@ -32,7 +34,9 @@ jobs:
         run: uv publish --repository testpypi --skip-existing
 
       - name: Publish to PyPI (final)
-        if: "!contains(github.ref_name, '-')"
+        if: >
+          startsWith(github.ref_name, 'v') && !contains(github.ref_name, '-') ||
+          github.ref == 'refs/heads/meow'
         env:
           UV_PYPIRC: |
             [pypi]
