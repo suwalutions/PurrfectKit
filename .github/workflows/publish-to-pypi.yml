@@ -4,6 +4,10 @@ on:
     tags: [ "v*" ]
     branches: [ meow ]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   publish:
     name: Build & Publish ${{ github.ref_name }}
@@ -26,7 +30,7 @@ jobs:
             [testpypi]
             username = __token__
             password = ${{ secrets.TEST_PYPI_API_TOKEN }}
-        run: uv publish --repository testpypi --no-trusted-publishing
+        run: uv publish --repository testpypi
 
       - name: Publish to PyPI (final)
         if: "!contains(github.ref_name, '-')"
@@ -35,4 +39,4 @@ jobs:
             [pypi]
             username = __token__
             password = ${{ secrets.PYPI_API_TOKEN }}
-        run: uv publish --no-trusted-publishing
+        run: uv publish
