@@ -123,19 +123,23 @@ image-release: image-build image-save image-push
 
 deploy: release wait-pypi trigger-docs wait-docs docker-release celebrate
 
+pypi-now:
+	@echo "Pushing CURRENT version $(shell python -c "import purrfectmeow; print(purrfectmeow.__version__)") to PyPI..."
+	@git push origin HEAD --tags
+	@sleep 8
+	@make wait-pypi || (echo "PyPI workflow failed — check GitHub Actions" && exit 1)
+	@echo "CURRENT VERSION IS NOW LIVE ON PYPI!"
+
 wait-pypi:
-	@echo "Waiting for PyPI publish (tag $(TAG_V))..."
-	@sleep 12
+	@echo "Waiting for PyPI publish (latest commit)..."
+	@sleep 15
 	@while true; do \
 		RUN=$$(curl -s https://api.github.com/repos/$(GITHUB_OWNER)/PurrfectKit/actions/runs | \
-			jq -r '.workflow_runs[] | select(.head_branch=="main" and .name=="Publish to PyPI") | .status + " " + .conclusion' | head -n1); \
+			jq -r '.workflow_runs[] | select(.head_branch=="meow" and .name=="Publish to PyPI") | .status + " " + .conclusion' | head -n1); \
 		echo "PyPI status: $$RUN"; \
 		if echo "$$RUN" | grep -q "completed success"; then \
-			echo "PYPI LIVE → https://pypi.org/project/purrfectkit/$(VERSION)/"; \
+			echo "LIVE → https://pypi.org/project/purrfectkit/$(shell python -c "import purrfectmeow; print(purrfectmeow.__version__)")/"; \
 			break; \
-		fi; \
-		if echo "$$RUN" | grep -q "failure"; then \
-			echo "PYPI FAILED"; exit 1; \
 		fi; \
 		sleep 10; \
 	done
@@ -160,7 +164,7 @@ celebrate:
 	@echo "│                                                          			│"
 	@echo "│  PyPI			→	https://pypi.org/project/$(IMAGE_NAME)/$(VERSION)/		│"
 	@echo "│  Docs			→	https://$(GITHUB_OWNER).github.io/PurrfectKit/	│"
-	@echo "│  Docker		→ 	ghcr.io/suwalutions/$(IMAGE_NAME):$(TAG_V)		│"
+	@echo "│  Docker		→ 	ghcr.io/$(GITHUB_OWNER)/$(IMAGE_NAME):$(TAG_V)		│"
 	@echo "│                                                          			│"
 	@echo "│  All 5 Thai cats are purring in perfect harmony.        			│"
 	@echo "╰───────────────────────────────────────────────────────────────────────────────╯"
@@ -223,8 +227,7 @@ help:
 	@echo "| RESULT AFTER DEPLOY:"
 	@echo "|    PyPI			→ https://pypi.org/project/purrfectkit/X.Y.Z/"
 	@echo "|    Docs			→ https://suwalutions.github.io/PurrfectKit/"
-	@echo "|    ghcr.io			→ ghcr.io/suwalutions/purrfectkit:vX.Y.Z"
-	@echo "|    Docker			→ https://hub.docker.com/r/suwa24017/purrfectkit:vX.Y.Z"
+	@echo "|    Docker			→ ghcr.io/suwalutions/purrfectkit:vX.Y.Z"
 	@echo "| "
 	@echo "|    All 5 Thai cats purring in perfect harmony"
 	@echo "| "
