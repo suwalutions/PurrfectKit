@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from .felis import Document
+from purrfectmeow.meow.felis import Document
 
 
 class FileMetadata(TypedDict, total=False):

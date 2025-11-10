@@ -1,7 +1,7 @@
 from io import BytesIO
 from typing import Any
 
-from .chaus import FileMetadata
+from purrfectmeow.meow.chaus import FileMetadata
 
 
 class Document:
