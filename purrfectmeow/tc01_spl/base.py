@@ -1,14 +1,15 @@
-from typing import Dict, BinaryIO, Any
+from typing import Any, BinaryIO
 
 from .markdown import Markdown
 from .ocr import Ocr
 from .simple import Simple
 
+
 class Suphalak:
-    tmp_dir = '.cache/tmp'
+    tmp_dir = ".cache/tmp"
     DEFAULT_LOADER = "PYMUPDF4LLM"
 
-    _LOADERS: Dict[str, Dict[str, Any]] = {
+    _LOADERS: dict[str, dict[str, Any]] = {
         "MARKITDOWN": {
             "func": Markdown.markitdown_convert,
             "ext": ("csv", "docx", "md", "pdf", "pptx", "txt", "xls", "xlsx"),
@@ -67,8 +68,9 @@ class Suphalak:
         return cls.DEFAULT_LOADER
 
     @classmethod
-    def reading(cls, file: BinaryIO, file_name: str, loader: str = None, **kwargs: Any) -> str:
+    def reading(cls, file: BinaryIO, file_name: str, loader: str | None = None, **kwargs: Any) -> str:
         import os
+
         file_ext = file_name.split(".")[-1].lower()
 
         if not loader:
@@ -87,6 +89,7 @@ class Suphalak:
         file_path = os.path.join(cls.tmp_dir, file_name)
 
         try:
+            text: str
             with open(file_path, "wb") as f:
                 f.write(file.read())
 

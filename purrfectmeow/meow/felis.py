@@ -1,15 +1,18 @@
-from typing import Any, Dict, List, Union
 from io import BytesIO
+from typing import Any
+
+from .chaus import FileMetadata
+
 
 class Document:
-    def __init__(self, page_content: str, metadata: Dict[str, Any]):
+    def __init__(self, page_content: str, metadata: dict[str, Any]) -> None:
         self.page_content = page_content
         self.metadata = metadata or {}
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__}(page_content={self.page_content!r}, metadata={self.metadata!r})"
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> Any:
         if key == "page_content":
             return self.page_content
         elif key == "metadata":
@@ -17,31 +20,29 @@ class Document:
         else:
             raise KeyError(f"{key} is not a valid key. Use 'page_content' or 'metadata'.")
 
-    def to_dict(self):
-        return {
-            "page_content": self.page_content,
-            "metadata": self.metadata
-        }
+    def to_dict(self) -> dict[str, Any]:
+        return {"page_content": self.page_content, "metadata": self.metadata}
+
 
 class DocTemplate:
     @staticmethod
-    def create_template(chunks: List[str], metadata: Dict[str, Any]) -> List[Document]:
+    def create_template(chunks: list[str], metadata: dict[str, Any]) -> list[Document]:
         if not isinstance(chunks, list):
             raise TypeError(f"Expected 'chunks' to be a list, but got {type(chunks).__name__}.")
 
         if not isinstance(metadata, dict):
             raise TypeError(f"Expected 'metadata' to be a dict, but got {type(metadata).__name__}.")
-        
+
         if not all(isinstance(c, str) for c in chunks):
             raise ValueError("All elements in 'chunks' must be strings.")
 
         docs = []
         chunk_hashes = []
 
-        import uuid
         import hashlib
+        import uuid
 
-        for idx, chunk in enumerate(chunks):
+        for _, chunk in enumerate(chunks):
             hash_val = hashlib.md5(chunk.encode()).hexdigest()
             chunk_hashes.append(hash_val)
 
@@ -62,22 +63,17 @@ class DocTemplate:
                 "chunk_size": chunk_size,
             }
 
-            doc_metadata = {
-                "chunk_info": chunk_info,
-                "source_info": metadata
-            }
+            doc_metadata = {"chunk_info": chunk_info, "source_info": metadata}
 
-            doc = Document(
-                page_content=chunk,
-                metadata=doc_metadata
-            )
+            doc = Document(page_content=chunk, metadata=doc_metadata)
             docs.append(doc)
 
         return docs
 
+
 class MetaFile:
     @staticmethod
-    def get_metadata(file: Union[str, BytesIO], **kwargs: Any) -> Dict[str, Union[str, int]]:
+    def get_metadata(file: str | BytesIO, **kwargs: Any) -> FileMetadata:
         if isinstance(file, bytes):
             file = BytesIO(file)
 
@@ -85,13 +81,13 @@ class MetaFile:
             import os
 
             os.makedirs(".cache/tmp", exist_ok=True)
-            file_name = kwargs.get('file_name')
+            file_name = kwargs.get("file_name")
 
             if not file_name:
                 raise ValueError("file_name must be provided when using BytesIO.")
-            
+
             file_path = os.path.join(".cache/tmp", file_name)
-            with open(file_path, 'wb') as f:
+            with open(file_path, "wb") as f:
                 f.write(file.getvalue())
 
             try:
@@ -101,21 +97,22 @@ class MetaFile:
 
         elif isinstance(file, str):
             return MetaFile._get_metadata_from_path(file)
-        
+
         else:
             raise TypeError(f"Unsupported file type: {type(file).__name__}. Expected str, bytes, or BytesIO.")
 
     @staticmethod
-    def _get_metadata_from_path(file_path: str) -> Dict[str, Union[str, int]]:
-        metadata = {}
-        
+    def _get_metadata_from_path(file_path: str) -> FileMetadata:
+        metadata: FileMetadata = {}
+
+        import hashlib
         import os
         import re
-        import time
-        import magic
-        import hashlib
         import subprocess
-        
+        import time
+
+        import magic
+
         try:
             if not os.path.exists(file_path):
                 raise FileNotFoundError(f"File {file_path} does not exist")
@@ -123,12 +120,8 @@ class MetaFile:
             stats = os.stat(file_path)
             metadata["file_name"] = os.path.basename(file_path)
             metadata["file_size"] = stats.st_size
-            metadata["file_created_date"] = time.strftime(
-                '%Y-%m-%d %H:%M:%S', time.localtime(stats.st_ctime)
-            )
-            metadata["file_modified_date"] = time.strftime(
-                '%Y-%m-%d %H:%M:%S', time.localtime(stats.st_mtime)
-            )
+            metadata["file_created_date"] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(stats.st_ctime))
+            metadata["file_modified_date"] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(stats.st_mtime))
             metadata["file_extension"] = os.path.splitext(file_path)[1] or "none"
 
             try:
@@ -143,12 +136,7 @@ class MetaFile:
                 metadata["total_pages"] = 1
             elif metadata["file_type"].startswith("application/pdf"):
                 try:
-                    result = subprocess.run(
-                        ['pdfinfo', file_path],
-                        stdout=subprocess.PIPE,
-                        text=True,
-                        check=True
-                    )
+                    result = subprocess.run(["pdfinfo", file_path], stdout=subprocess.PIPE, text=True, check=True)
                     pages_match = re.search(r"Pages:\s*(\d+)", result.stdout)
                     if pages_match:
                         metadata["total_pages"] = int(pages_match.group(1))
@@ -168,4 +156,4 @@ class MetaFile:
             return metadata
 
         except Exception as e:
-            raise RuntimeError(f"Failed to extract metadata: {str(e)}")
+            raise RuntimeError(f"Failed to extract metadata: {e}") from e

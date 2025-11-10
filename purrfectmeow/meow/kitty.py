@@ -2,16 +2,18 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-class LevelBasedFormatter(logging.Formatter):
-    def __init__(self, default_fmt, info_fmt, datefmt=None):
-        super().__init__(datefmt=datefmt)
-        self.default_fmt = logging.Formatter(default_fmt, datefmt)
-        self.info_fmt = logging.Formatter(info_fmt, datefmt)
 
-    def format(self, record):
+class LevelBasedFormatter(logging.Formatter):
+    def __init__(self, default_fmt: str, info_fmt: str, datefmt: str | None = None) -> None:
+        super().__init__(datefmt=datefmt)
+        self.default_fmt: logging.Formatter = logging.Formatter(default_fmt, datefmt)
+        self.info_fmt: logging.Formatter = logging.Formatter(info_fmt, datefmt)
+
+    def format(self, record: logging.LogRecord) -> str:
         if record.levelno == logging.INFO:
             return self.info_fmt.format(record)
         return self.default_fmt.format(record)
+
 
 def kitty_logger(name: str, log_file: str = "kitty.log", log_level: str = "INFO") -> logging.Logger:
     """
@@ -43,9 +45,7 @@ def kitty_logger(name: str, log_file: str = "kitty.log", log_level: str = "INFO"
         log_dir.mkdir(parents=True, exist_ok=True)
         log_path = log_dir / log_file
 
-        file_handler = RotatingFileHandler(
-            log_path, maxBytes=5 * 1024 * 1024, backupCount=3
-        )
+        file_handler = RotatingFileHandler(log_path, maxBytes=5 * 1024 * 1024, backupCount=3)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
 

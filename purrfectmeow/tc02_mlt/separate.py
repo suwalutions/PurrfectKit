@@ -1,12 +1,15 @@
+from __future__ import annotations
+
 import time
 
 from purrfectmeow.meow.kitty import kitty_logger
 
+
 class SeparateSplit:
     _logger = kitty_logger(__name__)
-    
+
     @classmethod
-    def splitter(cls, chunk_separator: str):
+    def splitter(cls, chunk_separator: str) -> CharacterSeparator:
         cls._logger.debug("Initializing separate splitter")
         start = time.time()
 
@@ -25,8 +28,8 @@ class SeparateSplit:
     class CharacterSeparator:
         def __init__(self, separator: str):
             self.separator = separator
-        
-        def split_text(self, text: str):
+
+        def split_text(self, text: str) -> list[str]:
             chunks = [chunk + self.separator for chunk in text.split(self.separator)]
             chunks[-1] = chunks[-1].rstrip(self.separator)
             return chunks

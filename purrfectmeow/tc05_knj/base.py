@@ -1,6 +1,4 @@
-
 class Kornja:
-
     @classmethod
-    def generating(cls):
-        ...
+    def generating(cls) -> None:
+        pass
