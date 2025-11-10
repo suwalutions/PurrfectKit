@@ -1,8 +1,9 @@
 name: Publish to PyPI
+
 on:
   push:
-    tags: [ "v*" ]
-    branches: [ meow ]
+    tags:
+      - "v*"
 
 permissions:
   id-token: write
@@ -12,10 +13,22 @@ jobs:
   publish:
     name: Build & Publish ${{ github.ref_name }}
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+
+      - name: Verify tag is on branch 'meow'
+        id: verify_branch
+        run: |
+          TAG_COMMIT=$(git rev-parse HEAD)
+          if git merge-base --is-ancestor $TAG_COMMIT origin/meow; then
+            echo "✅ Tag commit is on branch 'meow'."
+          else
+            echo "❌ Tag commit is NOT on branch 'meow'. Exiting."
+            exit 1
+          fi
 
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
