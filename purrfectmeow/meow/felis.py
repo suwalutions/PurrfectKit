@@ -1,7 +1,17 @@
 from io import BytesIO
-from typing import Any
+from typing import Any, TypedDict
 
-from purrfectmeow.meow.chaus import FileMetadata
+
+class FileMetadata(TypedDict, total=False):
+    file_name: str
+    file_size: int
+    file_created_date: str
+    file_modified_date: str
+    file_extension: str
+    file_type: str
+    description: str
+    total_pages: int | str
+    file_md5: str
 
 
 class Document:
