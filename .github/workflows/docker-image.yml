@@ -1,37 +1,37 @@
-name: Docker Image
+# name: Docker Image
 
-on:
-  push:
-    tags: [ 'latest', 'v*' ]
+# on:
+#   push:
+#     tags: [ 'latest', 'v*' ]
 
-jobs:
-  check-branch:
-    runs-on:
-      - self-hosted
-      - ${{ vars.SERVER_RUNNER_02 }}
-      - ${{ vars.PROJECT_NAME }}
-    outputs:
-      valid_branch: ${{ steps.set-branch-valid.outputs.valid }}
+# jobs:
+#   check-branch:
+#     runs-on:
+#       - self-hosted
+#       - ${{ vars.SERVER_RUNNER_02 }}
+#       - ${{ vars.PROJECT_NAME }}
+#     outputs:
+#       valid_branch: ${{ steps.set-branch-valid.outputs.valid }}
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-    
-      - name: Check if tag is from ${{ vars.MAIN_BRANCH }}branch
-        id: set-branch-valid
-        run: |
-          echo "Checking if tag ${{ github.ref_name }} is from ${{ vars.MAIN_BRANCH }}..."
-          TAG_COMMIT=$(git rev-list -n 1 ${{ github.ref_name }})
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v5
+#         with:
+#           fetch-depth: 0
 
-          if git merge-base --is-ancestor $TAG_COMMIT origin/${{ vars.MAIN_BRANCH }}; then
-            echo "Tag is from ${{ vars.MAIN_BRANCH }} branch."
-            echo "valid=true" >> $GITHUB_OUTPUT
-          else
-            echo "Tag is NOT from ${{ vars.MAIN_BRANCH }} branch."
-            echo "valid=false" >> $GITHUB_OUTPUT
-          fi
+#       - name: Check if tag is from ${{ vars.MAIN_BRANCH }}branch
+#         id: set-branch-valid
+#         run: |
+#           echo "Checking if tag ${{ github.ref_name }} is from ${{ vars.MAIN_BRANCH }}..."
+#           TAG_COMMIT=$(git rev-list -n 1 ${{ github.ref_name }})
+
+#           if git merge-base --is-ancestor $TAG_COMMIT origin/${{ vars.MAIN_BRANCH }}; then
+#             echo "Tag is from ${{ vars.MAIN_BRANCH }} branch."
+#             echo "valid=true" >> $GITHUB_OUTPUT
+#           else
+#             echo "Tag is NOT from ${{ vars.MAIN_BRANCH }} branch."
+#             echo "valid=false" >> $GITHUB_OUTPUT
+#           fi
 
   # build-image:
   #   runs-on:

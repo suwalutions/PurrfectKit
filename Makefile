@@ -1,25 +1,103 @@
-SEM_VERSION	?= patch
-VERSION		= $(shell grep '^version' pyproject.toml | head -n1 | cut -d'"' -f2 | tr -d ' ')
-TAG			= v$(VERSION)
-PKG_NAME	= purrfectkit
-REPO_OWNER	= suwalutions
+# =============================================================================
+# PURRFECTKIT — COMPLETE DEPLOY SYSTEM (dev/alpha/beta/rc/final)
+# All versions. All workflows. One command each.
+# =============================================================================
 
-.PHONY: bump-version wait-pypi build-docs wait-docs docker-images deploy deploy-lite help
+PKG_NAME    = purrfectkit
+REPO_OWNER  = suwalutions
+IMAGE      ?= false  # default: no Docker
 
-bump-version:
-	@bumpversion --allow-dirty $(SEM_VERSION)
+# Refresh VERSION and TAG
+_get-version:
+	@$(eval VERSION = $(shell grep '^version' pyproject.toml | head -n1 | cut -d'"' -f2 | tr -d ' '))
+	@$(eval TAG = v$(VERSION))
+
+# ───── 1. DEV DEPLOY ─────
+deploy-dev:
+	@echo "DEV DEPLOY → internal only"
+	@make _get-version
+	@bumpversion --allow-dirty dev
+	@make _get-version
+	@git push origin HEAD --tags
+	@echo "DEV TAG: $(TAG)"
+	@[ "$(IMAGE)" = "true" ] && make _docker TAG=$(TAG) || true
+	@echo "DEV BUILD READY"
+
+# ───── 2. ALPHA DEPLOY → TestPyPI ─────
+deploy-alpha:
+	@echo "ALPHA DEPLOY → TestPyPI"
+	@make _get-version
+	@bumpversion --allow-dirty alpha
+	@make _get-version
+	@git push origin HEAD --tags
+	@echo "ALPHA TAG: $(TAG)"
+	@make wait-test-pypi
+	@[ "$(IMAGE)" = "true" ] && make _docker TAG=$(TAG) || true
+	@echo "ALPHA COMPLETE"
+
+# ───── 3. BETA DEPLOY → TestPyPI ─────
+deploy-beta:
+	@echo "BETA DEPLOY → TestPyPI"
+	@make _get-version
+	@bumpversion --allow-dirty beta
+	@make _get-version
+	@git push origin HEAD --tags
+	@echo "BETA TAG: $(TAG)"
+	@make wait-test-pypi
+	@make build-docs
+	@make wait-docs
+	@[ "$(IMAGE)" = "true" ] && make _docker TAG=$(TAG) || true
+	@echo "BETA COMPLETE"
+
+# ───── 4. RC DEPLOY → TestPyPI ─────
+deploy-rc:
+	@echo "RC DEPLOY → TestPyPI"
+	@make _get-version
+	@bumpversion --allow-dirty rc
+	@make _get-version
+	@git push origin HEAD --tags
+	@echo "RC TAG: $(TAG)"
+	@make wait-test-pypi
+	@make build-docs
+	@make wait-docs
+	@[ "$(IMAGE)" = "true" ] && make _docker TAG=$(TAG) || true
+	@echo "RC COMPLETE"
+
+# ───── 5. FINAL DEPLOY → PyPI + latest (optional Docker) ─────
+deploy:
+	@echo "FINAL DEPLOY → PyPI + latest tag"
+	@make _get-version
+	@bumpversion --allow-dirty release
+	@make _get-version
 	@git push origin HEAD --tags
 	@git tag -f latest
 	@git push -f origin latest
-	@echo "Tagged $(TAG) + latest"
+	@echo "FINAL TAG: $(TAG) + latest"
+	@make wait-pypi
+	@make build-docs
+	@make wait-docs
+	@[ "$(IMAGE)" = "true" ] && make _docker TAG=$(TAG) || true
+	@echo ""
+	@echo "FINAL DEPLOY COMPLETE"
+	@echo "$(VERSION) → PyPI + Docs"
+	@[ "$(IMAGE)" = "true" ] && echo "Docker → ghcr.io/$(REPO_OWNER)/$(PKG_NAME):$(TAG)" || true
 
+# ───── WAITERS ─────
 wait-pypi:
 	@echo "Waiting for PyPI..."
 	@sleep 15
-	@while ! curl -fs https://pypi.org/pypi/$(PKG_NAME)/$(VERSION)/json > /dev/null; do \
-		echo "Still building..."; sleep 8; \
+	@while ! curl -fs https://pypi.org/pypi/$(PKG_NAME)/$(VERSION)/json >/dev/null; do \
+		echo "..."; sleep 8; \
 	done
-	@echo "PYPI LIVE → https://pypi.org/project/$(PKG_NAME)/$(VERSION)/"
+	@echo "PYPI → https://pypi.org/project/$(PKG_NAME)/$(VERSION)/"
+
+wait-test-pypi:
+	@echo "Waiting for TestPyPI..."
+	@sleep 15
+	@while ! curl -fs https://test.pypi.org/pypi/$(PKG_NAME)/$(VERSION)/json >/dev/null; do \
+		echo "..."; sleep 8; \
+	done
+	@echo "TESTPYPI → https://test.pypi.org/project/$(PKG_NAME)/$(VERSION)/"
 
 build-docs:
 	@git tag -d docs 2>/dev/null || true
@@ -30,49 +108,31 @@ build-docs:
 
 wait-docs:
 	@echo "Waiting for docs..."
-	@while ! curl -fs https://$(REPO_OWNER).github.io/PurrfectKit/ > /dev/null; do sleep 10; done
-	@echo "DOCS LIVE → https://$(REPO_OWNER).github.io/PurrfectKit/"
+	@while ! curl -fs https://$(REPO_OWNER).github.io/PurrfectKit/ >/dev/null; do sleep 10; done
+	@echo "DOCS → https://$(REPO_OWNER).github.io/PurrfectKit/"
 
-docker-images:
-	@docker build -t $(PKG_NAME):$(TAG) -t $(PKG_NAME):latest .
+# ───── INTERNAL: DOCKER BUILD & PUSH ─────
+_docker:
+	@echo "Building Docker → $(TAG)"
+	@docker build -t $(PKG_NAME):$(TAG) .
 	@echo $$DOCKERHUB_TOKEN | docker login -u $$DOCKERHUB_USERNAME --password-stdin
 	@echo $$GITHUB_TOKEN | docker login ghcr.io -u $$GITHUB_ACTOR --password-stdin
 	@docker tag $(PKG_NAME):$(TAG) ghcr.io/$(REPO_OWNER)/$(PKG_NAME):$(TAG)
 	@docker tag $(PKG_NAME):$(TAG) $$DOCKERHUB_USERNAME/$(PKG_NAME):$(TAG)
 	@docker push ghcr.io/$(REPO_OWNER)/$(PKG_NAME):$(TAG)
 	@docker push $$DOCKERHUB_USERNAME/$(PKG_NAME):$(TAG)
-	@echo "DOCKER LIVE → ghcr.io/$(REPO_OWNER)/$(PKG_NAME):$(TAG)"
+	@echo "DOCKER → ghcr.io/$(REPO_OWNER)/$(PKG_NAME):$(TAG)"
 
-deploy:
-	@make bump-version SEM_VERSION=$(SEM_VERSION)
-	@make wait-pypi
-	@make build-docs
-	@make wait-docs
-	@make docker-images
-	@echo ""
-	@echo "MEOW EMPIRE HAS ASCENDED"
-	@echo "Version : $(VERSION)"
-	@echo "PyPI    : https://pypi.org/project/$(PKG_NAME)/$(VERSION)/"
-	@echo "Docs    : https://$(REPO_OWNER).github.io/PurrfectKit/"
-	@echo "Docker  : ghcr.io/$(REPO_OWNER)/$(PKG_NAME):$(TAG)"
-	@echo ""
-
-deploy-lite:
-	@make bump-version SEM_VERSION=$(SEM_VERSION)
-	@make wait-pypi
-	@make build-docs
-	@make wait-docs
-	@echo ""
-	@echo "MEOW EMPIRE HAS ASCENDED"
-	@echo "Version : $(VERSION)"
-	@echo "PyPI    : https://pypi.org/project/$(PKG_NAME)/$(VERSION)/"
-	@echo "Docs    : https://$(REPO_OWNER).github.io/PurrfectKit/"
-	@echo ""
-
+# ───── HELP ─────
 help:
-	@echo "make deploy					# Full atomic release"
-	@echo "make deploy SEM_VERSION=major			# Override bump level (patch/minor/major)"
-	@echo "make deploy-lite				# deploy without Docker"
-	@echo "make bump-version				# tags latest + vX.Y.Z"
-	@echo "make build-docs					# deploy documentation only"
-	@echo "make docker-images				# deploy docker images only"
+	@echo "DEPLOY COMMANDS:"
+	@echo "  make deploy image=true        # Final → PyPI + Docs + Docker"
+	@echo "  make deploy                   # Final → PyPI + Docs"
+	@echo "  make deploy-dev image=true    # Dev internal only + Docker"
+	@echo "  make deploy-alpha image=true  # Alpha → TestPyPI + Docker"
+	@echo "  make deploy-beta image=true   # Beta → TestPyPI + Docs + Docker"
+	@echo "  make deploy-rc image=true     # RC → TestPyPI + Docs + Docker"
+	@echo ""
+	@echo "  make help                     # this"
+
+.PHONY: _get-version deploy-dev deploy-alpha deploy-beta deploy-rc deploy wait-pypi wait-test-pypi build-docs wait-docs _docker help
