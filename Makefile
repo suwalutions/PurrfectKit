@@ -3,9 +3,10 @@
 # All versions. All workflows. One command each.
 # =============================================================================
 
-PKG_NAME    = purrfectkit
-REPO_OWNER  = suwalutions
-IMAGE      ?= false  # default: no Docker
+PKG_NAME	= purrfectkit
+REPO_OWNER	= suwalutions
+IMAGE		?= false	# default: no Docker
+DOCS		?= true		# default: with Documentation
 
 # Refresh VERSION and TAG
 _get-version:
@@ -21,6 +22,7 @@ deploy-dev:
 	@git push origin HEAD --tags
 	@echo "DEV TAG: $(TAG)"
 	@[ "$(IMAGE)" = "true" ] && make _docker TAG=$(TAG) || true
+	@[ "$(DOCS)" = "true" ] && make build-docs && make wait-docs || true
 	@echo "DEV BUILD READY"
 
 # ───── 2. ALPHA DEPLOY → TestPyPI ─────
@@ -33,6 +35,7 @@ deploy-alpha:
 	@echo "ALPHA TAG: $(TAG)"
 	@make wait-test-pypi
 	@[ "$(IMAGE)" = "true" ] && make _docker TAG=$(TAG) || true
+	@[ "$(DOCS)" = "true" ] && make build-docs && make wait-docs || true
 	@echo "ALPHA COMPLETE"
 
 # ───── 3. BETA DEPLOY → TestPyPI ─────
@@ -44,9 +47,8 @@ deploy-beta:
 	@git push origin HEAD --tags
 	@echo "BETA TAG: $(TAG)"
 	@make wait-test-pypi
-	@make build-docs
-	@make wait-docs
 	@[ "$(IMAGE)" = "true" ] && make _docker TAG=$(TAG) || true
+	@[ "$(DOCS)" = "true" ] && make build-docs && make wait-docs || true
 	@echo "BETA COMPLETE"
 
 # ───── 4. RC DEPLOY → TestPyPI ─────
@@ -58,12 +60,11 @@ deploy-rc:
 	@git push origin HEAD --tags
 	@echo "RC TAG: $(TAG)"
 	@make wait-test-pypi
-	@make build-docs
-	@make wait-docs
 	@[ "$(IMAGE)" = "true" ] && make _docker TAG=$(TAG) || true
+	@[ "$(DOCS)" = "true" ] && make build-docs && make wait-docs || true
 	@echo "RC COMPLETE"
 
-# ───── 5. FINAL DEPLOY → PyPI + latest (optional Docker) ─────
+# ───── 5. FINAL DEPLOY → PyPI + latest ─────
 deploy:
 	@echo "FINAL DEPLOY → PyPI + latest tag"
 	@make _get-version
@@ -74,13 +75,21 @@ deploy:
 	@git push -f origin latest
 	@echo "FINAL TAG: $(TAG) + latest"
 	@make wait-pypi
-	@make build-docs
-	@make wait-docs
 	@[ "$(IMAGE)" = "true" ] && make _docker TAG=$(TAG) || true
+	@[ "$(DOCS)" = "true" ] && make build-docs && make wait-docs || true
 	@echo ""
 	@echo "FINAL DEPLOY COMPLETE"
 	@echo "$(VERSION) → PyPI + Docs"
 	@[ "$(IMAGE)" = "true" ] && echo "Docker → ghcr.io/$(REPO_OWNER)/$(PKG_NAME):$(TAG)" || true
+	@[ "$(DOCS)" = "true" ] && echo "Docs → https://$(REPO_OWNER).github.io/PurrfectKit/" || true
+
+# ───── DOCUMENTATION ─────
+build-docs:
+	@git tag -d docs 2>/dev/null || true
+	@git push origin :refs/tags/docs 2>/dev/null || true
+	@git tag docs
+	@git push origin docs
+	@echo "Docs rebuild triggered"
 
 # ───── WAITERS ─────
 wait-pypi:
@@ -98,13 +107,6 @@ wait-test-pypi:
 		echo "..."; sleep 8; \
 	done
 	@echo "TESTPYPI → https://test.pypi.org/project/$(PKG_NAME)/$(VERSION)/"
-
-build-docs:
-	@git tag -d docs 2>/dev/null || true
-	@git push origin :refs/tags/docs 2>/dev/null || true
-	@git tag docs
-	@git push origin docs
-	@echo "Docs rebuild triggered"
 
 wait-docs:
 	@echo "Waiting for docs..."
@@ -126,13 +128,14 @@ _docker:
 # ───── HELP ─────
 help:
 	@echo "DEPLOY COMMANDS:"
-	@echo "  make deploy image=true        # Final → PyPI + Docs + Docker"
-	@echo "  make deploy                   # Final → PyPI + Docs"
-	@echo "  make deploy-dev image=true    # Dev internal only + Docker"
-	@echo "  make deploy-alpha image=true  # Alpha → TestPyPI + Docker"
-	@echo "  make deploy-beta image=true   # Beta → TestPyPI + Docs + Docker"
-	@echo "  make deploy-rc image=true     # RC → TestPyPI + Docs + Docker"
+	@echo "  make deploy IMAGE=true			# Final → PyPI + Docs + Docker"
+	@echo "  make deploy					# Final → PyPI + Docs"
+	@echo "  make deploy-dev DOCS=false			# Dev internal only"
+	@echo "  make deploy-alpha DOCS=false			# Alpha → TestPyPI"
+	@echo "  make deploy-beta IMAGE=true			# Beta → TestPyPI + Docs + Docker"
+	@echo "  make deploy-rc IMAGE=true			# RC → TestPyPI + Docs + Docker"
+	@echo "  make build-docs				# Docs"
 	@echo ""
-	@echo "  make help                     # this"
+	@echo "  make help					# this"
 
-.PHONY: _get-version deploy-dev deploy-alpha deploy-beta deploy-rc deploy wait-pypi wait-test-pypi build-docs wait-docs _docker help
+.PHONY: _get-version deploy-dev deploy-alpha deploy-beta deploy-rc deploy build-docs wait-pypi wait-test-pypi wait-docs _docker help
