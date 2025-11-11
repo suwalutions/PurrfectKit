@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>purrfectmeow.tc01_spl.markdown &mdash; PurrfectKit 0.2.1 documentation</title>
+  <title>purrfectmeow.tc01_spl.markdown &mdash; PurrfectKit 0.2.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
@@ -14,7 +14,7 @@
     <link rel="canonical" href="https://suwalutions.com_modules/purrfectmeow/tc01_spl/markdown.html"/>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+      <script src="../../../_static/documentation_options.js?v=a47416a6"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -113,28 +113,29 @@
              
   <h1>Source code for purrfectmeow.tc01_spl.markdown</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">purrfectmeow.meow.kitty</span><span class="w"> </span><span class="kn">import</span> <span class="n">kitty_logger</span>
+
 
 <div class="viewcode-block" id="Markdown">
 <a class="viewcode-back" href="../../../purrfectmeow.tc01_spl.html#purrfectmeow.tc01_spl.markdown.Markdown">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Markdown</span><span class="p">:</span>
-    
     <span class="n">_logger</span> <span class="o">=</span> <span class="n">kitty_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_convert</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">converter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">extractor</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">converter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span> <span class="n">extractor</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting conversion for &#39;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">content</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">extractor</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+            <span class="n">raw_content</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">converter</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+            <span class="n">result</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">extractor</span><span class="p">(</span><span class="n">raw_content</span><span class="p">)</span>
 
             <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Succesfully converted &#39;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">result</span>
-        
+
         <span class="k">finally</span><span class="p">:</span>
             <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Conversion time spent &#39;</span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&#39; seconds.&quot;</span><span class="p">)</span>
@@ -146,8 +147,10 @@
         <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Using MarkItDown for Conversion&quot;</span><span class="p">)</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">markitdown</span><span class="w"> </span><span class="kn">import</span> <span class="n">MarkItDown</span>
-        
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_convert</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">MarkItDown</span><span class="p">(),</span> <span class="k">lambda</span> <span class="n">content</span><span class="p">:</span> <span class="n">content</span><span class="o">.</span><span class="n">text_content</span><span class="p">)</span></div>
+
+        <span class="n">mid</span> <span class="o">=</span> <span class="n">MarkItDown</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_convert</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">path</span><span class="p">:</span> <span class="n">mid</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">content</span><span class="p">:</span> <span class="n">content</span><span class="o">.</span><span class="n">text_content</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Markdown.docling_convert">
@@ -155,10 +158,14 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">docling_convert</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Using Docling for Conversion&quot;</span><span class="p">)</span>
-        
+
         <span class="kn">from</span><span class="w"> </span><span class="nn">docling.document_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentConverter</span>
 
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_convert</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">DocumentConverter</span><span class="p">(),</span> <span class="k">lambda</span> <span class="n">content</span><span class="p">:</span> <span class="n">content</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">export_to_markdown</span><span class="p">())</span></div>
+        <span class="n">dcl</span> <span class="o">=</span> <span class="n">DocumentConverter</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_convert</span><span class="p">(</span>
+            <span class="n">file_path</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">path</span><span class="p">:</span> <span class="n">dcl</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">document</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">content</span><span class="p">:</span> <span class="n">content</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">export_to_markdown</span><span class="p">()</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Markdown.pymupdf4llm_convert">
@@ -172,7 +179,7 @@
         <span class="kn">import</span><span class="w"> </span><span class="nn">pymupdf4llm</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="n">pymupdf4llm</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+            <span class="n">res</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pymupdf4llm</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Succesfully converted &#39;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">res</span>

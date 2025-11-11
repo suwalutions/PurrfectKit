@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>purrfectmeow.tc04_kmn package &mdash; PurrfectKit 0.2.1 documentation</title>
+  <title>purrfectmeow.tc04_kmn package &mdash; PurrfectKit 0.2.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -15,7 +15,7 @@
     <link rel="canonical" href="https://suwalutions.compurrfectmeow.tc04_kmn.html"/>
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=37f418d5"></script>
+      <script src="_static/documentation_options.js?v=a47416a6"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -129,8 +129,21 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="purrfectmeow.tc04_kmn.base.KhaoManee.searching">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">searching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_embed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sentence_embed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/purrfectmeow/tc04_kmn/base.html#KhaoManee.searching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.tc04_kmn.base.KhaoManee.searching" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">searching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_embed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sentence_embed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/purrfectmeow/tc04_kmn/base.html#KhaoManee.searching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.tc04_kmn.base.KhaoManee.searching" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query_embed</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>sentence_embed</strong> (<em>ndarray</em><em> | </em><em>list</em><em>[</em><em>ndarray</em><em>]</em>)</p></li>
+<li><p><strong>documents</strong> (<em>list</em><em>[</em><em>Document</em><em>]</em>)</p></li>
+<li><p><strong>top_k</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[<em>SimilarityResult</em>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -138,20 +151,23 @@
 <section id="module-purrfectmeow.tc04_kmn.cosine">
 <span id="purrfectmeow-tc04-kmn-cosine-module"></span><h2>purrfectmeow.tc04_kmn.cosine module<a class="headerlink" href="#module-purrfectmeow.tc04_kmn.cosine" title="Link to this heading"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="purrfectmeow.tc04_kmn.cosine.ConsineSim">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.tc04_kmn.cosine.</span></span><span class="sig-name descname"><span class="pre">ConsineSim</span></span><a class="reference internal" href="_modules/purrfectmeow/tc04_kmn/cosine.html#ConsineSim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.tc04_kmn.cosine.ConsineSim" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="purrfectmeow.tc04_kmn.cosine.CosineSim">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">purrfectmeow.tc04_kmn.cosine.</span></span><span class="sig-name descname"><span class="pre">CosineSim</span></span><a class="reference internal" href="_modules/purrfectmeow/tc04_kmn/cosine.html#CosineSim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.tc04_kmn.cosine.CosineSim" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="purrfectmeow.tc04_kmn.cosine.ConsineSim.vector_search">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vector_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embed_query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_sentence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/purrfectmeow/tc04_kmn/cosine.html#ConsineSim.vector_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.tc04_kmn.cosine.ConsineSim.vector_search" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="purrfectmeow.tc04_kmn.cosine.CosineSim.vector_search">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vector_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embed_query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_sentence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/purrfectmeow/tc04_kmn/cosine.html#CosineSim.vector_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.tc04_kmn.cosine.CosineSim.vector_search" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>embed_query</strong> (<em>ndarray</em>)</p></li>
-<li><p><strong>embed_sentence</strong> (<em>ndarray</em><em> | </em><em>List</em><em>[</em><em>ndarray</em><em>]</em>)</p></li>
-<li><p><strong>document</strong> (<em>Document</em>)</p></li>
+<li><p><strong>embed_sentence</strong> (<em>ndarray</em><em> | </em><em>list</em><em>[</em><em>ndarray</em><em>]</em>)</p></li>
+<li><p><strong>documents</strong> (<em>list</em><em>[</em><em>Document</em><em>]</em>)</p></li>
 <li><p><strong>top_k</strong> (<em>int</em>)</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[<em>SimilarityResult</em>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -167,8 +183,21 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="purrfectmeow.tc04_kmn.KhaoManee.searching">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">searching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_embed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sentence_embed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/purrfectmeow/tc04_kmn/base.html#KhaoManee.searching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.tc04_kmn.KhaoManee.searching" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">searching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_embed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sentence_embed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/purrfectmeow/tc04_kmn/base.html#KhaoManee.searching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purrfectmeow.tc04_kmn.KhaoManee.searching" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query_embed</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>sentence_embed</strong> (<em>ndarray</em><em> | </em><em>list</em><em>[</em><em>ndarray</em><em>]</em>)</p></li>
+<li><p><strong>documents</strong> (<em>list</em><em>[</em><em>Document</em><em>]</em>)</p></li>
+<li><p><strong>top_k</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[<em>SimilarityResult</em>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>purrfectmeow.tc02_mlt.base &mdash; PurrfectKit 0.2.1 documentation</title>
+  <title>purrfectmeow.tc02_mlt.base &mdash; PurrfectKit 0.2.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
@@ -14,7 +14,7 @@
     <link rel="canonical" href="https://suwalutions.com_modules/purrfectmeow/tc02_mlt/base.html"/>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+      <script src="../../../_static/documentation_options.js?v=a47416a6"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -112,21 +112,24 @@
            <div itemprop="articleBody">
              
   <h1>Source code for purrfectmeow.tc02_mlt.base</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.token</span><span class="w"> </span><span class="kn">import</span> <span class="n">TokenSplit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_text_splitters</span><span class="w"> </span><span class="kn">import</span> <span class="n">TokenTextSplitter</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">.separate</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeparateSplit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.token</span><span class="w"> </span><span class="kn">import</span> <span class="n">TokenSplit</span>
+
 
 <div class="viewcode-block" id="Malet">
 <a class="viewcode-back" href="../../../purrfectmeow.tc02_mlt.html#purrfectmeow.Malet">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Malet</span><span class="p">:</span>
-    <span class="n">DEFAULT_MODEL_NAME</span> <span class="o">=</span> <span class="s1">&#39;sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2&#39;</span>
+    <span class="n">DEFAULT_MODEL_NAME</span> <span class="o">=</span> <span class="s2">&quot;sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2&quot;</span>
     <span class="n">DEFAULT_CHUNK_SIZE</span> <span class="o">=</span> <span class="mi">500</span>
     <span class="n">DEFAULT_CHUNK_OVERLAP</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">DEFAULT_CHUNK_SEPARATOR</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+    <span class="n">DEFAULT_CHUNK_SEPARATOR</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_kwarg</span><span class="p">(</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_kwarg</span><span class="p">(</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">keys</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -135,21 +138,27 @@
 <div class="viewcode-block" id="Malet.chunking">
 <a class="viewcode-back" href="../../../purrfectmeow.tc02_mlt.html#purrfectmeow.Malet.chunking">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">chunking</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">chunk_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="s2">&quot;separate&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">chunking</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">chunk_method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="s2">&quot;separate&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TokenTextSplitter</span> <span class="o">|</span> <span class="n">SeparateSplit</span><span class="o">.</span><span class="n">CharacterSeparator</span><span class="p">:</span>
         <span class="k">match</span> <span class="n">chunk_method</span><span class="p">:</span>
             <span class="k">case</span> <span class="s2">&quot;token&quot;</span><span class="p">:</span>
                 <span class="n">model_name</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_kwarg</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;model_name&quot;</span><span class="p">,</span> <span class="s2">&quot;ModelName&quot;</span><span class="p">,</span> <span class="s2">&quot;modelName&quot;</span><span class="p">],</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEFAULT_MODEL_NAME</span><span class="p">)</span>
                 <span class="n">chunk_size</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_kwarg</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;chunk_size&quot;</span><span class="p">,</span> <span class="s2">&quot;ChunkSize&quot;</span><span class="p">,</span> <span class="s2">&quot;chunkSize&quot;</span><span class="p">],</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEFAULT_CHUNK_SIZE</span><span class="p">)</span>
-                <span class="n">chunk_overlap</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_kwarg</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;chunk_overlap&quot;</span><span class="p">,</span> <span class="s2">&quot;ChunkOverlap&quot;</span><span class="p">,</span> <span class="s2">&quot;chunkOverlap&quot;</span><span class="p">],</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEFAULT_CHUNK_OVERLAP</span><span class="p">)</span>
+                <span class="n">chunk_overlap</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_kwarg</span><span class="p">(</span>
+                    <span class="n">kwargs</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;chunk_overlap&quot;</span><span class="p">,</span> <span class="s2">&quot;ChunkOverlap&quot;</span><span class="p">,</span> <span class="s2">&quot;chunkOverlap&quot;</span><span class="p">],</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEFAULT_CHUNK_OVERLAP</span>
+                <span class="p">)</span>
 
                 <span class="n">method</span> <span class="o">=</span> <span class="n">TokenSplit</span><span class="o">.</span><span class="n">splitter</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">chunk_overlap</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">method</span><span class="o">.</span><span class="n">split_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
             <span class="k">case</span> <span class="s2">&quot;separate&quot;</span><span class="p">:</span>
-                <span class="n">chunk_separator</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_kwarg</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;chunk_separator&quot;</span><span class="p">,</span> <span class="s2">&quot;ChunkSeparator&quot;</span><span class="p">,</span> <span class="s2">&quot;chunkSeparator&quot;</span><span class="p">],</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEFAULT_CHUNK_SEPARATOR</span><span class="p">)</span>
+                <span class="n">chunk_separator</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_kwarg</span><span class="p">(</span>
+                    <span class="n">kwargs</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;chunk_separator&quot;</span><span class="p">,</span> <span class="s2">&quot;ChunkSeparator&quot;</span><span class="p">,</span> <span class="s2">&quot;chunkSeparator&quot;</span><span class="p">],</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEFAULT_CHUNK_SEPARATOR</span>
+                <span class="p">)</span>
 
                 <span class="n">method</span> <span class="o">=</span> <span class="n">SeparateSplit</span><span class="o">.</span><span class="n">splitter</span><span class="p">(</span><span class="n">chunk_separator</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">method</span><span class="o">.</span><span class="n">split_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">method</span><span class="o">.</span><span class="n">split_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
