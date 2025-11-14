@@ -12,6 +12,7 @@ DOCS		?= true		# default: with Documentation
 _get-version:
 	@$(eval VERSION = $(shell grep '^version' pyproject.toml | head -n1 | cut -d'"' -f2 | tr -d ' '))
 	@$(eval TAG = v$(VERSION))
+	@echo "TAG: $(TAG)"
 
 # ───── 1. DEV DEPLOY ─────
 deploy-dev:
@@ -68,7 +69,7 @@ deploy-rc:
 deploy:
 	@echo "FINAL DEPLOY → PyPI + latest tag"
 	@make _get-version
-	@bumpversion final
+	@bumpversion release
 	@make _get-version
 	@git push origin HEAD --tags
 	@git tag -f latest
