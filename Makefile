@@ -19,7 +19,7 @@ _get-version:
 # ───── INTERNAL: Ensure pre-release exists ─────
 _init-pre-release:
 	@CURRENT_VERSION=$(shell grep '^version' pyproject.toml | head -n1 | cut -d'"' -f2); \
-	if ! echo $$CURRENT_VERSION | grep -qE '-(dev|alpha|beta|rc|final)\.[0-9]+'; then \
+	if ! echo $$CURRENT_VERSION | grep -E -q '\-(dev|alpha|beta|rc|final)\.[0-9]+'; then \
 		echo "Initializing pre-release suffix..."; \
 		bumpversion --new-version "$$CURRENT_VERSION-dev.0" patch; \
 	fi
