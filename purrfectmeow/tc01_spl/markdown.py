@@ -43,7 +43,7 @@ class Markdown:
         dcl = DocumentConverter()
 
         return cls._convert(
-            file_path, lambda path: dcl.convert(path).document, lambda content: content.document.export_to_markdown()
+            file_path, lambda path: dcl.convert(path).document, lambda content: content.export_to_markdown()
         )
 
     @classmethod
