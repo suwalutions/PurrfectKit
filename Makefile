@@ -68,7 +68,7 @@ deploy-rc:
 deploy:
 	@echo "FINAL DEPLOY → PyPI + latest tag"
 	@make _get-version
-	@bumpversion --allow-dirty release
+	@bumpversion --allow-dirty final
 	@make _get-version
 	@git push origin HEAD --tags
 	@git tag -f latest
