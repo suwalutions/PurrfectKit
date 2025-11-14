@@ -7,6 +7,8 @@ PKG_NAME	= purrfectkit
 REPO_OWNER	= suwalutions
 IMAGE		?= false	# default: no Docker
 DOCS		?= true		# default: with Documentation
+VERSION		?=
+TAG			?=
 
 # Refresh VERSION and TAG
 _get-version:
