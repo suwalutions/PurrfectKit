@@ -77,7 +77,6 @@ module-root = ""
 module-name = "purrfectmeow"
 include = ["LICENSE", "README.md", "pyproject.toml"]
 exclude = [
-    ".bumpversion.cfg",
     ".cache/",
     ".git/",
     ".github/",
@@ -88,7 +87,6 @@ exclude = [
     "docs/",
     "test",
     "tests/",
-    ".bumpversion",
     ".dockerignore",
     ".gitignore",
     ".pre-commit-config.yaml",
@@ -112,3 +110,34 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 addopts = "-ra -q"
+
+[tool.bumpversion]
+current_version = "0.2.3"
+commit = true
+tag = true
+parse = '''
+  (?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)
+  (?:-(?P<release>[a-z]+)\.(?P<build>\d+))?
+'''
+serialize = [
+  "{major}.{minor}.{patch}-{release}.{build}",
+  "{major}.{minor}.{patch}"
+]
+
+[[tool.bumpversion.parts.release]]
+values = ["dev", "alpha", "beta", "rc", "final"]
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "uv.lock"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "src/purrfectmeow/__init__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'

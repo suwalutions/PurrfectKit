@@ -17,7 +17,7 @@ _get-version:
 deploy-dev:
 	@echo "DEV DEPLOY → internal only"
 	@make _get-version
-	@bumpversion --allow-dirty dev
+	@bumpversion dev
 	@make _get-version
 	@git push origin HEAD --tags
 	@echo "DEV TAG: $(TAG)"
@@ -29,7 +29,7 @@ deploy-dev:
 deploy-alpha:
 	@echo "ALPHA DEPLOY → TestPyPI"
 	@make _get-version
-	@bumpversion --allow-dirty alpha
+	@bumpversion alpha
 	@make _get-version
 	@git push origin HEAD --tags
 	@echo "ALPHA TAG: $(TAG)"
@@ -42,7 +42,7 @@ deploy-alpha:
 deploy-beta:
 	@echo "BETA DEPLOY → TestPyPI"
 	@make _get-version
-	@bumpversion --allow-dirty beta
+	@bumpversion beta
 	@make _get-version
 	@git push origin HEAD --tags
 	@echo "BETA TAG: $(TAG)"
@@ -55,7 +55,7 @@ deploy-beta:
 deploy-rc:
 	@echo "RC DEPLOY → TestPyPI"
 	@make _get-version
-	@bumpversion --allow-dirty rc
+	@bumpversion rc
 	@make _get-version
 	@git push origin HEAD --tags
 	@echo "RC TAG: $(TAG)"
@@ -68,7 +68,7 @@ deploy-rc:
 deploy:
 	@echo "FINAL DEPLOY → PyPI + latest tag"
 	@make _get-version
-	@bumpversion --allow-dirty final
+	@bumpversion final
 	@make _get-version
 	@git push origin HEAD --tags
 	@git tag -f latest

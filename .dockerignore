@@ -16,7 +16,6 @@ __pycache__/
 Dockerfile*
 
 # Ignore local config files
-.bumpversion.cofg
 .python-version
 logs/*
 tmp/*
