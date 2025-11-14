@@ -10,20 +10,82 @@
 [![Docker](https://img.shields.io/docker/v/suwalutions/purrfectkit?label=docker)](https://ghcr.io/suwalutions/purrfectkit)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**PurrfectKit** is a toolkit that simplifies Retrieval-Augmented Generation (RAG) into 5 easy steps:
-1. Suphalak - read content from files
-2. Malet - split content into chunks
-3. WichienMaat - embed chunks into vectors
-4. KhaoManee - search vectors with queries
-5. Kornja - generate answers from vectors
 
-> **_NOTE:_** Each step is inspired by a unique Thai cat breed, making the workflow memorable and fun.
+**PurrfectKit** is your all-in-one, dependency-smart, configuration-friendly toolkit that turns even the most advanced Retrieval-Augmented Generation (RAG) workflows into a smooth, beginner-friendly experience.
+
+
+🧩 5 Cats Will Lead You To The Purrfect Way.    
+
+🐱 **Suphalak** – Seamlessly reads and loads content from files.
+
+🐱 **Malet** – Splits content into high-quality, model-friendly chunks.
+
+🐱 **WichienMaat** – Embeds chunks into powerful vector representations.
+
+🐱 **KhaoManee** – Searches and retrieves the most relevant vectors.
+
+🐱 **Kornja** – Generates final responses enriched by retrieved knowledge (Under Development).
+
+
+> **_NOTE:_** The Thai cat-themed naming isn’t just cute—it makes learning and remembering the RAG process surprisingly fun and intuitive.
+
+
+Whether you're a sturdent, researcher, hobbyist, or production-level engineer, this toolkit gives you a clean, guided workflow that “**just works**”
 
 ## Quickstart
 
+PurrfectKit aims to be plug-and-play, but a few lightweight system tools are required.
+
 ### Prerequisites
-- python
-- tesseract
+
+#### Linux (Ubuntu / Debian)
+
+    # Install Python (if not already)
+    sudo apt update
+    sudo apt install -y python3 python3-pip
+    
+    # Install Tesseract OCR
+    sudo apt install -y tesseract-ocr tesseract-ocr-tha
+    
+    # Install FFmpeg
+    sudo apt install -y ffmpeg
+    
+    # Install libmagic
+    sudo apt install -y libmagic1
+
+#### macOS
+
+    # Install Homebrew if missing
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    
+    # Install Python
+    brew install python
+    
+    # Install Tesseract OCR
+    brew install tesseract
+    
+    # Install FFmpeg
+    brew install ffmpeg
+    
+    # Install libmagic
+    brew install libmagic
+
+#### Windows
+
+    # Install Python
+    Download from the official website:
+   
+    [https://www.python.org/downloads/](https://www.python.org/downloads/)
+
+    ✔ Make sure to check “Add Python to **PATH**” during installation.
+
+    # Install Tesseract OCR
+    Download the Windows installer:
+
+    [https://github.com/UB-Mannheim/tesseract/wiki](https://github.com/UB-Mannheim/tesseract/wiki)
+
+    ✔ Make sure to add the installation path to your **System PATH**
+
 
 
 ### Installation
