@@ -3,33 +3,21 @@
 # All versions. All workflows. One command each.
 # =============================================================================
 
-PKG_NAME    = purrfectkit
-REPO_OWNER  = suwalutions
-IMAGE       ?= false    # default: no Docker
-DOCS        ?= true     # default: with Documentation
-VERSION     ?=
-TAG         ?=
+PKG_NAME	= purrfectkit
+REPO_OWNER	= suwalutions
+IMAGE		?= false	# default: no Docker
+DOCS		?= true		# default: with Documentation
 
 # Refresh VERSION and TAG
 _get-version:
 	@$(eval VERSION = $(shell grep '^version' pyproject.toml | head -n1 | cut -d'"' -f2 | tr -d ' '))
 	@$(eval TAG = v$(VERSION))
-	@echo "TAG: $(TAG)"
-
-# ───── INTERNAL: Ensure pre-release exists ─────
-_init-pre-release:
-	@CURRENT_VERSION=$(shell grep '^version' pyproject.toml | head -n1 | cut -d'"' -f2); \
-	if ! echo $$CURRENT_VERSION | grep -E -q '\-(dev|alpha|beta|rc|final)\.[0-9]+'; then \
-		echo "Initializing pre-release suffix..."; \
-		bumpversion --new-version "$$CURRENT_VERSION-dev.0" patch; \
-	fi
 
 # ───── 1. DEV DEPLOY ─────
 deploy-dev:
 	@echo "DEV DEPLOY → internal only"
 	@make _get-version
-	@make _init-pre-release
-	@bumpversion dev
+	@bumpversion --allow-dirty dev
 	@make _get-version
 	@git push origin HEAD --tags
 	@echo "DEV TAG: $(TAG)"
@@ -41,8 +29,7 @@ deploy-dev:
 deploy-alpha:
 	@echo "ALPHA DEPLOY → TestPyPI"
 	@make _get-version
-	@make _init-pre-release
-	@bumpversion alpha
+	@bumpversion --allow-dirty alpha
 	@make _get-version
 	@git push origin HEAD --tags
 	@echo "ALPHA TAG: $(TAG)"
@@ -55,8 +42,7 @@ deploy-alpha:
 deploy-beta:
 	@echo "BETA DEPLOY → TestPyPI"
 	@make _get-version
-	@make _init-pre-release
-	@bumpversion beta
+	@bumpversion --allow-dirty beta
 	@make _get-version
 	@git push origin HEAD --tags
 	@echo "BETA TAG: $(TAG)"
@@ -69,8 +55,7 @@ deploy-beta:
 deploy-rc:
 	@echo "RC DEPLOY → TestPyPI"
 	@make _get-version
-	@make _init-pre-release
-	@bumpversion rc
+	@bumpversion --allow-dirty rc
 	@make _get-version
 	@git push origin HEAD --tags
 	@echo "RC TAG: $(TAG)"
@@ -83,8 +68,7 @@ deploy-rc:
 deploy:
 	@echo "FINAL DEPLOY → PyPI + latest tag"
 	@make _get-version
-	@make _init-pre-release
-	@bumpversion final
+	@bumpversion --allow-dirty release
 	@make _get-version
 	@git push origin HEAD --tags
 	@git tag -f latest
@@ -144,14 +128,14 @@ _docker:
 # ───── HELP ─────
 help:
 	@echo "DEPLOY COMMANDS:"
-	@echo "  make deploy IMAGE=true            	# Final → PyPI + Docs + Docker"
-	@echo "  make deploy                     	# Final → PyPI + Docs"
-	@echo "  make deploy-dev DOCS=false         	# Dev internal only"
-	@echo "  make deploy-alpha DOCS=false       	# Alpha → TestPyPI"
-	@echo "  make deploy-beta IMAGE=true        	# Beta → TestPyPI + Docs + Docker"
-	@echo "  make deploy-rc IMAGE=true          	# RC → TestPyPI + Docs + Docker"
-	@echo "  make build-docs                  	# Docs"
+	@echo "  make deploy IMAGE=true			# Final → PyPI + Docs + Docker"
+	@echo "  make deploy					# Final → PyPI + Docs"
+	@echo "  make deploy-dev DOCS=false			# Dev internal only"
+	@echo "  make deploy-alpha DOCS=false			# Alpha → TestPyPI"
+	@echo "  make deploy-beta IMAGE=true			# Beta → TestPyPI + Docs + Docker"
+	@echo "  make deploy-rc IMAGE=true			# RC → TestPyPI + Docs + Docker"
+	@echo "  make build-docs				# Docs"
 	@echo ""
-	@echo "  make help                        	# this"
+	@echo "  make help					# this"
 
-.PHONY: _get-version _init-pre-release deploy-dev deploy-alpha deploy-beta deploy-rc deploy build-docs wait-pypi wait-test-pypi wait-docs _docker help
+.PHONY: _get-version deploy-dev deploy-alpha deploy-beta deploy-rc deploy build-docs wait-pypi wait-test-pypi wait-docs _docker help
