@@ -1,0 +1,39 @@
+[tool.bumpversion]
+current_version = "0.2.3"
+search = "{current_version}"
+replace = "{new_version}"
+
+regex = true
+ignore_missing_version = false
+ignore_missing_files = false
+tag = false
+sign_tags = false
+tag_name = "v{new_version}"
+tag_message = "Bump version: {current_version} → {new_version}"
+commit = false
+message = "Bump version: {current_version} → {new_version}"
+allow_dirty = true
+moveable_tags = []
+commit_args = ""
+setup_hooks = []
+pre_commit_hooks = []
+post_commit_hooks = []
+
+[tool.bumpversion.parts.pre_l]
+values = ["dev", "alpha", "beta", "rc", "final"]
+optional_value = "final"
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "purrfectmeow/__init__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "uv.lock"
+search = 'name = "purrfectkit"\nversion = "{current_version}"'
+replace = 'name = "purrfectkit"\nversion = "{new_version}"'
