@@ -44,6 +44,7 @@ dependencies = [
     "easyocr<=1.7.2",
     "surya-ocr<=0.14.0",
     "python-doctr<=1.0.0",
+    "typhoon-ocr<=0.4.1",
     "pandas<=2.3.2",
     "langchain-text-splitters<=1.0.0",
     "tiktoken<=0.12.0",

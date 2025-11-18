@@ -17,6 +17,7 @@ pytesseract
 easyocr
 surya-ocr
 python-doctr
+typhoon-ocr
 
 ## simple
 PyMuPDF
@@ -30,4 +31,3 @@ sentence_transformers
 
 # searching
 scikit-learn
-
