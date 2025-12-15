@@ -118,20 +118,19 @@ class Ocr:
     def doctr_convert(cls, file_path: str) -> str:
         cls._logger.debug("Using docTR for Conversion")
 
-        def converter(image: str) -> str:
+        def converter(image: Any) -> Any:
             import os
-            import shutil
             import tempfile
 
             from doctr.io import DocumentFile
             from doctr.models import ocr_predictor
 
             with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
-                shutil.copy(image, tmp.name)
-                temp_image_path = tmp.name
+                image.save(tmp.name)
+                tmp_path = tmp.name
 
             model = ocr_predictor(pretrained=True)
-            doc = DocumentFile.from_images(temp_image_path)
+            doc = DocumentFile.from_images(tmp_path)
             result = model(doc)
             data = result.export()
             combined_text = "\n".join(
@@ -142,8 +141,40 @@ class Ocr:
                 for word in line.get("words", [])
                 if "value" in word
             )
-            if os.path.exists(temp_image_path):
-                os.remove(temp_image_path)
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
             return combined_text
+
+        return cls._convert(file_path, converter)
+
+    @classmethod
+    def typhoonocr_convert(cls, file_path: str, **kwargs: Any) -> str:
+        cls._logger.debug("Using Typhoon OCR for Conversion")
+
+        def converter(image: Any) -> Any:
+            import os
+            import re
+            import tempfile
+
+            from typhoon_ocr import ocr_document
+
+            base_url = kwargs.get("base_url") or os.getenv("OLLAMA_SERVER") or "http://localhost:11434/v1"
+            if not base_url.endswith("/v1"):
+                base_url += "/v1"
+            api_key = kwargs.get("api_key") or "ollama"
+            model = kwargs.get("model") or kwargs.get("model_name") or "scb10x/typhoon-ocr1.5-3b"
+
+            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+                image.save(tmp.name)
+                tmp_path = tmp.name
+
+            text = ocr_document(tmp_path, base_url=base_url, api_key=api_key, model=model)
+
+            if model.startswith("gemma3"):
+                text = re.sub(r"^```[a-zA-Z0-9_]*\n|```$", "", text).strip()
+
+            os.remove(tmp_path)
+
+            return text
 
         return cls._convert(file_path, converter)

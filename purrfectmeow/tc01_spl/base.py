@@ -38,6 +38,10 @@ class Suphalak:
             "func": Ocr.doctr_convert,
             "ext": ("gif", "jpg", "pdf", "png"),
         },
+        "TYPHOONOCR": {
+            "func": Ocr.typhoonocr_convert,
+            "ext": ("gif", "jpg", "pdf", "png"),
+        },
         "PYMUPDF": {
             "func": Simple.pymupdf_convert,
             "ext": ("docx", "md", "pdf", "pptx", "xlsx"),
@@ -98,7 +102,7 @@ class Suphalak:
             if (
                 file_ext == "pdf"
                 and (not text or not str(text).strip())
-                and loader not in ("PYTESSERACT", "EASYOCR", "SURYAOCR", "DOCTR")
+                and loader not in ("PYTESSERACT", "EASYOCR", "SURYAOCR", "DOCTR", "TYPHOONOCR")
             ):
                 ocr_loader = cls._LOADERS["PYTESSERACT"]
                 text = ocr_loader["func"](file_path, **kwargs)
