@@ -16,7 +16,7 @@ class Suphalak:
         },
         "DOCLING": {
             "func": Markdown.docling_convert,
-            "ext": ("csv", "docx", "jpg", "md", "pdf", "png", "pptx", "xlsx"),
+            "ext": ("csv", "docx", "jpg", "jpeg", "md", "pdf", "png", "pptx", "xlsx"),
         },
         "PYMUPDF4LLM": {
             "func": Markdown.pymupdf4llm_convert,
@@ -24,23 +24,23 @@ class Suphalak:
         },
         "PYTESSERACT": {
             "func": Ocr.pytesseract_convert,
-            "ext": ("gif", "jpg", "pdf", "png"),
+            "ext": ("gif", "jpg", "jpeg", "pdf", "png"),
         },
         "EASYOCR": {
             "func": Ocr.easyocr_convert,
-            "ext": ("gif", "jpg", "pdf", "png"),
+            "ext": ("gif", "jpg", "jpeg", "pdf", "png"),
         },
         "SURYAOCR": {
             "func": Ocr.suryaocr_convert,
-            "ext": ("gif", "jpg", "pdf", "png"),
+            "ext": ("gif", "jpg", "jpeg", "pdf", "png"),
         },
         "DOCTR": {
             "func": Ocr.doctr_convert,
-            "ext": ("gif", "jpg", "pdf", "png"),
+            "ext": ("gif", "jpg", "jpeg", "pdf", "png"),
         },
         "TYPHOONOCR": {
             "func": Ocr.typhoonocr_convert,
-            "ext": ("gif", "jpg", "pdf", "png"),
+            "ext": ("gif", "jpg", "jpeg", "pdf", "png"),
         },
         "PYMUPDF": {
             "func": Simple.pymupdf_convert,
@@ -60,7 +60,7 @@ class Suphalak:
     def _detect_loader(cls, file_ext: str) -> str:
         priority = [
             ("PANDAS", ("csv", "xls")),
-            ("PYTESSERACT", ("jpg", "png", "gif")),
+            ("PYTESSERACT", ("jpg", "jpeg", "png", "gif")),
             ("PYMUPDF", ("pdf", "md")),
             ("PYMUPDF4LLM", ("txt", "xlsx", "pptx", "docx")),
         ]
