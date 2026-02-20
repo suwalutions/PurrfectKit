@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any
 
 import yaml
@@ -14,7 +15,8 @@ class WichienMaat:
         base_url = kwargs.get("openai_base_url") or kwargs.get("base_url") or ""
         api_key = kwargs.get("openai_api_key") or kwargs.get("api_key") or ""
 
-        with open("purrfectmeow/meow/felidae/models.yaml") as f:
+        config_path = Path(__file__).resolve().parents[1] / "meow" / "felidae" / "models.yaml"
+        with open(config_path) as f:
             _CFG = yaml.safe_load(f)
 
         hf_models = set(_CFG["huggingface"]["models"])
