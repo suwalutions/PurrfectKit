@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "purrfectkit"
-version = "0.2.7"
+version = "0.2.8"
 authors = [{ name = "SUWALUTIONS", email = "suwa@suwalutions.com" }]
 maintainers = [{ name = "KHARAPSY", email = "kharapsy@suwalutions.com" }]
 description = "**PurrfectKit** is a Python library for effortless Retrieval-Augmented Generation (RAG) workflows."
