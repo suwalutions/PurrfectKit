@@ -1,0 +1,46 @@
+huggingface:
+  default: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+  models:
+    - "BAAI/bge-m3"
+    - "google/embeddinggemma-300m"
+    - "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    - "thenlper/gte-large"
+    - "nomic-ai/nomic-embed-text-v1.5"
+    - "cointegrated/rubert-tiny2"
+    - "intfloat/multilingual-e5-base"
+    - "BAAI/bge-large"
+    - "Alibaba-NLP/gte-large-en-v1.5"
+    - "Snowflake/snowflake-arctic-embed-l-v2.0"
+    - "ibm-granite/granite-embedding-278m-multilingual"
+    - "sentence-transformers/all-MiniLM-L12-v2"
+
+ollama:
+  default: "paraphrase-multilingual"
+  models:
+    - "nomic-embed-text-v2-moe"
+    - "granite-embedding"
+    - "bge-large"
+    - "paraphrase-multilingual"
+    - "qwen3-embedding"
+    - "snowflake-arctic-embed2"
+    - "embeddinggemma"
+    - "snowflake-arctic-embed"
+    - "all-minilm"
+    - "bge-m3"
+    - "mxbai-embed-large"
+    - "nomic-embed-text"
+
+openai:
+  default: 'text-embedding-ada-002'
+  models:
+    - "text-embedding-ada-002"
+    - "text-embedding-3-small"
+    - "text-embedding-3-large"
+
+typhoon_ocr:
+  default: "scb10x/typhoon-ocr1.5-3b"
+  models:
+    - "scb10x/typhoon-ocr-7b"
+    - "scb10x/typhoon-ocr-3b"
+    - "scb10x/typhoon-ocr1.5-3b"
+    - "gemma3"
